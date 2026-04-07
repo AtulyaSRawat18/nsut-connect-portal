@@ -11,7 +11,7 @@ export default function Navbar() {
                         <Link href="/" className="flex items-center gap-3">
                             <div className="relative w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center text-primary font-bold overflow-hidden bg-white shadow-sm">
                                 <span className="text-xs">NC</span>
-                                <img src="/nsut-logo.jpg" alt="" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                <img src="/nsut-logo.jpg" alt="" className="absolute inset-0 w-full h-full object-cover z-10" />
                             </div>
                             <div className="flex flex-col justify-center">
                                 <h1 className="text-[17px] font-extrabold text-primary tracking-tight leading-none">NSUT Connect</h1>
