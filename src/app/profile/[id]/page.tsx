@@ -33,7 +33,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
     projects = data || [];
   } else {
     const { data } = await supabase.from('applications').select('projects(id, title, status)').eq('student_id', id);
-    projects = data?.map(a => a.projects) || [];
+    projects = data?.map((a: any) => a.projects) || [];
   }
 
   if (projects.length === 0) {
