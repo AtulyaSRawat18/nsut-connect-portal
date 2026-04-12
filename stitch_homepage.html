@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#B22222",
+                    "primary-dark": "#8B0000",
+                    "on-primary": "#ffffff",
+                    "background": "#ffffff",
+                    "surface": "#f8fafc",
+                    "on-surface": "#0f172a",
+                    "outline": "#e2e8f0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "md": "2px",
+                    "lg": "4px"
+            },
+            "fontFamily": {
+                    "sans": ["Manrope", "sans-serif"],
+                    "headline": ["Manrope", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<!-- Navigation -->
+<header class="sticky top-0 w-full z-50 bg-white border-b border-outline">
+<nav class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-4">
+<img alt="NSUT Logo" class="h-12 w-auto" src="https://lh3.googleusercontent.com/aida/ADBb0ugJUsWCjDW3a7s5kV6BXkmZEq48ee-J6B9D7qjWVQY_-fYbik8P7oojcyZKpQTXSkoK34R8tbLNcyAmNJB9sMHBc3FX-3jZ39vDHOMHBi5EoUFfMHN8aJ1Wb9P3ToguJdqFqg_jknODB5htnkZ3oNvtVA9j2Y5xw5awGiCiC1Lqp5Rsy_1qhn3LvylOgAfPRzHApoKN4bpmLvc26u3a2AzXKeW-F0IudmlK4VcF7BbTtKHxjXM6npzptO0_Znf-_08E7bgo338R"/>
+<div class="flex flex-col border-l border-outline pl-4">
+<span class="text-lg font-extrabold text-primary leading-tight uppercase tracking-tight">
+                    NSUT Connect<sub class="text-[10px] ml-1 lowercase font-bold">-by IQAC</sub>
+</span>
+<span class="text-[10px] text-slate-500 uppercase font-semibold tracking-widest">Institutional Portal</span>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold text-slate-600 hover:text-primary transition-colors" href="#">Directory</a>
+<a class="text-sm font-semibold text-slate-600 hover:text-primary transition-colors" href="#">Projects</a>
+<a class="text-sm font-semibold text-slate-600 hover:text-primary transition-colors" href="#">Publications</a>
+<a class="text-sm font-semibold text-slate-600 hover:text-primary transition-colors" href="#">Grants</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-5 py-2 text-sm font-bold uppercase tracking-wider hover:bg-primary-dark transition-colors">Sign In</button>
+</div>
+</nav>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative min-h-[500px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="NSUT Building" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uj-Fq4SNs4kB0aaIV5ZNFagER9jxCG8cEVmdrSzKscMAekXZF2vZO2pmp-_y2iOr7xvp-5-zPgoQKaelEQrgr7KT_xX1b7OPTO4WjZhWyL4smsNVKKuaOsPFcs5yd_uttnBzQ0IlPTMyN1cx4ZYqy7yvxDPZhBknaBO0p95R3sIdq3j7YPlRvuBVhor8uLpVNsZ2-yulFk3fcAX95BykUc1axLQznRhLZQnNSVkf8ay1w2HN52hCO-CmFK-YOEihqHSLVnQnCZhwA"/>
+<div class="absolute inset-0 bg-slate-900/70"></div>
+</div>
+<div class="max-w-screen-xl mx-auto px-8 relative z-10 w-full">
+<div class="max-w-3xl">
+<div class="w-16 h-1 bg-primary mb-6"></div>
+<h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+                    Pioneering Academic <br/>
+<span class="text-primary">Research Excellence.</span>
+</h1>
+<p class="text-xl text-slate-200 mb-10 leading-relaxed font-medium">
+                    Connecting NSUT students and faculty for transparent research collaboration.
+                </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-primary-dark transition-all">
+                        Explore Project Listings
+                    </button>
+<button class="bg-white text-slate-900 px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-slate-100 transition-all">
+                        Faculty Directory
+                    </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Institutional Links -->
+<section class="py-20 px-8 bg-white">
+<div class="max-w-screen-xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div class="max-w-2xl">
+<h2 class="text-primary text-xs font-black uppercase tracking-[0.2em] mb-3">Institutional Resource</h2>
+<h3 class="text-3xl font-bold text-slate-900">A Unified Research Ecosystem</h3>
+</div>
+<a class="text-primary font-bold text-sm uppercase tracking-widest border-b-2 border-primary pb-1 hover:text-primary-dark hover:border-primary-dark transition-all" href="#">View All Departments →</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-outline">
+<!-- Link Card 1 -->
+<div class="p-10 hover:bg-slate-50 transition-colors border-r border-outline last:border-r-0">
+<span class="material-symbols-outlined text-primary text-4xl mb-6">group</span>
+<h4 class="text-xl font-bold mb-4">Faculty Directory</h4>
+<p class="text-slate-600 text-sm leading-relaxed mb-6">Access comprehensive profiles of NSUT faculty members, their research specializations, and publication history.</p>
+<a class="text-primary font-bold text-xs uppercase tracking-widest hover:underline" href="#">Find a Mentor</a>
+</div>
+<!-- Link Card 2 -->
+<div class="p-10 hover:bg-slate-50 transition-colors border-r border-outline last:border-r-0">
+<span class="material-symbols-outlined text-primary text-4xl mb-6">article</span>
+<h4 class="text-xl font-bold mb-4">Active Projects</h4>
+<p class="text-slate-600 text-sm leading-relaxed mb-6">Explore ongoing research initiatives across various engineering and technology departments seeking student researchers.</p>
+<a class="text-primary font-bold text-xs uppercase tracking-widest hover:underline" href="#">Browse Listings</a>
+</div>
+<!-- Link Card 3 -->
+<div class="p-10 hover:bg-slate-50 transition-colors border-r border-outline last:border-r-0">
+<span class="material-symbols-outlined text-primary text-4xl mb-6">fact_check</span>
+<h4 class="text-xl font-bold mb-4">Compliance &amp; Ethics</h4>
+<p class="text-slate-600 text-sm leading-relaxed mb-6">Institutional guidelines for research ethics, IP policy, and project management standards at NSUT.</p>
+<a class="text-primary font-bold text-xs uppercase tracking-widest hover:underline" href="#">Read Guidelines</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Section -->
+<section class="bg-slate-900 py-16 px-8">
+<div class="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="text-center">
+<p class="text-primary text-4xl font-extrabold mb-2">450+</p>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Active Projects</p>
+</div>
+<div class="text-center border-l border-slate-800">
+<p class="text-primary text-4xl font-extrabold mb-2">1,200+</p>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Research Students</p>
+</div>
+<div class="text-center border-l border-slate-800">
+<p class="text-primary text-4xl font-extrabold mb-2">890</p>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Publications</p>
+</div>
+<div class="text-center border-l border-slate-800">
+<p class="text-primary text-4xl font-extrabold mb-2">34</p>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Patents Pending</p>
+</div>
+</div>
+</section>
+<!-- Faculty Spotlight -->
+<section class="py-24 px-8 bg-surface">
+<div class="max-w-screen-xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+<div class="w-full lg:w-1/2">
+<img alt="Dr. Anita Sharma" class="w-full grayscale brightness-90 border border-outline" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd_WHcfWMP-l1cLea6PWIPl6VY-uIxKJQWd_yy_S4v3iYEO45JqqV_bNZ-JSETg_3qIT1895iz8XKOViYlxjsZqGbN3TfQd1ul8nT3QFy6D27moegnw9xGQdffPgbRKlgSh5gfq3GaLdEBoM0L70VniTB9BNqmVGrbHsr-8u0kBxc_ERmj46tJaj-9mMObK4sGXYb501epaq9yeHhSM51oFciQl6UWXXClPuOPXyqqkSPYTHYQZ_ZN9IeN3wIgUImsQtnTZ4tKcc"/>
+</div>
+<div class="w-full lg:w-1/2">
+<h2 class="text-primary text-xs font-black uppercase tracking-[0.2em] mb-4">Spotlight: Institutional Success</h2>
+<h3 class="text-4xl font-bold text-slate-900 mb-8 leading-tight">Empowering Undergraduate Researchers to Lead.</h3>
+<p class="text-slate-600 text-lg mb-8 italic border-l-4 border-primary pl-6 leading-relaxed">
+                    "The portal bridged the gap between theoretical learning and actual lab work. Students now have a direct pathway to connect with mentors and contribute to high-impact research."
+                </p>
+<div class="mb-8">
+<p class="text-slate-900 font-bold text-xl">Dr. Anita Sharma</p>
+<p class="text-slate-500 font-medium uppercase text-xs tracking-widest">Department of Computer Science &amp; AI</p>
+</div>
+<a class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 text-sm font-bold uppercase tracking-widest hover:bg-primary-dark transition-all" href="#">Read Faculty Interview</a>
+</div>
+</div>
+</section>
+<!-- CTA -->
+<section class="py-24 px-8 border-t border-outline bg-white">
+<div class="max-w-screen-xl mx-auto text-center">
+<h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6">Advance Your Research at NSUT</h2>
+<p class="text-slate-600 text-lg mb-12 max-w-2xl mx-auto">Whether you are a faculty member initiating a project or a student seeking to contribute, the research portal is your primary gateway.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<button class="bg-primary text-white px-12 py-4 text-sm font-bold uppercase tracking-widest hover:bg-primary-dark transition-all shadow-lg">New Project Proposal</button>
+<button class="border border-slate-900 text-slate-900 px-12 py-4 text-sm font-bold uppercase tracking-widest hover:bg-slate-50 transition-all">Contact Research Office</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Institutional Footer -->
+<footer class="bg-slate-50 border-t border-outline py-12 px-8">
+<div class="max-w-screen-2xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
+<div class="flex items-center gap-3">
+<img alt="NSUT Logo" class="h-10 w-auto opacity-80" src="https://lh3.googleusercontent.com/aida/ADBb0ugJUsWCjDW3a7s5kV6BXkmZEq48ee-J6B9D7qjWVQY_-fYbik8P7oojcyZKpQTXSkoK34R8tbLNcyAmNJB9sMHBc3FX-3jZ39vDHOMHBi5EoUFfMHN8aJ1Wb9P3ToguJdqFqg_jknODB5htnkZ3oNvtVA9j2Y5xw5awGiCiC1Lqp5Rsy_1qhn3LvylOgAfPRzHApoKN4bpmLvc26u3a2AzXKeW-F0IudmlK4VcF7BbTtKHxjXM6npzptO0_Znf-_08E7bgo338R"/>
+<div class="flex flex-col">
+<span class="text-sm font-extrabold text-slate-900 uppercase">
+                        NSUT Connect<sub class="text-[9px] ml-0.5 lowercase font-bold">-by IQAC</sub>
+</span>
+<span class="text-[10px] text-slate-500 uppercase font-semibold">Institutional Portal</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-x-8 gap-y-4">
+<a class="text-xs font-bold text-slate-500 hover:text-primary uppercase tracking-widest" href="#">University Site</a>
+<a class="text-xs font-bold text-slate-500 hover:text-primary uppercase tracking-widest" href="#">Ethics Committee</a>
+<a class="text-xs font-bold text-slate-500 hover:text-primary uppercase tracking-widest" href="#">IP Policy</a>
+<a class="text-xs font-bold text-slate-500 hover:text-primary uppercase tracking-widest" href="#">Contact</a>
+</div>
+</div>
+<div class="border-t border-outline pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-slate-400 text-[11px] uppercase font-semibold tracking-widest">© 2024 Netaji Subhas University of Technology. All Rights Reserved.</p>
+<div class="flex gap-6">
+<a class="text-slate-400 hover:text-primary text-[11px] font-bold uppercase tracking-widest" href="#">Privacy</a>
+<a class="text-slate-400 hover:text-primary text-[11px] font-bold uppercase tracking-widest" href="#">Terms</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

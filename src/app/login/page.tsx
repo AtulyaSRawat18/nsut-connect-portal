@@ -1,96 +1,157 @@
-import Link from "next/link";
-import { Mail, Lock, LogIn } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
-    return (
-        <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-950 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="w-full max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-xl overflow-hidden p-8">
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rollNumber, setRollNumber] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Portal Authentication</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">Please log in with your institutional credentials.</p>
-                </div>
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const supabase = createClient();
 
-                {/* Tabs */}
-                <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded mb-8">
-                    <button className="flex-1 py-2 text-sm font-bold text-primary bg-white dark:bg-gray-900 rounded shadow-sm">STUDENT</button>
-                    <button className="flex-1 py-2 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-700">FACULTY</button>
-                </div>
+    if (isSignUp) {
+      if (!email.endsWith("@nsut.ac.in")) {
+        setError("You must use a valid institutional email (@nsut.ac.in).");
+        setLoading(false);
+        return;
+      }
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            roll_number: rollNumber,
+            full_name: fullName,
+            email: email,
+            role: "student"
+          }
+        }
+      });
+      if (error) setError(error.message);
+      else {
+        alert("Registration successful! Check your NSUT email to confirm your account.");
+        setIsSignUp(false);
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) setError(error.message);
+      else {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    }
+    setLoading(false);
+  };
 
-                <form className="space-y-6">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 tracking-wider uppercase mb-2">NSUT EMAIL ID</label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Mail className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
-                                type="email"
-                                placeholder="rollnumber@nsut.ac.in"
-                                className="pl-10 w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 dark:bg-gray-800 dark:text-white transition-colors"
-                            />
-                        </div>
-                    </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12 transition-colors">
+      <div className="max-w-md w-full bg-surface p-8 rounded-xl border border-outline shadow-xl relative z-10 overflow-hidden">
+        
+        {/* Top Aesthetic Line */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
 
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 tracking-wider uppercase">PASSWORD</label>
-                            <Link href="#" className="flex text-xs font-bold text-primary hover:underline">RESET PASSWORD?</Link>
-                        </div>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
-                                type="password"
-                                placeholder="••••••••"
-                                className="pl-10 w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 dark:bg-gray-800 dark:text-white transition-colors"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center">
-                        <input type="checkbox" id="remember" className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" />
-                        <label htmlFor="remember" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                            Remember this device for 30 days
-                        </label>
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full flex justify-center items-center gap-2 bg-[#CD2027] hover:bg-[#b01c22] text-white py-3 rounded-md font-bold tracking-wider transition-all shadow hover:shadow-lg"
-                    >
-                        SIGN IN TO PORTAL
-                        <LogIn className="w-4 h-4" />
-                    </button>
-                </form>
-
-                <div className="mt-8">
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
-                        </div>
-                        <div className="relative flex justify-center text-xs">
-                            <span className="px-4 bg-white dark:bg-gray-900 text-gray-400 font-medium tracking-widest uppercase">Alternative Access</span>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 grid grid-cols-2 gap-4">
-                        <button className="flex justify-center items-center gap-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 transition-colors">
-                            <span className="text-primary font-serif italic text-lg leading-none">IMS</span> Login
-                        </button>
-                        <button className="flex justify-center items-center gap-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 transition-colors">
-                            <Mail className="w-4 h-4 text-red-500" /> G-Suite
-                        </button>
-                    </div>
-                </div>
-
-                <div className="mt-8 text-center text-xs text-gray-500">
-                    <p>Official portal of Netaji Subhas University of Technology.</p>
-                    <p className="mt-1">Use of this system is subject to the <Link href="#" className="font-bold text-primary hover:underline">IT Policy</Link> and <Link href="#" className="font-bold text-primary hover:underline">User Guidelines</Link>.</p>
-                </div>
-
-            </div>
+        <div className="text-center mb-8 mt-4">
+          <img src="/nsut-logo.png" alt="NSUT Logo" className="w-16 h-16 mx-auto mb-4" />
+          <h2 className="text-3xl font-extrabold text-foreground uppercase tracking-wider">
+            {isSignUp ? "Student Registration" : "Portal Login"}
+          </h2>
+          <p className="text-foreground/70 mt-2 text-sm font-medium">
+            Authenticate using your official credentials
+          </p>
         </div>
-    );
+
+        <form onSubmit={handleAuth} className="space-y-6">
+          {error && (
+            <div className="bg-primary/10 border-l-2 border-primary p-4 text-primary text-sm font-bold">
+              {error}
+            </div>
+          )}
+          
+          {isSignUp && (
+            <>
+              <div>
+                <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-3 bg-background border border-outline text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30"
+                  placeholder="First Last"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">NSUT Roll Number</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-3 bg-background border border-outline text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30"
+                  placeholder="2024UEXXXX"
+                  value={rollNumber}
+                  onChange={(e) => setRollNumber(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Institutional Email</label>
+            <input
+              type="email"
+              required
+              className="w-full px-4 py-3 bg-background border border-outline text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30"
+              placeholder="name@nsut.ac.in"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Password</label>
+            <input
+              type="password"
+              required
+              className="w-full px-4 py-3 bg-background border border-outline text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-primary text-on-primary py-4 text-sm font-bold uppercase tracking-widest hover:bg-primary-dark transition-colors disabled:opacity-50"
+          >
+            {loading ? "Processing..." : (isSignUp ? "Register Account" : "Sign In to Portal")}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center border-t border-outline pt-6">
+          <button
+            type="button"
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="text-primary text-xs font-bold uppercase tracking-widest shadow-none hover:underline"
+          >
+            {isSignUp ? "Already have an account? Sign In" : "Need an account? Register here"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

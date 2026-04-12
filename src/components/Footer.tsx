@@ -1,19 +1,40 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function Footer() {
-    return (
-        <footer className="w-full py-6 px-4 md:px-8 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-            <div className="flex items-center gap-2 mb-4 md:mb-0">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">NSUT RESEARCH</span>
-                <span className="hidden md:inline">&mdash;</span>
-                <span>© 2024 Netaji Subhas University of Technology. All rights reserved.</span>
+  return (
+    <footer className="bg-surface border-t border-outline py-12 px-8 transition-colors">
+      <div className="max-w-screen-2xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
+          <div className="flex items-center gap-3">
+            <img 
+              alt="NSUT Logo" 
+              className="h-10 w-10 object-contain dark:opacity-90" 
+              src="/nsut-logo.png"
+            />
+            <div className="flex flex-col">
+              <span className="text-sm font-extrabold text-foreground uppercase">
+                NSUT Connect<sub className="text-[9px] ml-0.5 lowercase font-bold text-foreground/70">-by IQAC</sub>
+              </span>
+              <span className="text-[10px] text-foreground/50 uppercase font-semibold">Institutional Portal</span>
             </div>
-
-            <div className="flex space-x-6">
-                <Link href="#" className="hover:text-primary transition-colors uppercase tracking-wider">Privacy</Link>
-                <Link href="#" className="hover:text-primary transition-colors uppercase tracking-wider">Terms</Link>
-                <Link href="#" className="hover:text-primary transition-colors uppercase tracking-wider">Helpdesk</Link>
-            </div>
-        </footer>
-    );
+          </div>
+          <div className="flex flex-wrap gap-x-8 gap-y-4">
+            <Link href="https://nsut.ac.in" className="text-xs font-bold text-foreground/50 hover:text-primary uppercase tracking-widest transition-colors">University Site</Link>
+            <Link href="/ethics" className="text-xs font-bold text-foreground/50 hover:text-primary uppercase tracking-widest transition-colors">Ethics Committee</Link>
+            <Link href="/ip-policy" className="text-xs font-bold text-foreground/50 hover:text-primary uppercase tracking-widest transition-colors">IP Policy</Link>
+            <Link href="/contact" className="text-xs font-bold text-foreground/50 hover:text-primary uppercase tracking-widest transition-colors">Contact</Link>
+          </div>
+        </div>
+        <div className="border-t border-outline pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-foreground/40 text-[11px] uppercase font-semibold tracking-widest">
+            © 2024 Netaji Subhas University of Technology. All Rights Reserved.
+          </p>
+          <div className="flex gap-6">
+            <Link href="/privacy" className="text-foreground/40 hover:text-primary transition-colors text-[11px] font-bold uppercase tracking-widest">Privacy</Link>
+            <Link href="/terms" className="text-foreground/40 hover:text-primary transition-colors text-[11px] font-bold uppercase tracking-widest">Terms</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

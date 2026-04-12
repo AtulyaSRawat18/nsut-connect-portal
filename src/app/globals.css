@@ -3,46 +3,40 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
-  --primary: #CD2027;
-  --primary-foreground: #ffffff;
-  --header-bg: #ffffff;
+  --surface: #f8fafc;
+  --on-surface: #0f172a;
+  --primary: #CC2027; /* Prominent NSUT Red */
+  --primary-dark: #A31A1F;
+  --on-primary: #ffffff;
+  --secondary: #0a1f3d; /* Deep blue where necessary */
+  --on-secondary: #ffffff;
+  --outline: #e2e8f0;
+}
+
+.dark {
+  --background: #020617; /* Blue-tinted dark mode */
+  --foreground: #f8fafc;
+  --surface: #0f172a;    
+  --on-surface: #f8fafc;
+  --primary: #ef4444;    /* Vivid red for dark mode contrast */
+  --primary-dark: #dc2626;
+  --on-primary: #ffffff;
+  --secondary: #1e293b;
+  --on-secondary: #f8fafc;
+  --outline: #334155;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
   --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-header-bg: var(--header-bg);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617;
-    --foreground: #f8fafc;
-    --primary: #e11d48;
-    --header-bg: #0f172a;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), sans-serif;
-}
-
-.glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-@media (prefers-color-scheme: dark) {
-  .glass {
-    background: rgba(15, 23, 42, 0.7);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
+  --color-primary-dark: var(--primary-dark);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-outline: var(--outline);
+  --font-sans: var(--font-manrope);
+  --font-headline: var(--font-manrope);
 }
