@@ -50,8 +50,8 @@ export default function Hero() {
               <div className="absolute inset-0 bg-primary/10 rounded-2xl -rotate-6" />
               <div className="absolute inset-0 overflow-hidden rounded-2xl shadow-2xl rotate-3 transition-transform hover:rotate-0 duration-500">
                 <img 
-                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop" 
-                  alt="Students collaborating" 
+                  src="/campus-fountain.jpg" 
+                  alt="NSUT campus aerial view" 
                   className="w-full h-full object-cover"
                 />
               </div>
