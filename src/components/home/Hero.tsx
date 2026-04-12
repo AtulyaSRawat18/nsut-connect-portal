@@ -57,9 +57,9 @@ export default function Hero() {
               </div>
               
               {/* Decorative Elements */}
-              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl border-l-4 border-primary max-w-[200px]">
-                <p className="text-[24px] font-display font-black text-primary leading-none mb-1">450+</p>
-                <p className="text-[9px] font-sans font-bold tracking-widest text-foreground/50 uppercase leading-tight">
+              <div className="absolute -bottom-6 -left-6 bg-primary p-6 rounded-lg shadow-2xl border-l-4 border-secondary max-w-[200px]">
+                <p className="text-[24px] font-display font-black text-white leading-none mb-1">450+</p>
+                <p className="text-[9px] font-sans font-bold tracking-widest text-white/80 uppercase leading-tight">
                   Active projects seeking researchers
                 </p>
               </div>
