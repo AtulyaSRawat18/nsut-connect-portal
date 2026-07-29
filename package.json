@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:demo": "node scripts/seed-demo.mjs",
+    "seed:demo:clean": "node scripts/seed-demo.mjs --cleanup"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

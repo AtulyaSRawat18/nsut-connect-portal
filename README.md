@@ -34,3 +34,28 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Demo database
+
+After applying `supabase/schema.sql` and both files in `supabase/migrations`, add
+`NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to `.env.local`, then run:
+
+```bash
+npm run seed:demo
+```
+
+The idempotent seed creates 24 faculty accounts, 24 student accounts, one moderator,
+and linked projects, applications, publications, announcements, opportunities,
+forum posts, moderation reports and verification requests. It only uses
+`demo.*@nsut.ac.in` accounts and deterministic demo record IDs.
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Student | `demo.student01@nsut.ac.in` | `NSUTDemo!2026` |
+| Student | `demo.student02@nsut.ac.in` | `NSUTDemo!2026` |
+| Faculty | `demo.faculty01@nsut.ac.in` | `NSUTDemo!2026` |
+| Faculty | `demo.faculty02@nsut.ac.in` | `NSUTDemo!2026` |
+| Moderator | `demo.moderator@nsut.ac.in` | `NSUTDemo!2026` |
+
+Override the shared password with `DEMO_ACCOUNT_PASSWORD`. These accounts are for
+development or staging only and must not be seeded into a production project.
+Remove all namespaced demo data with `npm run seed:demo:clean`.
