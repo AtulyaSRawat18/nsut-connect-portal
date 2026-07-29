@@ -4,10 +4,10 @@ import { createClient } from "@/utils/supabase/server";
 
 export default async function Forum() {
   const supabase = await createClient();
-  
+
   let { data: posts } = await supabase
     .from('forum_posts')
-    .select('*, profiles(full_name, role)')
+    .select('*, portal_users(name, role)')
     .order('created_at', { ascending: false });
 
   // Dummy data fallback
@@ -20,7 +20,7 @@ export default async function Forum() {
         department: 'CSE',
         upvotes: 24,
         created_at: new Date().toISOString(),
-        profiles: { full_name: 'Rahul Mehta', role: 'student' }
+        portal_users: { name: 'Rahul Mehta', role: 'student' }
       },
       {
         id: '2',
@@ -29,7 +29,7 @@ export default async function Forum() {
         department: 'General',
         upvotes: 56,
         created_at: new Date().toISOString(),
-        profiles: { full_name: 'Dr. Ramesh Kumar', role: 'faculty' }
+        portal_users: { name: 'Dr. Ramesh Kumar', role: 'faculty' }
       },
       {
         id: '3',
@@ -38,7 +38,7 @@ export default async function Forum() {
         department: 'IT',
         upvotes: 12,
         created_at: new Date().toISOString(),
-        profiles: { full_name: 'Sanya Gupta', role: 'student' }
+        portal_users: { name: 'Sanya Gupta', role: 'student' }
       }
     ];
   }
@@ -61,9 +61,9 @@ export default async function Forum() {
           <div className="lg:col-span-3 space-y-6">
             <div className="bg-surface border border-outline p-4 flex items-center gap-4 focus-within:ring-2 focus-within:ring-primary transition-all">
               <Search className="w-5 h-5 text-foreground/50 ml-2" />
-              <input 
-                type="text" 
-                placeholder="Search discussions, topics, or faculty tags..." 
+              <input
+                type="text"
+                placeholder="Search discussions, topics, or faculty tags..."
                 className="w-full bg-transparent border-none focus:ring-0 text-foreground font-medium"
               />
             </div>
@@ -80,14 +80,14 @@ export default async function Forum() {
                        </button>
                        <span className="font-bold text-foreground">{post.upvotes}</span>
                     </div>
-                    
+
                     {/* Content */}
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-3 mb-3">
                         <span className="bg-primary/10 text-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded">
                           {post.department}
                         </span>
-                        {post.profiles?.role === 'faculty' && (
+                        {post.portal_users?.role === 'faculty' && (
                           <span className="flex items-center gap-1 bg-secondary text-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded">
                             <CheckCircle className="w-3 h-3" /> Faculty Verified
                           </span>
@@ -96,7 +96,7 @@ export default async function Forum() {
                           {new Date(post.created_at).toLocaleDateString()}
                         </span>
                       </div>
-                      
+
                       <Link href={`/forum/${post.id}`} className="block">
                          <h3 className="text-xl font-display font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                            {post.title}
@@ -105,10 +105,10 @@ export default async function Forum() {
                       <p className="text-foreground/70 text-sm line-clamp-2 mb-6 leading-relaxed">
                         {post.content}
                       </p>
-                      
+
                       <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 text-xs text-foreground/50 font-bold">
-                          <User className="w-4 h-4" /> {post.profiles?.full_name}
+                          <User className="w-4 h-4" /> {post.portal_users?.name}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-foreground/50 font-bold">
                           <MessageSquare className="w-4 h-4" /> 12 Replies

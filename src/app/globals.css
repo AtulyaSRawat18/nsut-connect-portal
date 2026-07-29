@@ -16,7 +16,7 @@
 .dark {
   --background: #020617; /* Blue-tinted dark mode */
   --foreground: #f8fafc;
-  --surface: #0f172a;    
+  --surface: #0f172a;
   --on-surface: #f8fafc;
   --primary: #ef4444;    /* Vivid red for dark mode contrast */
   --primary-dark: #dc2626;
@@ -37,6 +37,6 @@
   --color-secondary: var(--secondary);
   --color-on-secondary: var(--on-secondary);
   --color-outline: var(--outline);
-  --font-sans: var(--font-manrope);
-  --font-headline: var(--font-manrope);
+  --font-sans: "Segoe UI", Inter, Arial, sans-serif;
+  --font-headline: "Segoe UI", Inter, Arial, sans-serif;
 }

@@ -8,6 +8,7 @@ create table profiles (
   role text check (role in ('student', 'faculty', 'admin')) default 'student',
   full_name text,
   department text,
+  is_content_handler boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -69,12 +70,12 @@ alter table projects enable row level security;
 create policy "Projects are viewable by everyone."
   on projects for select using (true);
 
-create policy "Only faculty can insert projects"
+create policy "Content Handlers can insert projects"
   on projects for insert
   with check (
     exists (
       select 1 from profiles
-      where profiles.id = auth.uid() and profiles.role = 'faculty'
+      where profiles.id = auth.uid() and (profiles.role = 'faculty' or profiles.is_content_handler = true)
     )
   );
 
@@ -151,7 +152,7 @@ create policy "Faculty can manage their own publications"
   using (faculty_id = auth.uid());
 
 -- 9. Storage for Resumes
-insert into storage.buckets (id, name, public) 
+insert into storage.buckets (id, name, public)
 values ('resumes', 'resumes', false);
 
 create policy "Students can upload their own resumes"
@@ -225,5 +226,88 @@ alter table highlights enable row level security;
 
 create policy "Highlights are viewable by everyone"
   on highlights for select using (true);
+
+create policy "Content Handlers can insert highlights"
+  on highlights for insert
+  with check (
+    exists (
+      select 1 from profiles
+      where profiles.id = auth.uid() and (profiles.role = 'faculty' or profiles.is_content_handler = true)
+    )
+  );
+
+-- 13. New Signup Architecture (User & Profile Separation)
+create table portal_users (
+  id uuid references auth.users not null primary key,
+  name text not null,
+  email text unique not null,
+  role text check (role in ('faculty', 'student')) not null,
+  is_content_handler boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table portal_users enable row level security;
+create policy "Users can view their own record" on portal_users for select using (auth.uid() = id);
+
+create table faculty_profiles (
+  user_id uuid references public.portal_users(id) on delete cascade primary key,
+  department text,
+  designation text,
+  research_area text
+);
+
+alter table faculty_profiles enable row level security;
+create policy "Public faculty profiles" on faculty_profiles for select using (true);
+
+create table student_profiles (
+  user_id uuid references public.portal_users(id) on delete cascade primary key,
+  roll_number text unique,
+  course text,
+  year integer
+);
+
+alter table student_profiles enable row level security;
+create policy "Public student profiles" on student_profiles for select using (true);
+
+-- 14. Trigger for new Signup Architecture
+create or replace function public.handle_new_portal_user()
+returns trigger
+language plpgsql
+security definer set search_path = ''
+as $$
+begin
+  insert into public.portal_users (id, name, email, role)
+  values (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    new.email,
+    coalesce(new.raw_user_meta_data->>'role', 'student')
+  );
+
+  if new.raw_user_meta_data->>'role' = 'faculty' then
+    insert into public.faculty_profiles (user_id, department, designation)
+    values (
+      new.id,
+      new.raw_user_meta_data->>'department',
+      new.raw_user_meta_data->>'designation'
+    );
+  else
+    insert into public.student_profiles (user_id, roll_number, course, year)
+    values (
+      new.id,
+      new.raw_user_meta_data->>'roll_number',
+      new.raw_user_meta_data->>'course',
+      (new.raw_user_meta_data->>'year')::integer
+    );
+  end if;
+
+  return new;
+end;
+$$;
+
+-- You can manually switch the trigger from handle_new_user to handle_new_portal_user when ready
+-- create trigger on_auth_user_created_v2
+--   after insert on auth.users
+--   for each row execute procedure public.handle_new_portal_user();
 
 

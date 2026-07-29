@@ -2,15 +2,22 @@ import Link from "next/link";
 import { Search, Filter, Share2, MessageSquare, Bot, ArrowUpRight, Zap } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 
-export default async function Developments() {
+export default async function Developments(props: { searchParams?: Promise<{ category?: string }> }) {
   const supabase = await createClient();
-  
-  // This page will essentially be a curated view of Projects + Forum Posts + AI summaries
-  // For now, we fetch projects and treat them as "developments"
-  let { data: items } = await supabase
-    .from('projects')
-    .select('*, profiles(full_name)')
+  const searchParams = await props.searchParams;
+  const categoryParams = searchParams?.category || 'All';
+
+  // Custom query based on category
+  let query = supabase
+    .from('announcements')
+    .select('*, portal_users(name)')
     .order('created_at', { ascending: false });
+
+  if (categoryParams !== 'All') {
+    query = query.eq('category', categoryParams.toLowerCase());
+  }
+
+  let { data: items } = await query;
 
   // Dummy data fallback
   if (!items || items.length === 0) {
@@ -18,26 +25,26 @@ export default async function Developments() {
       {
         id: '1',
         title: 'New Paper: Scalable Blockchain Architecture for IoT',
-        description: 'Researchers from the CSE department have published a groundbreaking approach to blockchain sharding which could increase IoT network throughput by 300%.',
-        department: 'CSE',
+        content: 'Researchers from the CSE department have published a groundbreaking approach to blockchain sharding which could increase IoT network throughput by 300%. This marks a significant milestone in distributed systems research at NSUT.',
+        category: 'research',
         created_at: new Date().toISOString(),
-        profiles: { full_name: 'Dr. Vivek Singh' }
+        portal_users: { name: 'Dr. Vivek Singh' }
       },
       {
         id: '2',
         title: 'Patents Filed: Smart Material for Battery Cathodes',
-        description: 'Mechanical Engineering laboratory team files patent for a new composite material that significantly improves thermal stability in electric vehicle batteries.',
-        department: 'MECH',
+        content: 'Mechanical Engineering laboratory team files patent for a new composite material that significantly improves thermal stability in electric vehicle batteries.',
+        category: 'general',
         created_at: new Date().toISOString(),
-        profiles: { full_name: 'Dr. Sandeep Kumar' }
+        portal_users: { name: 'Dr. Sandeep Kumar' }
       },
       {
         id: '3',
         title: 'NSUT Team Wins Global Robotics Challenge',
-        description: 'The undergraduate robotics team has secured first place in the International Autonomous Navigation competition held in Tokyo.',
-        department: 'General',
+        content: 'The undergraduate robotics team has secured first place in the International Autonomous Navigation competition held in Tokyo.',
+        category: 'academic',
         created_at: new Date().toISOString(),
-        profiles: { full_name: 'Prof. A. Bansal' }
+        portal_users: { name: 'Prof. A. Bansal' }
       }
     ];
   }
@@ -46,62 +53,57 @@ export default async function Developments() {
     <div className="min-h-screen bg-background font-sans py-16">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row gap-16">
-          
+
           {/* Main Feed */}
           <div className="flex-1 space-y-12">
             <div>
-              <h1 className="text-4xl md:text-5xl font-display font-black text-foreground mb-4 tracking-tight">Departmental Feed</h1>
-              <p className="text-foreground/50 font-medium">Curated academic updates and research developments across NSUT.</p>
+              <h1 className="text-4xl md:text-5xl font-display font-black text-foreground mb-4 tracking-tight">Developments Feed</h1>
+              <p className="text-foreground/50 font-medium">Curated academic updates, news, and research opportunities across NSUT.</p>
             </div>
 
             {/* Feed Filter */}
             <div className="flex flex-wrap gap-4 border-b border-outline pb-6">
-               {['All', 'CSE', 'ECE', 'IT', 'MECH', 'CIVIL', 'BT'].map(dept => (
-                 <button key={dept} className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-full border border-outline transition-all hover:border-primary ${dept === 'All' ? 'bg-primary text-white border-primary' : 'bg-surface text-foreground/50'}`}>
-                   {dept}
-                 </button>
+               {['All', 'General', 'Research', 'Academic', 'Event'].map(cat => (
+                 <Link href={cat === 'All' ? '/developments' : `/developments?category=${cat}`} key={cat} className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-full border border-outline transition-all hover:border-primary ${categoryParams === cat ? 'bg-primary text-white border-primary' : 'bg-surface text-foreground/50'}`}>
+                   {cat}
+                 </Link>
                ))}
             </div>
 
             {/* List of Developments */}
             <div className="space-y-12">
               {items.map((item: any) => (
-                <div key={item.id} className="group cursor-pointer">
-                  <div className="flex flex-col md:flex-row gap-8 items-start">
-                    <div className="w-full md:w-1/3 aspect-video bg-surface rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-500 border border-outline">
-                       <div className="w-full h-full bg-primary/5 flex items-center justify-center text-primary font-bold">
-                         {item.department} Feed Image
-                       </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="text-[10px] font-black text-primary tracking-[0.2em] uppercase">{item.department}</span>
-                        <span className="w-1 h-1 rounded-full bg-outline" />
-                        <span className="text-[10px] text-foreground/50 font-bold uppercase tracking-widest">{new Date(item.created_at).toLocaleDateString()}</span>
-                      </div>
-                      
-                      <h2 className="text-2xl font-display font-bold text-foreground mb-4 group-hover:text-primary transition-colors leading-tight">
-                        {item.title}
-                      </h2>
-                      
-                      {/* AI Summary Section */}
-                      <div className="bg-surface border-l-2 border-primary p-4 mb-6 italic text-sm text-foreground/70 leading-relaxed font-medium">
-                         <span className="flex items-center gap-2 text-[9px] font-black text-primary uppercase tracking-widest mb-2">
-                           <Bot className="w-3 h-3" /> AI Summary
-                         </span>
-                         &quot;{item.description.substring(0, 150)}...&quot;
+                <div key={item.id} className="group">
+                  <div className="flex flex-col md:flex-row gap-8 items-start bg-surface border border-outline p-6 rounded-xl hover:border-primary transition-colors duration-300">
+                    <div className="flex-1 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-black text-primary tracking-[0.2em] uppercase px-2 py-1 bg-primary/10 rounded">{item.category}</span>
+                          <span className="w-1 h-1 rounded-full bg-outline" />
+                          <span className="text-[10px] text-foreground/50 font-bold uppercase tracking-widest">{new Date(item.created_at).toLocaleDateString()}</span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-6">
-                         <button className="flex items-center gap-2 text-[10px] font-bold text-foreground/50 hover:text-primary transition-colors uppercase tracking-widest">
-                           <Share2 className="w-4 h-4" /> Share
-                         </button>
-                         <button className="flex items-center gap-2 text-[10px] font-bold text-foreground/50 hover:text-primary transition-colors uppercase tracking-widest">
-                           <MessageSquare className="w-4 h-4" /> 8 Discussions
-                         </button>
-                         <Link href="#" className="flex items-center gap-2 text-[10px] font-black text-primary hover:underline uppercase tracking-widest ml-auto">
-                           Full Article <ArrowUpRight className="w-4 h-4" />
-                         </Link>
+                      <h2 className="text-2xl font-display font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
+                        {item.title}
+                      </h2>
+
+                      <p className="text-sm text-foreground/70 leading-relaxed font-medium">
+                         {item.content || "Read more about this development by clicking through."}
+                      </p>
+
+                      <div className="flex items-center justify-between border-t border-outline pt-4 mt-6">
+                         <div className="flex items-center gap-2">
+                             <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+                               {(item.portal_users?.name || 'A')?.charAt(0)}
+                             </div>
+                             <span className="text-xs font-bold text-foreground/60">{item.portal_users?.name || 'Admin'}</span>
+                         </div>
+                         <div className="flex items-center gap-4">
+                           <button className="flex items-center gap-2 text-[10px] font-bold text-foreground/50 hover:text-primary transition-colors uppercase tracking-widest">
+                             <Share2 className="w-4 h-4" /> Share
+                           </button>
+                         </div>
                       </div>
                     </div>
                   </div>

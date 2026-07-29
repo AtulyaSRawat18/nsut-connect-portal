@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { LayoutDashboard, Users, ShieldAlert, FileText, Settings, BarChart3, Bell, CheckCircle, XCircle } from "lucide-react";
+import { requirePageIdentity } from "@/lib/auth/server";
 
-export default function AdminPanel() {
+export default async function AdminPanel() {
+  await requirePageIdentity({ roles: ["admin"] });
+
   return (
     <div className="min-h-screen bg-surface font-sans">
       <div className="flex">

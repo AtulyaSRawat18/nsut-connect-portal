@@ -1,0 +1,63 @@
+import { ExternalLink, UserCheck } from "lucide-react";
+import { requirePageIdentity } from "@/lib/auth/server";
+import { createClient } from "@/utils/supabase/server";
+import VerificationActions from "./VerificationActions";
+
+export default async function FacultyVerificationPage() {
+  await requirePageIdentity({ permissions: ["faculty.verify"] });
+  const supabase = await createClient();
+  const { data: requests } = await supabase
+    .from("faculty_verification_requests")
+    .select("id, faculty_id, department, designation, employee_reference, evidence_url, status, submitted_at, portal_users!faculty_verification_requests_faculty_id_fkey(name, email)")
+    .in("status", ["pending", "reviewing"])
+    .order("submitted_at", { ascending: true });
+
+  return (
+    <div className="space-y-8">
+      <header>
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Identity review</p>
+        <h1 className="text-4xl font-black text-foreground">Faculty verification</h1>
+        <p className="mt-3 max-w-2xl text-foreground/55">
+          Confirm institutional identity before faculty publishing and application-review privileges become active.
+        </p>
+      </header>
+
+      <section className="grid gap-5 xl:grid-cols-2">
+        {(requests || []).map((request) => {
+          const faculty = Array.isArray(request.portal_users) ? request.portal_users[0] : request.portal_users;
+          return (
+            <article key={request.id} className="rounded-2xl border border-outline bg-surface p-6">
+              <div className="mb-6 flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <UserCheck className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="truncate text-lg font-black text-foreground">{faculty?.name || "Faculty applicant"}</h2>
+                  <p className="truncate text-sm text-foreground/50">{faculty?.email}</p>
+                </div>
+                <span className="ml-auto rounded-full bg-amber-500/10 px-3 py-1 text-[10px] font-bold uppercase text-amber-600">{request.status}</span>
+              </div>
+
+              <dl className="mb-6 grid grid-cols-2 gap-4 rounded-xl bg-background p-4 text-sm">
+                <div><dt className="text-xs text-foreground/40">Department</dt><dd className="mt-1 font-bold text-foreground">{request.department || "Not supplied"}</dd></div>
+                <div><dt className="text-xs text-foreground/40">Designation</dt><dd className="mt-1 font-bold text-foreground">{request.designation || "Not supplied"}</dd></div>
+                <div><dt className="text-xs text-foreground/40">Employee reference</dt><dd className="mt-1 font-bold text-foreground">{request.employee_reference || "Not supplied"}</dd></div>
+                <div><dt className="text-xs text-foreground/40">Submitted</dt><dd className="mt-1 font-bold text-foreground">{new Date(request.submitted_at).toLocaleDateString()}</dd></div>
+              </dl>
+
+              {request.evidence_url && (
+                <a href={request.evidence_url} target="_blank" rel="noreferrer" className="mb-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary hover:underline">
+                  Review evidence <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
+              <VerificationActions requestId={request.id} />
+            </article>
+          );
+        })}
+        {(requests || []).length === 0 && (
+          <div className="col-span-full rounded-2xl border border-dashed border-outline p-16 text-center text-foreground/45">No faculty verifications are waiting.</div>
+        )}
+      </section>
+    </div>
+  );
+}

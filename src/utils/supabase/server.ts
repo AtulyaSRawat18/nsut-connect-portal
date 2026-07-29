@@ -8,18 +8,7 @@ export async function createClient() {
   // If env vars are missing, return a dummy client that won't crash
   // but will return empty data — pages with dummy fallbacks will still render
   if (!supabaseUrl || !supabaseAnonKey) {
-    return {
-      from: () => ({
-        select: () => ({ order: () => ({ data: null, error: { message: 'Supabase not configured' } }),
-          ilike: () => ({ order: () => ({ data: null, error: { message: 'Supabase not configured' } }) }),
-          data: null, error: { message: 'Supabase not configured' }
-        }),
-      }),
-      auth: {
-        getUser: async () => ({ data: { user: null }, error: null }),
-        getSession: async () => ({ data: { session: null }, error: null }),
-      },
-    } as any
+    throw new Error('Supabase authentication is not configured')
   }
 
   const cookieStore = await cookies()
