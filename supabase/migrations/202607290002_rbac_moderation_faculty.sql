@@ -288,40 +288,53 @@ alter table public.project_requirements enable row level security;
 alter table public.project_milestones enable row level security;
 alter table public.application_status_history enable row level security;
 
+drop policy if exists "Members can create reports" on public.content_reports;
 create policy "Members can create reports" on public.content_reports
   for insert to authenticated
   with check (reporter_id = auth.uid() and public.authorize('report.create'));
+drop policy if exists "Reporters and moderators can read reports" on public.content_reports;
 create policy "Reporters and moderators can read reports" on public.content_reports
   for select to authenticated
   using (reporter_id = auth.uid() or public.authorize('report.read'));
+drop policy if exists "Moderators can update reports" on public.content_reports;
 create policy "Moderators can update reports" on public.content_reports
   for update to authenticated
   using (public.authorize('report.resolve'))
   with check (public.authorize('report.resolve'));
+drop policy if exists "Moderators can read actions" on public.moderation_actions;
 create policy "Moderators can read actions" on public.moderation_actions
   for select to authenticated using (public.authorize('audit.read'));
+drop policy if exists "Faculty can read own verification" on public.faculty_verification_requests;
 create policy "Faculty can read own verification" on public.faculty_verification_requests
   for select to authenticated
   using (faculty_id = auth.uid() or public.authorize('faculty.verify'));
+drop policy if exists "Faculty can submit verification" on public.faculty_verification_requests;
 create policy "Faculty can submit verification" on public.faculty_verification_requests
   for insert to authenticated
   with check (faculty_id = auth.uid() and public.has_app_role(array['faculty']));
+drop policy if exists "Verification team can update requests" on public.faculty_verification_requests;
 create policy "Verification team can update requests" on public.faculty_verification_requests
   for update to authenticated
   using (public.authorize('faculty.verify'))
   with check (public.authorize('faculty.verify'));
+drop policy if exists "Members can read skills" on public.skills;
 create policy "Members can read skills" on public.skills
   for select to authenticated using (true);
+drop policy if exists "Members can read user skills" on public.user_skills;
 create policy "Members can read user skills" on public.user_skills
   for select to authenticated using (true);
+drop policy if exists "Users can manage own skills" on public.user_skills;
 create policy "Users can manage own skills" on public.user_skills
   for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "Members can read project requirements" on public.project_requirements;
 create policy "Members can read project requirements" on public.project_requirements
   for select using (true);
+drop policy if exists "Faculty manage project requirements" on public.project_requirements;
 create policy "Faculty manage project requirements" on public.project_requirements
   for all to authenticated
   using (exists (select 1 from public.projects p where p.id = project_id and p.faculty_id = auth.uid()))
   with check (exists (select 1 from public.projects p where p.id = project_id and p.faculty_id = auth.uid()));
+drop policy if exists "Project participants read milestones" on public.project_milestones;
 create policy "Project participants read milestones" on public.project_milestones
   for select to authenticated
   using (
@@ -331,6 +344,7 @@ create policy "Project participants read milestones" on public.project_milestone
       where a.project_id = project_id and a.student_id = auth.uid() and a.status = 'accepted'
     )
   );
+drop policy if exists "Faculty manage milestones" on public.project_milestones;
 create policy "Faculty manage milestones" on public.project_milestones
   for all to authenticated
   using (exists (select 1 from public.projects p where p.id = project_id and p.faculty_id = auth.uid()))
@@ -338,6 +352,7 @@ create policy "Faculty manage milestones" on public.project_milestones
     created_by = auth.uid()
     and exists (select 1 from public.projects p where p.id = project_id and p.faculty_id = auth.uid())
   );
+drop policy if exists "Application participants read history" on public.application_status_history;
 create policy "Application participants read history" on public.application_status_history
   for select to authenticated
   using (

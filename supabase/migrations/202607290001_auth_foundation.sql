@@ -223,6 +223,7 @@ create policy "Users can update their own display name"
   with check (id = auth.uid() and public.is_active_member());
 
 drop policy if exists "Content Handlers can insert projects" on public.projects;
+drop policy if exists "Active faculty can create projects" on public.projects;
 drop policy if exists "Faculty can update their own projects" on public.projects;
 create policy "Active faculty can create projects"
   on public.projects for insert to authenticated
@@ -236,7 +237,9 @@ create policy "Faculty can update their own projects"
   with check (faculty_id = auth.uid() and public.is_active_member());
 
 drop policy if exists "Students can insert their own applications" on public.applications;
+drop policy if exists "Active students can apply to open projects" on public.applications;
 drop policy if exists "Faculty can update application status" on public.applications;
+drop policy if exists "Project faculty can update application status" on public.applications;
 create policy "Active students can apply to open projects"
   on public.applications for insert to authenticated
   with check (
@@ -264,6 +267,7 @@ create policy "Project faculty can update application status"
   );
 
 drop policy if exists "Only admin/faculty can create announcements" on public.announcements;
+drop policy if exists "Active faculty can create announcements" on public.announcements;
 create policy "Active faculty can create announcements"
   on public.announcements for insert to authenticated
   with check (
@@ -272,6 +276,7 @@ create policy "Active faculty can create announcements"
   );
 
 drop policy if exists "Content Handlers can insert highlights" on public.highlights;
+drop policy if exists "Content handlers can create highlights" on public.highlights;
 create policy "Content handlers can create highlights"
   on public.highlights for insert to authenticated
   with check (
@@ -284,11 +289,13 @@ create policy "Content handlers can create highlights"
   );
 
 drop policy if exists "Authenticated users can create forum posts" on public.forum_posts;
+drop policy if exists "Active members can create forum posts" on public.forum_posts;
 create policy "Active members can create forum posts"
   on public.forum_posts for insert to authenticated
   with check (author_id = auth.uid() and public.is_active_member());
 
 drop policy if exists "Faculty can view applicants resumes" on storage.objects;
+drop policy if exists "Project faculty can view applicant resumes" on storage.objects;
 create policy "Project faculty can view applicant resumes"
   on storage.objects for select to authenticated
   using (
