@@ -14,8 +14,9 @@ if (existsSync(envFile)) {
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const password = process.env.DEMO_ACCOUNT_PASSWORD || "NSUTDemo!2026";
+const password = process.env.DEMO_ACCOUNT_PASSWORD;
 if (!url || !serviceKey) throw new Error("Missing Supabase URL or service-role key in .env.local.");
+if (!password) throw new Error("Missing DEMO_ACCOUNT_PASSWORD in .env.local.");
 
 const db = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 const departments = "CSE ECE IT MAC ICE MECH CIVIL BT".split(" ");
@@ -125,5 +126,4 @@ if (process.argv.includes("--cleanup")) {
   console.log("Faculty:   demo.faculty01@nsut.ac.in");
   console.log("Faculty:   demo.faculty02@nsut.ac.in");
   console.log("Moderator: demo.moderator@nsut.ac.in");
-  console.log(`Password:  ${password}`);
 }
