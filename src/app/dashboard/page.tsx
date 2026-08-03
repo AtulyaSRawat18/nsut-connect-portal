@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import StudentDashboard from "@/components/dashboard/StudentDashboard";
 import { requirePageIdentity } from "@/lib/auth/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function Dashboard() {
   const profile = await requirePageIdentity();
   const portalMode = (await cookies()).get("nsut_portal_mode")?.value;

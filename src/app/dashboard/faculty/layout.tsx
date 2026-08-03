@@ -3,6 +3,8 @@ import { requirePageIdentity } from "@/lib/auth/server";
 import { createClient } from "@/utils/supabase/server";
 import WorkspaceShell from "@/components/workspace/WorkspaceShell";
 
+export const dynamic = "force-dynamic";
+
 export default async function FacultyDashboardLayout({ children }: { children: ReactNode }) {
   const identity = await requirePageIdentity({
     roles: ["faculty", "admin"],
