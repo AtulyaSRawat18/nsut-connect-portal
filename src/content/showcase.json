@@ -1,0 +1,198 @@
+{
+  "projects": [
+    {
+      "id": "69c9154f-7fd0-490d-a839-862186fb806c",
+      "title": "Edge AI for Electric-Vehicle Battery Health",
+      "summary": "Build an embedded diagnostic system that estimates lithium-ion battery state-of-health from current, voltage and temperature signals without uploading raw telemetry.",
+      "department": "ECE",
+      "status": "open",
+      "maxStudents": 4,
+      "leadIndex": 1,
+      "problem": "Battery degradation is nonlinear and depends on temperature, load history and cell variation. Cloud-only diagnostics introduce latency, connectivity and privacy constraints for fleet-scale monitoring.",
+      "method": "The team will curate cycling traces, engineer impedance and temporal features, compare compact sequence models, quantize the best model for an ARM-class device and validate estimates against controlled charge-discharge tests.",
+      "objectives": ["Create a reproducible battery-cycling dataset and data card", "Reach a mean absolute state-of-health error below 3% on held-out cycles", "Demonstrate inference under 100 ms on a low-power edge device", "Document uncertainty, failure modes and safe-use limits"],
+      "skills": ["Python and signal processing", "Embedded C/C++", "Time-series machine learning", "Experimental documentation"],
+      "deliverables": ["Versioned dataset and preprocessing pipeline", "Quantized edge model and benchmark report", "Hardware demonstrator", "Reproducibility and safety brief"],
+      "timeline": ["Weeks 1-3: literature review and protocol", "Weeks 4-7: data preparation and baselines", "Weeks 8-11: edge optimization", "Weeks 12-14: validation and final demonstration"],
+      "pdf": "/briefs/edge-ai-ev-battery-health.pdf"
+    },
+    {
+      "id": "db240800-0c81-442d-adea-9c0f0a444b62",
+      "title": "InSAR-Assisted Landslide Early-Warning Prototype",
+      "summary": "Prototype a geospatial workflow combining satellite deformation signals, rainfall and terrain features to prioritize slopes for civil-engineering inspection.",
+      "department": "CIVIL",
+      "status": "open",
+      "maxStudents": 3,
+      "leadIndex": 6,
+      "problem": "Slope failures can develop through subtle ground movement before visible collapse. Civil teams need interpretable risk indicators that combine remote sensing with local rainfall and terrain evidence.",
+      "method": "Students will process open Sentinel-1 interferometric products, align them with rainfall and digital elevation data, build an explainable susceptibility model and design a field-verification checklist. The prototype will not issue public safety warnings.",
+      "objectives": ["Build a reproducible geospatial preprocessing notebook", "Compare rule-based and machine-learning risk scoring", "Quantify uncertainty caused by vegetation and decorrelation", "Produce an inspection-priority map with responsible-use guidance"],
+      "skills": ["GIS or remote sensing", "Python geospatial tools", "Civil/geotechnical fundamentals", "Risk communication"],
+      "deliverables": ["Documented geospatial pipeline", "Explainable risk-scoring model", "Interactive inspection-priority map", "Validation and limitations report"],
+      "timeline": ["Weeks 1-2: study-area and data audit", "Weeks 3-6: InSAR and terrain processing", "Weeks 7-10: modelling and uncertainty", "Weeks 11-14: validation and engineering brief"],
+      "pdf": "/briefs/insar-landslide-warning.pdf"
+    },
+    {
+      "id": "a5a4aa71-a73a-4928-a54b-fad63af14628",
+      "title": "Microfluidic Screening for Antimicrobial Resistance",
+      "summary": "Design a low-volume microfluidic assay concept for rapidly comparing bacterial response to antibiotic concentration gradients under supervised laboratory conditions.",
+      "department": "BT",
+      "status": "open",
+      "maxStudents": 3,
+      "leadIndex": 7,
+      "problem": "Conventional susceptibility workflows can be resource intensive. A carefully validated microfluidic approach could reduce reagent use and shorten experimental turnaround while preserving biosafety and interpretability.",
+      "method": "The project begins with non-pathogenic teaching strains and simulated image data. Students will design channel geometry, model diffusion, develop an image-analysis pipeline and prepare a biosafety-reviewed protocol before any wet-lab work.",
+      "objectives": ["Simulate stable antibiotic concentration gradients", "Develop transparent growth/no-growth image measurements", "Define positive, negative and contamination controls", "Complete biosafety and ethical review before wet-lab validation"],
+      "skills": ["Biotechnology laboratory fundamentals", "CAD or microfluidic design", "Microscopy image analysis", "Biosafety documentation"],
+      "deliverables": ["Microfluidic design files", "Diffusion simulation report", "Image-analysis prototype", "Biosafety-reviewed validation protocol"],
+      "timeline": ["Weeks 1-3: review and biosafety planning", "Weeks 4-6: device simulation", "Weeks 7-10: image-analysis prototype", "Weeks 11-14: supervised validation plan"],
+      "pdf": "/briefs/microfluidic-amr-screening.pdf"
+    },
+    {
+      "id": "7a92a4ac-e1a4-4525-af2c-c586f658d74e",
+      "title": "Knowledge Graph for Indian Scientific Literature",
+      "summary": "Create a bilingual discovery prototype that links Indian research papers, methods, datasets and institutions while preserving source provenance.",
+      "department": "CSE",
+      "status": "open",
+      "maxStudents": 4,
+      "leadIndex": 0,
+      "problem": "Research discovery is hindered by inconsistent terminology, fragmented metadata and limited cross-language search. Generated summaries can also obscure provenance if citations are not explicit.",
+      "method": "The team will ingest openly licensed metadata, define a compact ontology, extract entities and relations, evaluate Hindi-English retrieval and expose evidence-backed graph paths. No paywalled full text will be copied.",
+      "objectives": ["Define a provenance-first research ontology", "Build entity resolution and citation-linking baselines", "Evaluate bilingual retrieval with a documented test set", "Expose evidence for every generated relationship"],
+      "skills": ["Python and NLP", "Graph databases", "Information retrieval", "Data licensing and evaluation"],
+      "deliverables": ["Ontology and data dictionary", "Curated evaluation dataset", "Search and graph prototype", "Model card, provenance report and demo"],
+      "timeline": ["Weeks 1-3: licensing audit and ontology", "Weeks 4-7: ingestion and entity resolution", "Weeks 8-11: bilingual retrieval", "Weeks 12-14: evaluation and demonstration"],
+      "pdf": "/briefs/indian-science-knowledge-graph.pdf"
+    }
+  ],
+  "news": [
+    {
+      "id": "4aa0faa0-5281-4214-a966-2b1144c068a9",
+      "title": "Climate-aware pavement design moves beyond one-size-fits-all temperature assumptions",
+      "summary": "IIT Gandhinagar researchers combined climate data, thermal modelling and machine learning to identify region-specific thermal behaviour in rigid pavements.",
+      "category": "civil-climate",
+      "date": "2026-07-21T07:35:00.000Z",
+      "sourceLabel": "Press Information Bureau / IIT Gandhinagar",
+      "sourceUrl": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2286937&lang=2&reg=48",
+      "whyItMatters": "For civil engineers, the result is a useful example of translating hourly climate data into design guidance instead of applying a single thermal assumption across diverse regions.",
+      "points": ["The framework couples ERA5 climate data with thermal modelling and machine learning.", "Five microzones showed meaningfully different pavement thermal behaviour.", "The authors describe extension to pan-India, zone-specific design charts as future work."],
+      "questions": ["Which local measurements would be required before using such a framework in Delhi NCR?", "How should uncertainty be reflected in a design chart?"]
+    },
+    {
+      "id": "f123e8fa-5e7e-4cbb-a270-ff36da98039b",
+      "title": "SpaDeX demonstrates fully autonomous redocking and bidirectional power transfer",
+      "summary": "ISRO reported a second autonomous docking of the SpaDeX satellites followed by power transfer in both directions, an important systems-engineering milestone for future in-orbit operations.",
+      "category": "space",
+      "date": "2025-04-21T12:00:00.000Z",
+      "sourceLabel": "Indian Space Research Organisation",
+      "sourceUrl": "https://www.isro.gov.in/Spadex_Successful_demonstration_of_Second_Docking_and_Power_Transfer.html",
+      "whyItMatters": "Docking combines relative navigation, guidance, control, communications and fault management. It is a compact case study for students interested in robotics, embedded systems and verification.",
+      "points": ["The second docking was completed autonomously from an inter-satellite distance of 15 metres.", "ISRO exercised power transfer from each spacecraft to the other on 21 April 2025.", "Ground simulations and on-orbit trials incorporated lessons from the first docking and undocking."],
+      "questions": ["How would a docking controller represent uncertainty in relative position and velocity?", "Which failure modes should be exercised in hardware-in-the-loop simulation?"]
+    },
+    {
+      "id": "25a283d8-1d5d-47ac-a67c-077692bfa8ac",
+      "title": "BioE3 implementation links biofoundries, Bio-AI and circular biomanufacturing",
+      "summary": "The Department of Biotechnology's implementation framework identifies six national biomanufacturing verticals supported by Bio-AI and biofoundry hubs.",
+      "category": "biotech",
+      "date": "2026-03-12T08:00:00.000Z",
+      "sourceLabel": "Department of Biotechnology",
+      "sourceUrl": "https://bmi.dbtindia.gov.in/biomanufacturing-initiative.php",
+      "whyItMatters": "The framework connects biotechnology research to scale-up, data infrastructure, biosafety and entrepreneurship—useful context for student projects that need a credible translation pathway.",
+      "points": ["The six verticals include biochemicals, smart proteins, precision biotherapeutics, climate-resilient agriculture, biofuels/carbon capture and futuristic marine/space research.", "Bio-AI and biofoundry hubs are described as cross-cutting enablers.", "The initiative emphasizes circular bioeconomy, ethics, biosafety and equitable access."],
+      "questions": ["What minimum data and quality controls should a teaching biofoundry expose?", "Where should life-cycle assessment enter an early biotechnology prototype?"]
+    },
+    {
+      "id": "8f929e52-32e0-4b42-a359-0f49f12c6ffd",
+      "title": "India's deep-tech startup definition raises the bar for research-led ventures",
+      "summary": "Updated Startup India guidance distinguishes deep-tech ventures through scientific novelty, sustained R&D, significant intellectual property and long technical development cycles.",
+      "category": "entrepreneurship",
+      "date": "2026-04-01T08:00:00.000Z",
+      "sourceLabel": "Startup India / DPIIT",
+      "sourceUrl": "https://www.startupindia.gov.in/content/dam/startupindia/Verify-Rec-Mapping/Startup-Playbook-Exclusive-Benefits-for-DPIIT-Recognised-Startups-in-India-April-2026.pdf",
+      "whyItMatters": "Student founders can use the framework to distinguish a genuine research translation plan from a conventional software venture and to plan evidence, IP and validation earlier.",
+      "points": ["The guidance describes deep tech as rooted in new scientific or engineering knowledge.", "It highlights R&D intensity, novel IP, technical uncertainty, capital needs and longer gestation.", "The practical implication is to document technical risk reduction—not only market traction."],
+      "questions": ["Which experiment removes the greatest technical uncertainty from your idea?", "What should remain open research, and what may require IP protection?"]
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "4605aa30-912b-4f4d-ae72-b0694d30d518",
+      "title": "Prototype Call: Climate-Resilient Infrastructure Data Sprint",
+      "summary": "A four-week, mentor-led prototype exercise using open climate, terrain and infrastructure data to build an auditable civil-engineering decision aid.",
+      "type": "event",
+      "deadline": "2026-08-28",
+      "sourceUrl": "/contact?subject=Climate%20Infrastructure%20Data%20Sprint",
+      "eligibility": ["NSUT students in teams of two to four", "At least one civil/environmental or geospatial contributor", "Commitment to open data licensing and reproducible methods"],
+      "support": ["Weekly faculty critique", "Starter datasets and validation checklist", "Final engineering-review presentation"],
+      "howToApply": ["Prepare a one-page problem statement", "Identify the proposed users and decisions", "List datasets, risks and a four-week validation plan"],
+      "note": "Prototype content for staging review. Publication as an official call requires approval from the responsible NSUT office."
+    },
+    {
+      "id": "1c7efcb0-bbe0-4f43-a620-636c1a0981a9",
+      "title": "Research Translation Clinic: From Laboratory Result to Deep-Tech Venture",
+      "summary": "A structured clinic for teams to map technical uncertainty, validation evidence, intellectual-property choices and responsible commercialization pathways.",
+      "type": "event",
+      "deadline": "2026-09-04",
+      "sourceUrl": "https://maarg.startupindia.gov.in/",
+      "eligibility": ["Student or faculty teams with a research-backed prototype", "A named technical hypothesis and target user", "Willingness to document limitations and competing approaches"],
+      "support": ["Technical-risk canvas", "Prior-art and IP orientation", "Mentor-readiness checklist linked to Startup India's MAARG resource"],
+      "howToApply": ["Submit a 250-word technical abstract", "Attach one validation result or experiment plan", "Explain the next uncertainty-reducing milestone"],
+      "note": "Prototype NSUT Connect clinic listing; the external MAARG link is provided as an official national mentorship resource, not as an NSUT endorsement."
+    },
+    {
+      "id": "9e877d1b-aa7a-435d-a0fd-0591c4d04ef3",
+      "title": "Biomanufacturing Reproducibility Reading Group",
+      "summary": "A six-session reading and protocol-design group covering strain engineering, measurement quality, scale-up, life-cycle assessment, ethics and biosafety.",
+      "type": "highlight",
+      "deadline": null,
+      "sourceUrl": "https://bmi.dbtindia.gov.in/biomanufacturing-initiative.php",
+      "eligibility": ["Open to biotechnology, chemistry, instrumentation and computing students", "No wet-lab access required", "Participants must lead one evidence-based discussion"],
+      "support": ["Curated official and peer-reviewed reading list", "Protocol review template", "Cross-disciplinary discussion facilitation"],
+      "howToApply": ["Choose one BioE3 thematic vertical", "Submit two research questions", "State the measurement or modelling skill you can contribute"],
+      "note": "Prototype academic activity for staging review; schedule and organizer must be approved before publication."
+    }
+  ],
+  "forum": [
+    {
+      "id": "df22d859-70b9-456a-a6e1-91787e1a8455",
+      "title": "How should we validate an InSAR landslide-risk prototype before field use?",
+      "summary": "A civil-engineering discussion about ground truth, uncertainty and responsible limits for a student remote-sensing prototype.",
+      "content": "We can generate deformation candidates from Sentinel-1, rainfall and terrain layers, but a susceptibility score is not an early warning by itself. What validation sequence would make the prototype useful to an engineering team without overstating safety?",
+      "department": "CIVIL",
+      "authorIndex": 6,
+      "upvotes": 38,
+      "replies": [
+        {"author": "Dr. Kavita Rao", "role": "Faculty", "content": "Start with retrospective events and blinded site ranking. Then compare the ranking with geological mapping and any available instrumentation. Report false negatives separately because their consequence is much higher.", "posted": "Faculty reply"},
+        {"author": "Aarav Sharma", "role": "Student", "content": "Would a confidence band based on coherence and rainfall-data completeness be clearer than a single risk score? We could also suppress outputs below a minimum evidence threshold.", "posted": "Student follow-up"},
+        {"author": "Dr. Kavita Rao", "role": "Faculty", "content": "Yes. Show evidence quality beside susceptibility, and state that the output prioritizes inspection. It must never be presented as a public warning without an authorized operational validation process.", "posted": "Accepted guidance"}
+      ]
+    },
+    {
+      "id": "8b9fad69-1c77-4302-a329-7c2804dec5cd",
+      "title": "Choosing an edge model for battery state-of-health estimation",
+      "summary": "Students compare compact temporal models, calibration and hardware constraints for EV battery diagnostics.",
+      "content": "Our LSTM baseline is accurate but too slow on the target microcontroller. Should we prioritize a temporal convolutional network, gradient-boosted features, or aggressive quantization? The target is under 100 ms with uncertainty estimates.",
+      "department": "ECE",
+      "authorIndex": 1,
+      "upvotes": 31,
+      "replies": [
+        {"author": "Dr. Raghav Mehta", "role": "Faculty", "content": "Establish a feature-based baseline first. It gives you an interpretable latency and accuracy floor. Then test a compact temporal convolution only if it improves performance across temperature and ageing conditions.", "posted": "Faculty reply"},
+        {"author": "Diya Kapoor", "role": "Student", "content": "We can report calibration error and abstain when the input temperature is outside the training range. That may be more responsible than always returning a point estimate.", "posted": "Student follow-up"}
+      ]
+    },
+    {
+      "id": "7e7d70ef-a159-4366-a3cd-15ca4e976ce4",
+      "title": "What belongs in a reproducibility checklist for microfluidic assays?",
+      "summary": "A biotechnology thread on controls, image-analysis provenance and biosafety gates.",
+      "content": "We are drafting a non-pathogenic teaching assay. Beyond channel dimensions and flow rate, which metadata and controls are essential so another student team can reproduce the result?",
+      "department": "BT",
+      "authorIndex": 7,
+      "upvotes": 27,
+      "replies": [
+        {"author": "Dr. Sameer Khanna", "role": "Faculty", "content": "Record batch identifiers, inoculum preparation, temperature, exposure time, imaging settings and analysis version. Include positive, negative and contamination controls in every run.", "posted": "Faculty reply"},
+        {"author": "Myra Nair", "role": "Student", "content": "We should also store the unprocessed images and a machine-readable manifest so threshold changes can be audited later.", "posted": "Student follow-up"}
+      ]
+    }
+  ]
+}

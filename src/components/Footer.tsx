@@ -15,7 +15,7 @@ export default function Footer() {
               <span className="text-sm font-extrabold text-foreground uppercase">
                 NSUT Connect<sub className="text-[9px] ml-0.5 lowercase font-bold text-foreground/70">-by IQAC</sub>
               </span>
-              <span className="text-[10px] text-foreground/50 uppercase font-semibold">Institutional Portal</span>
+              <span className="text-[10px] text-foreground/50 uppercase font-semibold">Research Collaboration Prototype</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-x-8 gap-y-4">
@@ -27,7 +27,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-outline pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-foreground/40 text-[11px] uppercase font-semibold tracking-widest">
-            © 2024 Netaji Subhas University of Technology. All Rights Reserved.
+            © 2026 NSUT Connect prototype. Institutional review pending.
           </p>
           <div className="flex gap-6">
             <Link href="/privacy" className="text-foreground/40 hover:text-primary transition-colors text-[11px] font-bold uppercase tracking-widest">Privacy</Link>

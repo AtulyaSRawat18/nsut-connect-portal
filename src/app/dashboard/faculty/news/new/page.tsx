@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +11,7 @@ const newsSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   content: z.string().min(20, "Content must be at least 20 characters"),
   category: z.string().min(1, "Category is required"),
+  sourceUrl: z.string().url("A valid source URL is required").refine((value) => value.startsWith("https://"), "Use an HTTPS source URL"),
 });
 
 type NewsFormValues = z.infer<typeof newsSchema>;
@@ -26,23 +26,18 @@ export default function NewNewsPage() {
   });
 
   const onSubmit = async (data: NewsFormValues) => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) return;
-
-    const { error } = await supabase.from('announcements').insert({
-      title: data.title,
-      content: data.content,
-      category: data.category,
-      author_id: user.id
+    const response = await fetch("/api/faculty/news", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
     });
-
-    if (error) {
-      alert(error.message);
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      alert(result.message || "News publishing failed.");
     } else {
       alert("News published successfully!");
-      router.push("/developments");
+      router.push("/news");
+      router.refresh();
     }
   };
 
@@ -76,6 +71,18 @@ export default function NewNewsPage() {
               {...register("content")}
             />
             {errors.content && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.content.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Primary source link <span className="text-primary">(required)</span></label>
+            <input
+              type="url"
+              className={`w-full px-4 py-3 bg-background border ${errors.sourceUrl ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`}
+              placeholder="https://official-source.example/research-update"
+              {...register("sourceUrl")}
+            />
+            <p className="mt-2 text-xs text-foreground/45">Every news item must link to the official or primary source used for the summary.</p>
+            {errors.sourceUrl && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.sourceUrl.message}</p>}
           </div>
 
           <div>

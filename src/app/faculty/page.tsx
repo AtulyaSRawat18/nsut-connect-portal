@@ -1,89 +1,61 @@
-import { Search, Mail, Globe } from "lucide-react";
+import { Filter, Globe, Mail, Search } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
+import Pagination from "@/components/shared/Pagination";
+import { getPublicFaculty, getPublicFacultyDepartments } from "@/lib/public-data";
 
-type FacultyProfileRow = {
-  department: string | null;
-  designation: string | null;
-  research_area: string | null;
-  website_url: string | null;
-  verification_status: string | null;
-};
+const verificationFilters = ["all", "verified", "pending"] as const;
 
-type FacultyRow = {
-  id: string;
-  name: string;
-  email: string;
-  faculty_profiles: FacultyProfileRow | FacultyProfileRow[] | null;
-};
-
-export default async function FacultyDirectory() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("portal_users")
-    .select("id, name, email, faculty_profiles(department, designation, research_area, website_url, verification_status)")
-    .eq("role", "faculty")
-    .eq("account_status", "active")
-    .order("name");
-
-  const faculty = ((data || []) as FacultyRow[]).map((person) => {
-    const profile = Array.isArray(person.faculty_profiles)
-      ? person.faculty_profiles[0]
-      : person.faculty_profiles;
-    return {
-      id: person.id,
-      name: person.name,
-      email: person.email,
-      role: profile?.designation || "Faculty",
-      dept: profile?.department || "NSUT",
-      research: profile?.research_area || "Interdisciplinary Research",
-      website: profile?.website_url,
-      verified: profile?.verification_status === "approved",
-    };
-  });
+export default async function FacultyDirectory({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string; department?: string; verification?: string; page?: string }>;
+}) {
+  const params = await searchParams;
+  const q = (params?.q || "").trim();
+  const verification = verificationFilters.includes(params?.verification as (typeof verificationFilters)[number]) ? params?.verification || "all" : "all";
+  const departments = await getPublicFacultyDepartments();
+  const selectedDepartment = departments.includes(params?.department || "") ? params?.department || "all" : "all";
+  const result = await getPublicFaculty({ q, department: selectedDepartment, verification, page: Number(params?.page || 1) });
+  const faculty = result.data;
 
   return (
     <div className="min-h-screen bg-background py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <h1 className="text-4xl font-display font-black text-primary mb-4 tracking-tight">Faculty Directory</h1>
-        <p className="text-foreground/70 mb-12 max-w-2xl">Connect with NSUT researchers and find the right mentor for your academic journey.</p>
+      <div className="mx-auto max-w-7xl px-6">
+        <h1 className="mb-4 text-4xl font-black tracking-tight text-primary">Faculty Directory</h1>
+        <p className="mb-10 max-w-2xl text-foreground/70">Connect with NSUT researchers and find the right mentor for your academic journey.</p>
 
-        <div className="bg-surface border border-outline p-4 flex items-center gap-4 mb-12">
-          <Search className="w-5 h-5 text-foreground/50 ml-2" />
-          <input type="text" placeholder="Search by name, department, or research area..." className="w-full bg-transparent border-none focus:ring-0 text-foreground" />
-        </div>
+        <form className="mb-12 grid gap-3 rounded-2xl border border-outline bg-surface p-4 md:grid-cols-[1fr_13rem_11rem_auto]">
+          <label className="relative"><Search className="absolute left-3 top-3.5 h-5 w-5 text-foreground/50" /><input name="q" defaultValue={q} placeholder="Search name, department, or research" className="w-full rounded-lg border border-outline bg-background py-3 pl-11 pr-4 text-sm outline-none focus:border-primary" /></label>
+          <select name="department" defaultValue={selectedDepartment} aria-label="Filter faculty by department" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary">
+            <option value="all">All departments</option>{departments.map((department) => <option key={department} value={department}>{department}</option>)}
+          </select>
+          <select name="verification" defaultValue={verification} aria-label="Filter faculty by verification" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary">
+            <option value="all">All profiles</option><option value="verified">Verified</option><option value="pending">Not verified</option>
+          </select>
+          <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-3 text-xs font-bold uppercase tracking-widest text-background"><Filter className="h-4 w-4" /> Filter</button>
+        </form>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {faculty.map((f) => (
-            <div key={f.id} className="bg-surface border border-outline p-8 hover:border-primary transition-all group">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                  {f.name.split(" ").at(-1)?.[0] || "F"}
+        {result.error ? (
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-12 text-center text-red-600">Faculty profiles are temporarily unavailable.</div>
+        ) : (
+          <div className="lazy-card-list grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {faculty.map((person) => (
+              <article key={person.id} className="group border border-outline bg-surface p-8 transition-all hover:border-primary">
+                <div className="mb-6 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">{person.name.split(" ").at(-1)?.[0] || "F"}</div>
+                  <div><h2 className="font-bold text-foreground transition-colors group-hover:text-primary">{person.name}</h2><p className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">{person.role} · {person.dept}{person.verified ? " · Verified" : ""}</p></div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">{f.name}</h3>
-                  <p className="text-[10px] font-bold text-foreground/50 uppercase tracking-widest">
-                    {f.role} • {f.dept}{f.verified ? " • Verified" : ""}
-                  </p>
+                <p className="mb-6 text-sm font-medium italic text-foreground/70">&quot;{person.research}&quot;</p>
+                <div className="flex gap-4">
+                  <Link href={`mailto:${person.email}`} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"><Mail className="h-4 w-4" /> Email</Link>
+                  <Link href={person.website || `/profile/${person.id}`} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"><Globe className="h-4 w-4" /> Profile</Link>
                 </div>
-              </div>
-              <p className="text-sm text-foreground/70 mb-6 font-medium italic">&quot;{f.research}&quot;</p>
-              <div className="flex gap-4">
-                <Link href={`mailto:${f.email}`} className="text-primary hover:underline flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
-                  <Mail className="w-4 h-4" /> Email
-                </Link>
-                <Link href={f.website || `/profile/${f.id}`} className="text-primary hover:underline flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
-                  <Globe className="w-4 h-4" /> Profile
-                </Link>
-              </div>
-            </div>
-          ))}
-          {faculty.length === 0 && (
-            <p className="col-span-full border border-dashed border-outline p-12 text-center text-foreground/50">
-              No faculty profiles are available yet.
-            </p>
-          )}
-        </div>
+              </article>
+            ))}
+            {faculty.length === 0 && <p className="col-span-full border border-dashed border-outline p-12 text-center text-foreground/50">No faculty profiles match these filters.</p>}
+            <div className="col-span-full"><Pagination basePath="/faculty" currentPage={result.page} pageSize={result.pageSize} searchParams={{ q, department: selectedDepartment, verification }} totalCount={result.count} /></div>
+          </div>
+        )}
       </div>
     </div>
   );

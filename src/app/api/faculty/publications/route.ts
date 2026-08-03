@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { AuthenticationError, AuthorizationError, requirePortalIdentity } from "@/lib/auth/server";
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
       .select("id")
       .single();
     if (error) return authError(400, "PUBLICATION_FAILED", error.message);
+    revalidateTag("public-publications", "max");
     return NextResponse.json({ error: false, id: data.id }, { status: 201 });
   } catch (error) {
     if (error instanceof AuthenticationError) return authError(401, "UNAUTHENTICATED", error.message);

@@ -1,158 +1,71 @@
 import Link from "next/link";
-import { Search, MessageSquare, ThumbsUp, CheckCircle, Bot, Filter, User, ArrowRight } from "lucide-react";
-import { createClient } from "@/utils/supabase/server";
+import { CheckCircle, Filter, MessageSquare, Search, User } from "lucide-react";
+import Pagination from "@/components/shared/Pagination";
+import ResearchBackdrop from "@/components/shared/ResearchBackdrop";
+import { getPublicForumPosts } from "@/lib/public-data";
+import ForumQuickActions from "./ForumQuickActions";
 
-export default async function Forum() {
-  const supabase = await createClient();
+const departments = ["all", "CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"] as const;
 
-  let { data: posts } = await supabase
-    .from('forum_posts')
-    .select('*, portal_users(name, role)')
-    .order('created_at', { ascending: false });
-
-  // Dummy data fallback
-  if (!posts || posts.length === 0) {
-    posts = [
-      {
-        id: '1',
-        title: 'Best practices for securing IoT edge nodes?',
-        content: 'I am currently working on a project involving remote sensors. What are the recommended security patches for low-power devices...',
-        department: 'CSE',
-        upvotes: 24,
-        created_at: new Date().toISOString(),
-        portal_users: { name: 'Rahul Mehta', role: 'student' }
-      },
-      {
-        id: '2',
-        title: 'Upcoming Research Symposium: Call for Papers',
-        content: 'Faculty and students are invited to submit their work for the upcoming Annual Research Symposium scheduled for November.',
-        department: 'General',
-        upvotes: 56,
-        created_at: new Date().toISOString(),
-        portal_users: { name: 'Dr. Ramesh Kumar', role: 'faculty' }
-      },
-      {
-        id: '3',
-        title: 'Comparing LSTMs vs Transformers for Time-Series',
-        content: 'Has anyone benchmarked Transformer models against traditional LSTMs for solar energy forecasting? I am seeing mixed results...',
-        department: 'IT',
-        upvotes: 12,
-        created_at: new Date().toISOString(),
-        portal_users: { name: 'Sanya Gupta', role: 'student' }
-      }
-    ];
-  }
+export default async function Forum({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string; department?: string; page?: string }>;
+}) {
+  const params = await searchParams;
+  const q = (params?.q || "").trim();
+  const department = departments.includes(params?.department as (typeof departments)[number]) ? params?.department || "all" : "all";
+  const result = await getPublicForumPosts({ q, department, page: Number(params?.page || 1) });
 
   return (
-    <div className="min-h-screen bg-background font-sans py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+    <div className="relative min-h-screen overflow-hidden bg-[#fbf7ef] py-16 font-sans dark:bg-background">
+      <ResearchBackdrop compact />
+      <div className="relative mx-auto max-w-7xl px-6">
+        <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-5xl font-display font-black text-primary mb-4 tracking-tight">Academic Forum</h1>
-            <p className="text-lg text-foreground/70 font-medium">Connect, discuss, and share research insights with the NSUT community.</p>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Ask · assess · improve</p>
+            <h1 className="text-5xl font-black tracking-tight text-foreground">Academic Forum</h1>
+            <p className="mt-4 max-w-2xl text-lg font-medium text-foreground/70">Vote on useful research questions and reply with evidence, methods, or constructive technical guidance—without leaving the forum feed.</p>
           </div>
-          <button className="bg-primary text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded shadow-lg hover:bg-primary-dark transition-all">
-            Start a Discussion
-          </button>
+          <Link href="/dashboard/faculty/forum" className="rounded bg-primary px-7 py-4 text-center text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-lg">Faculty publishing desk</Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-          {/* Main Feed */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="bg-surface border border-outline p-4 flex items-center gap-4 focus-within:ring-2 focus-within:ring-primary transition-all">
-              <Search className="w-5 h-5 text-foreground/50 ml-2" />
-              <input
-                type="text"
-                placeholder="Search discussions, topics, or faculty tags..."
-                className="w-full bg-transparent border-none focus:ring-0 text-foreground font-medium"
-              />
-            </div>
+        <form className="mb-10 grid gap-3 rounded-2xl border border-outline bg-surface/95 p-4 shadow-sm backdrop-blur-sm md:grid-cols-[1fr_13rem_auto]">
+          <label className="relative"><Search className="absolute left-3 top-3.5 h-5 w-5 text-foreground/45" /><input name="q" defaultValue={q} placeholder="Search discussions" className="w-full rounded-lg border border-outline bg-background py-3 pl-11 pr-4 text-sm outline-none focus:border-primary" /></label>
+          <select name="department" defaultValue={department} aria-label="Filter by department" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary">
+            {departments.map((item) => <option key={item} value={item}>{item === "all" ? "All departments" : item}</option>)}
+          </select>
+          <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-3 text-xs font-bold uppercase tracking-widest text-background"><Filter className="h-4 w-4" /> Filter</button>
+        </form>
 
-            {/* Posts List */}
-            <div className="space-y-4">
-              {posts.map((post: any) => (
-                <div key={post.id} className="bg-surface border border-outline hover:border-primary/50 transition-all p-8 rounded-lg group">
-                  <div className="flex gap-6">
-                    {/* Voting */}
-                    <div className="flex flex-col items-center gap-2">
-                       <button className="p-2 hover:bg-primary/10 rounded transition-colors text-foreground/50 hover:text-primary">
-                         <ThumbsUp className="w-5 h-5" />
-                       </button>
-                       <span className="font-bold text-foreground">{post.upvotes}</span>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-3 mb-3">
-                        <span className="bg-primary/10 text-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded">
-                          {post.department}
-                        </span>
-                        {post.portal_users?.role === 'faculty' && (
-                          <span className="flex items-center gap-1 bg-secondary text-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded">
-                            <CheckCircle className="w-3 h-3" /> Faculty Verified
-                          </span>
-                        )}
-                        <span className="text-[10px] text-foreground/50 font-bold uppercase tracking-widest ml-auto">
-                          {new Date(post.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <Link href={`/forum/${post.id}`} className="block">
-                         <h3 className="text-xl font-display font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                           {post.title}
-                         </h3>
-                      </Link>
-                      <p className="text-foreground/70 text-sm line-clamp-2 mb-6 leading-relaxed">
-                        {post.content}
-                      </p>
-
-                      <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2 text-xs text-foreground/50 font-bold">
-                          <User className="w-4 h-4" /> {post.portal_users?.name}
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-foreground/50 font-bold">
-                          <MessageSquare className="w-4 h-4" /> 12 Replies
-                        </div>
-                      </div>
-                    </div>
+        {result.error ? (
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-12 text-center text-red-600">Forum discussions are temporarily unavailable.</div>
+        ) : result.data.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-outline bg-background/70 p-16 text-center text-foreground/50">No discussions match the selected filters.</div>
+        ) : (
+          <div className="lazy-card-list space-y-5">
+            {result.data.map((post) => {
+              const author = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+              return (
+                <article key={post.id} className="group rounded-2xl border border-outline bg-surface/95 p-6 shadow-sm backdrop-blur-sm transition-all hover:border-primary/50 md:p-8">
+                  <div className="mb-3 flex flex-wrap items-center gap-3">
+                    <span className="rounded bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary">{post.department}</span>
+                    {author?.role === "faculty" && <span className="flex items-center gap-1 rounded bg-secondary px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white"><CheckCircle className="h-3 w-3" /> Faculty verified</span>}
+                    <time className="ml-auto text-[10px] font-bold uppercase tracking-widest text-foreground/50">{new Date(post.created_at).toLocaleDateString()}</time>
                   </div>
-                </div>
-              ))}
-            </div>
+                  <h2 className="text-xl font-black text-foreground transition-colors group-hover:text-primary md:text-2xl"><Link href={`/forum/${post.id}`}>{post.title}</Link></h2>
+                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/70">{post.content}</p>
+                  <div className="mt-5 flex flex-wrap items-center gap-6 text-xs font-bold text-foreground/50">
+                    <span className="flex items-center gap-2"><User className="h-4 w-4" /> {author?.full_name || "NSUT member"}</span>
+                    <Link href={`/forum/${post.id}`} className="flex items-center gap-2 text-primary"><MessageSquare className="h-4 w-4" /> Full discussion</Link>
+                  </div>
+                  <ForumQuickActions postId={post.id} initialScore={post.upvotes || 0} />
+                </article>
+              );
+            })}
+            <Pagination basePath="/forum" currentPage={result.page} pageSize={result.pageSize} searchParams={{ q, department }} totalCount={result.count} />
           </div>
-
-          {/* Sidebar */}
-          <div className="space-y-8">
-            {/* AI Suggested Answers */}
-            <div className="bg-gradient-to-br from-primary to-primary-dark p-8 rounded-xl text-white shadow-xl">
-              <div className="flex items-center gap-3 mb-4">
-                <Bot className="w-6 h-6" />
-                <h3 className="font-display font-bold text-lg">AI Smart Insights</h3>
-              </div>
-              <p className="text-white/80 text-xs leading-relaxed mb-6 italic">
-                &quot;Recent discussions show a high interest in Edge Computing. Check out the latest resources in the CSE department feed.&quot;
-              </p>
-              <button className="w-full bg-white text-primary py-3 rounded font-bold uppercase tracking-widest text-[10px] hover:bg-white/90 transition-colors">
-                Explore Insights
-              </button>
-            </div>
-
-            {/* Popular Departments */}
-            <div className="bg-surface border border-outline p-8 rounded-lg">
-              <h4 className="font-bold text-xs text-foreground/50 tracking-widest uppercase mb-6 flex items-center gap-2">
-                <Filter className="w-4 h-4" /> Filter by Dept
-              </h4>
-              <div className="space-y-4">
-                {['General', 'CSE', 'IT', 'ECE', 'MAC'].map(dept => (
-                  <Link key={dept} href="#" className="flex justify-between items-center text-sm font-bold text-foreground/80 hover:text-primary transition-colors group">
-                    <span>{dept}</span>
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

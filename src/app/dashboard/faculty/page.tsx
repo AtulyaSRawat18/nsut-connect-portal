@@ -7,29 +7,33 @@ import WorkspaceStatCard from "@/components/workspace/WorkspaceStatCard";
 export default async function FacultyWorkspaceOverview() {
   const identity = await requirePageIdentity({ permissions: ["project.create"] });
   const supabase = await createClient();
-  const { data: projects } = await supabase
-    .from("projects")
-    .select("id, title, department, status, max_students, created_at")
-    .eq("faculty_id", identity.id)
-    .order("created_at", { ascending: false });
-  const projectIds = (projects || []).map((project) => project.id);
-  const [pending, accepted, publications] = await Promise.all([
-    projectIds.length
-      ? supabase.from("applications").select("id", { count: "exact", head: true }).in("project_id", projectIds).eq("status", "pending")
-      : Promise.resolve({ count: 0 }),
-    projectIds.length
-      ? supabase.from("applications").select("id", { count: "exact", head: true }).in("project_id", projectIds).eq("status", "accepted")
-      : Promise.resolve({ count: 0 }),
+  const [projectsResult, pending, accepted, publications] = await Promise.all([
+    supabase
+      .from("projects")
+      .select("id, title, department, status, max_students, created_at")
+      .eq("faculty_id", identity.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("applications")
+      .select("id, projects!inner(faculty_id)", { count: "exact", head: true })
+      .eq("projects.faculty_id", identity.id)
+      .eq("status", "pending"),
+    supabase
+      .from("applications")
+      .select("id, projects!inner(faculty_id)", { count: "exact", head: true })
+      .eq("projects.faculty_id", identity.id)
+      .eq("status", "accepted"),
     supabase.from("publications").select("id", { count: "exact", head: true }).eq("faculty_id", identity.id),
   ]);
+  const projects = projectsResult.data || [];
 
   return (
     <div className="space-y-10">
       <header className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Faculty research desk</p>
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Faculty dashboard</p>
           <h1 className="text-4xl font-black tracking-tight text-foreground">Welcome, {identity.name}</h1>
-          <p className="mt-3 max-w-2xl text-foreground/55">Manage research opportunities, review student interest, and maintain your academic record.</p>
+          <p className="mt-3 max-w-2xl text-foreground/55">Assess project health, maintain evidence, review student interest, and publish research updates from one workspace.</p>
         </div>
         <Link href="/dashboard/faculty/projects/new" className="rounded-xl bg-primary px-5 py-3 text-center text-xs font-bold uppercase tracking-widest text-primary-foreground">
           Create project

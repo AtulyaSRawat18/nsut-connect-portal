@@ -1,67 +1,42 @@
-import { BookOpen, Search, Download, ExternalLink } from "lucide-react";
-import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
+import { BookOpen, ExternalLink, Filter, Search } from "lucide-react";
+import Pagination from "@/components/shared/Pagination";
+import { getPublicPublications, getPublicPublicationYears } from "@/lib/public-data";
 
-type PublicationRow = {
-  id: string;
-  title: string;
-  authors: string[] | null;
-  published_date: string | null;
-  url: string | null;
-  portal_users: { name: string }[];
-};
-
-export default async function Publications() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("publications")
-    .select("id, title, authors, published_date, url, portal_users!publications_faculty_id_fkey(name)")
-    .order("published_date", { ascending: false });
-  const publications = data || [];
+export default async function Publications({ searchParams }: { searchParams?: Promise<{ q?: string; year?: string; page?: string }> }) {
+  const params = await searchParams;
+  const q = (params?.q || "").trim();
+  const years = await getPublicPublicationYears();
+  const year = years.includes(params?.year || "") ? params?.year || "all" : "all";
+  const result = await getPublicPublications({ q, year, page: Number(params?.page || 1) });
+  const publications = result.data;
 
   return (
     <div className="min-h-screen bg-background py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <h1 className="text-4xl font-display font-black text-primary mb-4 tracking-tight">Research Publications</h1>
-        <p className="text-foreground/70 mb-12 max-w-2xl">Access the peer-reviewed research output from Netaji Subhas University of Technology.</p>
-
-        <div className="bg-surface border border-outline p-4 flex items-center gap-4 mb-12">
-          <Search className="w-5 h-5 text-foreground/50 ml-2" />
-          <input type="text" placeholder="Search by paper title, author, or journal..." className="w-full bg-transparent border-none focus:ring-0 text-foreground" />
-        </div>
-
-        <div className="space-y-6">
-          {(publications as PublicationRow[]).map((p) => (
-            <div key={p.id} className="bg-surface border border-outline p-8 hover:border-primary transition-all group">
-              <div className="flex gap-6 items-start">
-                <div className="w-12 h-12 bg-primary/5 rounded flex-shrink-0 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                  <BookOpen className="w-6 h-6" />
+      <div className="mx-auto max-w-7xl px-6">
+        <h1 className="mb-4 text-4xl font-black tracking-tight text-primary">Research Publications</h1>
+        <p className="mb-10 max-w-2xl text-foreground/70">Access research output from Netaji Subhas University of Technology.</p>
+        <form className="mb-12 grid gap-3 rounded-2xl border border-outline bg-surface p-4 sm:grid-cols-[1fr_12rem_auto]">
+          <label className="relative"><Search className="absolute left-3 top-3.5 h-5 w-5 text-foreground/50" /><input name="q" defaultValue={q} placeholder="Paper title" className="w-full rounded-lg border border-outline bg-background py-3 pl-11 pr-4 text-sm outline-none focus:border-primary" /></label>
+          <select name="year" defaultValue={year} aria-label="Filter publications by year" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary"><option value="all">All years</option>{years.map((item) => <option key={item} value={item}>{item === "forthcoming" ? "Forthcoming" : item}</option>)}</select>
+          <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-3 text-xs font-bold uppercase tracking-widest text-background"><Filter className="h-4 w-4" /> Filter</button>
+        </form>
+        {result.error ? (
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-12 text-center text-red-600">Publications are temporarily unavailable.</div>
+        ) : publications.length === 0 ? (
+          <div className="border border-dashed border-outline p-12 text-center text-foreground/50">No publications match these filters.</div>
+        ) : (
+          <div className="lazy-card-list space-y-6">
+            {publications.map((publication) => (
+              <article key={publication.id} className="group border border-outline bg-surface p-8 transition-all hover:border-primary">
+                <div className="flex items-start gap-6">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded bg-primary/5 text-primary transition-all group-hover:bg-primary group-hover:text-white"><BookOpen className="h-6 w-6" /></div>
+                  <div className="min-w-0 flex-1"><h2 className="mb-2 text-xl font-bold text-foreground transition-colors group-hover:text-primary">{publication.title}</h2><p className="mb-4 text-sm text-foreground/70">{(publication.authors || []).join(", ")} ({publication.published_date ? new Date(publication.published_date).getFullYear() : "Forthcoming"})</p>{publication.url && <a href={publication.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground/50 transition-colors hover:text-primary"><ExternalLink className="h-4 w-4" /> Open publication</a>}</div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-display font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{p.title}</h3>
-                  <p className="text-sm text-foreground/70 mb-4">
-                    {(p.authors || []).join(", ")} •{" "}
-                    <span className="font-bold text-primary">{p.portal_users?.[0]?.name || "NSUT Research"}</span>{" "}
-                    ({p.published_date ? new Date(p.published_date).getFullYear() : "Forthcoming"})
-                  </p>
-                  <div className="flex gap-4">
-                    <Link href={p.url || "#"} className="flex items-center gap-2 text-[10px] font-bold text-foreground/50 hover:text-primary uppercase tracking-widest transition-colors">
-                      <Download className="w-4 h-4" /> PDF
-                    </Link>
-                    <Link href={p.url || "#"} className="flex items-center gap-2 text-[10px] font-bold text-foreground/50 hover:text-primary uppercase tracking-widest transition-colors">
-                      <ExternalLink className="w-4 h-4" /> DOI
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          {publications.length === 0 && (
-            <div className="border border-dashed border-outline p-12 text-center text-foreground/50">
-              No publications have been added yet.
-            </div>
-          )}
-        </div>
+              </article>
+            ))}
+            <Pagination basePath="/publications" currentPage={result.page} pageSize={result.pageSize} searchParams={{ q, year }} totalCount={result.count} />
+          </div>
+        )}
       </div>
     </div>
   );

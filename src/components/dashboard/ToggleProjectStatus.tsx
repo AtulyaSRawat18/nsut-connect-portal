@@ -1,28 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function ToggleProjectStatus({ projectId, initialStatus }: { projectId: string; initialStatus: string }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleToggle = async () => {
     setLoading(true);
     const newStatus = initialStatus === "open" ? "closed" : "open";
 
-    const { error } = await supabase
-      .from("projects")
-      .update({ status: newStatus })
-      .eq("id", projectId);
+    const response = await fetch("/api/faculty/projects/" + projectId, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    const result = await response.json().catch(() => ({}));
 
     setLoading(false);
 
-    if (error) {
-      alert("Error updating status: " + error.message);
+    if (!response.ok) {
+      alert("Error updating status: " + (result.message || "Request failed."));
     } else {
       router.refresh();
     }

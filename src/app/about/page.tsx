@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Mail, Phone, MapPin, Globe, Shield, Users, Target } from "lucide-react";
+import { Mail, Phone, MapPin, Shield, Users, Target } from "lucide-react";
 
 export default function About() {
   return (
@@ -23,7 +22,7 @@ export default function About() {
              <h2 className="text-xs font-black text-primary tracking-[0.3em] uppercase mb-4">The Platform</h2>
              <h3 className="text-4xl font-display font-black text-foreground mb-8 leading-tight">Empowering Every Researcher.</h3>
              <p className="text-foreground/70 text-lg leading-relaxed mb-8">
-               Our portal provides a unified interface for students to discover faculty-led projects, apply with verified credentials, and engage in high-impact intellectual discourse. By leveraging specialized AI scaffolding, we ensure that every application is high-quality and every research proposal is discoverable.
+               Our portal provides a unified interface for students to discover faculty-led projects, apply with verified credentials, and engage in high-impact intellectual discourse. Structured workflows keep applications clear, attributable, and easy for faculty to review.
              </p>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex gap-4">
@@ -36,8 +35,8 @@ export default function About() {
                 <div className="flex gap-4">
                    <Target className="w-6 h-6 text-primary flex-shrink-0" />
                    <div>
-                      <h4 className="font-bold text-foreground">AI Guided</h4>
-                      <p className="text-sm text-foreground/50">Intelligent tools to help draft proposals and map skillsets.</p>
+                      <h4 className="font-bold text-foreground">Structured Collaboration</h4>
+                      <p className="text-sm text-foreground/50">Clear project requirements and application workflows connect skills with research needs.</p>
                    </div>
                 </div>
              </div>
@@ -108,7 +107,7 @@ export default function About() {
             <span className="text-foreground/20 font-light text-2xl">|</span>
             <span className="text-foreground/50 font-bold uppercase tracking-widest text-[10px]">Research Portal</span>
          </div>
-         <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em]">© 2026 Netaji Subhas University of Technology</p>
+         <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em]">© 2026 NSUT Connect prototype</p>
       </footer>
     </div>
   );

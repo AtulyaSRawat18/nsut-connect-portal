@@ -1,0 +1,14 @@
+import PolicyPage from "@/components/legal/PolicyPage";
+
+export default function TermsPage() {
+  return <PolicyPage eyebrow="Terms of use" title="Rules for responsible participation" summary="These draft terms describe the behaviour, account and content rules needed for a trusted academic collaboration portal." sections={[
+    { title: "Eligibility and account responsibility", bullets: ["Use an approved institutional identity and provide accurate role information.", "Keep credentials private and report suspected compromise promptly.", "Do not share accounts, impersonate another person or attempt to bypass approval status."] },
+    { title: "Acceptable academic use", bullets: ["Use the portal for research discovery, collaboration, academic publishing and authorized community activity.", "Do not upload unlawful, discriminatory, harassing, deceptive or privacy-invasive material.", "Do not submit malware, scrape restricted data, probe security controls or interfere with service availability.", "Respect laboratory safety, research ethics, academic integrity and applicable approvals."] },
+    { title: "Projects and applications", paragraphs: ["A listing is an invitation to express interest, not a guarantee of selection, funding, credit, authorship or employment. Project owners should state expectations clearly and review applications fairly. Separate written agreements may be required for funded, confidential or externally sponsored work."] },
+    { title: "Content and moderation", paragraphs: ["Authors remain accountable for the accuracy, legality and permissions of their content. Authorized moderators may restrict, remove or preserve content when required for safety, policy enforcement or investigation. The final terms must include an appeal route and response targets."] },
+    { title: "External information", paragraphs: ["Research briefs summarize primary sources for discovery and education. Users should read the linked source before relying on a claim. External opportunities and websites are not endorsed unless explicitly stated by an authorized university office."] },
+    { title: "Service availability", paragraphs: ["The staging prototype may change, pause or lose test content. Production terms must define service ownership, support expectations, backup commitments and limits permitted by applicable law; this draft does not waive rights or create an official warranty."] },
+    { title: "Enforcement and appeals", bullets: ["Possible actions include warning, content restriction, temporary suspension or account deactivation.", "High-impact decisions should state the reason, actor, time and appeal path.", "Emergency security action may occur before notice when needed to contain harm."] },
+    { title: "Governing approval", paragraphs: ["NSUT must approve the policy owner, applicable law, dispute route, effective date and version history before these terms become binding."] }
+  ]} />;
+}

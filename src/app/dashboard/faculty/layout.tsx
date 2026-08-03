@@ -9,23 +9,16 @@ export default async function FacultyDashboardLayout({ children }: { children: R
     permissions: ["project.create"],
   });
   const supabase = await createClient();
-  const { data: projects } = await supabase
-    .from("projects")
-    .select("id")
-    .eq("faculty_id", identity.id);
-  const projectIds = (projects || []).map((project) => project.id);
-  const pendingApplications = projectIds.length
-    ? await supabase
-        .from("applications")
-        .select("id", { count: "exact", head: true })
-        .in("project_id", projectIds)
-        .eq("status", "pending")
-    : { count: 0 };
+  const pendingApplications = await supabase
+    .from("applications")
+    .select("id, projects!inner(faculty_id)", { count: "exact", head: true })
+    .eq("projects.faculty_id", identity.id)
+    .eq("status", "pending");
 
   return (
     <WorkspaceShell
-      title="NSUT Faculty"
-      roleLabel="Research workspace"
+      title="Faculty Dashboard"
+      roleLabel="Research control centre"
       user={{ name: identity.name, email: identity.email }}
       navigation={[
         { label: "Overview", href: "/dashboard/faculty", icon: "dashboard" },
@@ -37,6 +30,7 @@ export default async function FacultyDashboardLayout({ children }: { children: R
           badge: pendingApplications.count || 0,
         },
         { label: "Publications", href: "/dashboard/faculty/publications", icon: "publications" },
+        { label: "Forum posts", href: "/dashboard/faculty/forum", icon: "forum" },
         { label: "Publish news", href: "/dashboard/faculty/news/new", icon: "news" },
         { label: "Public profile", href: `/profile/${identity.id}`, icon: "profile" },
       ]}

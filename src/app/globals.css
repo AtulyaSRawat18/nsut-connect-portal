@@ -40,3 +40,9 @@
   --font-sans: "Segoe UI", Inter, Arial, sans-serif;
   --font-headline: "Segoe UI", Inter, Arial, sans-serif;
 }
+
+/* Defer layout and paint work for discovery cards until they near the viewport. */
+.lazy-card-list > article {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 18rem;
+}

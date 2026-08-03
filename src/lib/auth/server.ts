@@ -53,23 +53,22 @@ export async function getPortalIdentity(): Promise<PortalIdentity | null> {
   // getUser validates the Supabase access-token JWT with the Auth server.
   if (authError || !user) return null;
 
-  const { data, error } = await supabase
-    .from("portal_users")
-    .select(
-      "id, name, email, role, account_status, is_content_handler, banned_until, ban_reason",
-    )
-    .eq("id", user.id)
-    .single();
+  const [portalResult, roleResult] = await Promise.all([
+    supabase
+      .from("portal_users")
+      .select("id, name, email, role, account_status, is_content_handler, banned_until, ban_reason")
+      .eq("id", user.id)
+      .single(),
+    supabase.from("user_roles").select("role_key").eq("user_id", user.id),
+  ]);
+  const { data, error } = portalResult;
+  const { data: roleRows } = roleResult;
 
   if (error || !data) return null;
 
   const row = data as PortalUserRow;
   if (!isPortalRole(row.role)) return null;
 
-  const { data: roleRows } = await supabase
-    .from("user_roles")
-    .select("role_key")
-    .eq("user_id", user.id);
   const roles = Array.from(
     new Set([
       row.role,

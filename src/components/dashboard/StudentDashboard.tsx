@@ -1,8 +1,10 @@
-import { Projector, MessageCircle, Newspaper, Search, History, GraduationCap } from "lucide-react";
+import { MessageCircle, Newspaper, Search, History, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import StudentFeed from "./StudentFeed";
 
-export default function StudentDashboard({ profile }: { profile: any }) {
+interface StudentProfile { id?: string; name?: string }
+
+export default function StudentDashboard({ profile }: { profile: StudentProfile | null }) {
   return (
     <div className="space-y-12">
       <header className="mb-12">
@@ -44,12 +46,12 @@ export default function StudentDashboard({ profile }: { profile: any }) {
         <div className="bg-surface border border-outline p-8 group hover:border-primary transition-all">
           <Newspaper className="w-10 h-10 text-primary mb-4" />
           <h3 className="text-xl font-bold mb-2">Opportunities</h3>
-          <p className="text-sm text-foreground/50 mb-6">Stay updated with latest internships and events at NSUT.</p>
+          <p className="text-sm text-foreground/50 mb-6">Explore curated research translation programs, data sprints and reading groups.</p>
           <Link href="/opportunities" className="text-xs font-bold uppercase tracking-widest text-primary hover:underline">View All</Link>
         </div>
       </div>
 
-      <StudentFeed userProfile={profile} />
+      <StudentFeed />
     </div>
   );
 }

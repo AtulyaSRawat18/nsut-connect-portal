@@ -13,7 +13,7 @@ const opportunitySchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(20, "Description must be at least 20 characters"),
   type: z.enum(["internship", "scholarship", "event", "highlight"]),
-  link_url: z.string().url("Must be a valid URL").or(z.literal("")),
+  link_url: z.string().min(1, "An application or source link is required").refine((value) => value.startsWith("https://") || value.startsWith("/"), "Use an HTTPS or site-local link"),
   deadline: z.string().min(1, "Deadline date is required"),
 });
 
@@ -60,20 +60,18 @@ export default function NewOpportunityPage() {
   });
 
   const onSubmit = async (data: OpportunityFormValues) => {
-    const supabase = createClient();
-    const { error } = await supabase.from("highlights").insert({
-      title: data.title,
-      description: data.description,
-      type: data.type,
-      link_url: data.link_url || null,
-      deadline: data.deadline,
+    const response = await fetch("/api/opportunities", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...data, linkUrl: data.link_url }),
     });
-
-    if (error) {
-      alert(error.message);
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      alert(result.message || "Opportunity publishing failed.");
     } else {
       alert("Opportunity posted successfully!");
       router.push("/opportunities");
+      router.refresh();
     }
   };
 
@@ -147,7 +145,7 @@ export default function NewOpportunityPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Apply URL</label>
+              <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Apply or source URL <span className="text-primary">(required)</span></label>
               <input
                 type="text"
                 className={`w-full px-4 py-3 bg-background border ${errors.link_url ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`}

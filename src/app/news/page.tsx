@@ -1,95 +1,38 @@
 import Link from "next/link";
-import { Calendar, User, ArrowRight, Bell } from "lucide-react";
-import { createClient } from "@/utils/supabase/server";
+import { Bell, Calendar, Filter, Search, User } from "lucide-react";
+import Pagination from "@/components/shared/Pagination";
+import { getPublicNews, getPublicNewsCategories } from "@/lib/public-data";
 
-export default async function News() {
-  const supabase = await createClient();
-  
-  let { data: newsItems } = await supabase
-    .from('announcements')
-    .select('*, profiles(full_name)')
-    .order('created_at', { ascending: false });
-
-  // Dummy data fallback
-  if (!newsItems || newsItems.length === 0) {
-    newsItems = [
-      {
-        id: '1',
-        title: 'New Institutional Ethics Guidelines for Research with Human Subjects',
-        content: 'The NSUT Research Office has released updated compliance standards for all projects involving behavioral and medical data. All researchers must re-submit their ethics review by the end of this month.',
-        category: 'Compliance',
-        created_at: new Date().toISOString(),
-        profiles: { full_name: 'Registrar Office' }
-      },
-      {
-        id: '2',
-        title: 'Summer Research Internship Fair 2026',
-        content: 'Join us at the Main Auditorium this Friday to meet with industry partners offering summer research opportunities and collaborative projects.',
-        category: 'Events',
-        created_at: new Date().toISOString(),
-        profiles: { full_name: 'Placement Cell' }
-      },
-      {
-        id: '3',
-        title: 'Faculty Grant Submissions: Open Call',
-        content: 'Applications are now open for internal research seed grants for the next academic year. Early-career faculty are strongly encouraged to apply.',
-        category: 'Grants',
-        created_at: new Date().toISOString(),
-        profiles: { full_name: 'Director (R&D)' }
-      }
-    ];
-  }
+export default async function News({ searchParams }: { searchParams?: Promise<{ q?: string; category?: string; page?: string }> }) {
+  const params = await searchParams;
+  const q = (params?.q || "").trim();
+  const categories = await getPublicNewsCategories();
+  const category = categories.includes(params?.category || "") ? params?.category || "all" : "all";
+  const result = await getPublicNews({ q, category, page: Number(params?.page || 1) });
+  const newsItems = result.data;
 
   return (
-    <div className="min-h-screen bg-background font-sans py-16">
-      <div className="max-w-screen-lg mx-auto px-6">
-        <div className="flex items-center gap-4 mb-12">
-           <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-             <Bell className="w-6 h-6" />
-           </div>
-           <div>
-             <h1 className="text-4xl font-display font-black text-foreground tracking-tight">System Announcements</h1>
-             <p className="text-foreground/50 font-medium">Keep up with the latest institutional news and research updates.</p>
-           </div>
-        </div>
-
-        <div className="space-y-8">
-          {newsItems.map((item: any) => (
-            <div key={item.id} className="bg-surface border-l-4 border-primary border-y border-r border-outline p-10 shadow-sm transition-all hover:shadow-md group">
-              <div className="flex flex-wrap items-center gap-4 mb-6">
-                 <span className="bg-primary/10 text-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full">
-                   {item.category}
-                 </span>
-                 <div className="flex items-center gap-2 text-[10px] text-foreground/50 font-bold uppercase tracking-widest">
-                   <Calendar className="w-3 h-3" /> {new Date(item.created_at).toLocaleDateString()}
-                 </div>
-                 <div className="flex items-center gap-2 text-[10px] text-foreground/50 font-bold uppercase tracking-widest">
-                   <User className="w-3 h-3" /> {item.profiles?.full_name}
-                 </div>
-              </div>
-              
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-4 leading-tight group-hover:text-primary transition-colors">
-                {item.title}
-              </h2>
-              
-              <p className="text-foreground/70 leading-relaxed mb-8 text-lg">
-                {item.content}
-              </p>
-              
-              <Link href={`/news/${item.id}`} className="inline-flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest hover:underline">
-                Read Full Announcement <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        {/* Admin Publish UI (Mocked for Demo) */}
-        <div className="mt-24 p-8 border-2 border-dashed border-outline rounded-xl text-center">
-           <p className="text-foreground/50 text-sm font-medium mb-4 italic">You are viewing the news feed as a visitor. Faculty members can publish news via the dashboard.</p>
-           <Link href="/admin/news/new" className="inline-block border border-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-foreground hover:bg-surface transition-colors">
-             Go to Admin Dashboard
-           </Link>
-        </div>
+    <div className="min-h-screen bg-background py-16 font-sans">
+      <div className="mx-auto max-w-screen-lg px-6">
+        <div className="mb-10 flex items-center gap-4"><div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"><Bell className="h-6 w-6" /></div><div><h1 className="text-4xl font-black tracking-tight text-foreground">Research & Technology Briefs</h1><p className="font-medium text-foreground/50">Curated science and engineering developments linked to primary sources.</p></div></div>
+        <form className="mb-10 grid gap-3 rounded-2xl border border-outline bg-surface p-4 sm:grid-cols-[1fr_12rem_auto]">
+          <label className="relative"><Search className="absolute left-3 top-3.5 h-5 w-5 text-foreground/50" /><input name="q" defaultValue={q} placeholder="Search research briefs" className="w-full rounded-lg border border-outline bg-background py-3 pl-11 pr-4 text-sm outline-none focus:border-primary" /></label>
+          <select name="category" defaultValue={category} aria-label="Filter announcements by category" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary"><option value="all">All categories</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+          <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-3 text-xs font-bold uppercase tracking-widest text-background"><Filter className="h-4 w-4" /> Filter</button>
+        </form>
+        {result.error ? (
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-12 text-center text-red-600">Announcements are temporarily unavailable.</div>
+        ) : newsItems.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-outline p-12 text-center text-foreground/50">No announcements match these filters.</div>
+        ) : (
+          <div className="lazy-card-list space-y-8">
+            {newsItems.map((item) => {
+              const author = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles;
+              return <article key={item.id} className="group border-y border-r border-l-4 border-outline border-l-primary bg-surface p-10 shadow-sm"><div className="mb-6 flex flex-wrap items-center gap-4"><span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">{item.category || "general"}</span><span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground/50"><Calendar className="h-3 w-3" /> {new Date(item.created_at).toLocaleDateString()}</span><span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground/50"><User className="h-3 w-3" /> {author?.full_name || "NSUT"}</span></div><h2 className="mb-4 text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary md:text-3xl"><Link href={`/news/${item.id}`}>{item.title}</Link></h2><p className="text-lg leading-relaxed text-foreground/70">{item.content}</p><Link href={`/news/${item.id}`} className="mt-6 inline-flex text-xs font-black uppercase tracking-widest text-primary">Read evidence brief →</Link></article>;
+            })}
+            <Pagination basePath="/news" currentPage={result.page} pageSize={result.pageSize} searchParams={{ q, category }} totalCount={result.count} />
+          </div>
+        )}
       </div>
     </div>
   );
