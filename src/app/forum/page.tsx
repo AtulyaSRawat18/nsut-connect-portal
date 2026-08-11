@@ -56,7 +56,7 @@ export default async function Forum({
                   <h2 className="text-xl font-black text-foreground transition-colors group-hover:text-primary md:text-2xl"><Link href={`/forum/${post.id}`}>{post.title}</Link></h2>
                   <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/70">{post.content}</p>
                   <div className="mt-5 flex flex-wrap items-center gap-6 text-xs font-bold text-foreground/50">
-                    <span className="flex items-center gap-2"><User className="h-4 w-4" /> {author?.full_name || "NSUT member"}</span>
+                    <span className="flex items-center gap-2"><User className="h-4 w-4" /> {author?.full_name || "Account unavailable"}</span>
                     <Link href={`/forum/${post.id}`} className="flex items-center gap-2 text-primary"><MessageSquare className="h-4 w-4" /> Full discussion</Link>
                   </div>
                   <ForumQuickActions postId={post.id} initialScore={post.upvotes || 0} />

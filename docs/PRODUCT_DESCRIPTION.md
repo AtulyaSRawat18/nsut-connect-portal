@@ -61,7 +61,7 @@ The portal creates a coherent, searchable representation of academic activity an
 - Research project directory and project details
 - Research publications
 - News, developments, highlights, grants, and opportunities
-- Community forum and public activity feed
+- Attributed community forum with reportable posts and replies, plus a public activity feed
 - Ethics, university information, and informational pages
 
 ### Student workspace

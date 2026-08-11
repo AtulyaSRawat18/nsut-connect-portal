@@ -206,8 +206,9 @@ Priority is P0 release-blocking, P1 pilot-important, and P2 later enhancement.
 ### Forum
 
 - **FR-FOR-001 (P0):** Public users read approved posts.
-- **FR-FOR-002 (P0):** Active members create posts as themselves.
-- **FR-FOR-003 (P1):** Add editing, deletion rules, reporting, pagination, and spam controls.
+- **FR-FOR-002 (P0):** Active members create posts and replies as their visible institutional identity; anonymous participation is not supported.
+- **FR-FOR-003 (P1):** Posts and replies are reportable into the permission-protected moderator queue with category, explanation, target context, duplicate prevention, rate limits, and origin validation.
+- **FR-FOR-004 (P1):** Add editing and deletion rules while retaining pagination and spam controls.
 
 ### Moderation and verification
 
