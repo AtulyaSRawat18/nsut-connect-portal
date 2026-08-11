@@ -156,6 +156,29 @@ async function replaceOldDemoContent() {
     highlights: Array.from({ length: 24 }, (_, i) => uuid(`highlight:${i}`)),
     projects: Array.from({ length: 30 }, (_, i) => uuid(`project:${i}`)),
   };
+
+  // Earlier seed generations used non-deterministic application IDs for the
+  // deterministic demo projects. Remove those dependants only after proving
+  // every applicant is one of the namespaced demo student accounts.
+  const legacyApplications = await must(
+    "Inspect legacy demo project applications",
+    db.from("applications").select("id,student_id").in("project_id", oldIds.projects),
+  );
+  if (legacyApplications.length > 0) {
+    const applicantIds = [...new Set(legacyApplications.map((application) => application.student_id))];
+    const applicants = await must(
+      "Inspect legacy demo applicants",
+      db.from("portal_users").select("id,email").in("id", applicantIds),
+    );
+    const emailById = new Map(applicants.map((applicant) => [applicant.id, applicant.email]));
+    const unsafeApplication = legacyApplications.find((application) => !String(emailById.get(application.student_id) || "").startsWith("demo.student"));
+    if (unsafeApplication) throw new Error("Refusing to replace legacy demo projects because a non-demo application references them.");
+    await must(
+      "Replace legacy demo project applications",
+      db.from("applications").delete().in("id", legacyApplications.map((application) => application.id)),
+    );
+  }
+
   for (const table of ["project_contribution_requests", "faculty_collaboration_requests", "content_reports", "applications", "publications", "forum_posts", "announcements", "highlights", "projects"]) {
     await must(`Replace old demo ${table}`, db.from(table).delete().in("id", oldIds[table]));
   }
