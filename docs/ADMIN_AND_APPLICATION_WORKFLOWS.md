@@ -111,8 +111,17 @@ Only after explicitly verifying that the configured project is non-production:
 DEMO_ACCOUNT_PASSWORD must be supplied through ignored local configuration. No
 seed script prints it.
 
+The repeatable seed creates 24 students and 24 faculty members with completed,
+varied biographies, education, academic details, public contact fields and
+academic links. Every faculty directory card opens `/profile/[id]`; identified
+forum posts and replies also link to the same public profile route. Two students
+use the synthetic CV PDFs in `public/demo-cvs/`; unavailable demo documents use
+the explicit `NA` value so the interface does not publish broken links.
+
 Validation must cover:
 
+- Anonymous access to seeded faculty and student profile routes without exposing
+  private `portal_users` account-state fields.
 - Anonymous access to public forum content and denial of member data.
 - Student application creation permission and direct decision denial.
 - Faculty visibility of owned applications and the decision RPC.

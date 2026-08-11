@@ -48,7 +48,7 @@ export default async function FacultyDirectory({
                 <p className="mb-6 text-sm font-medium italic text-foreground/70">&quot;{person.research}&quot;</p>
                 <div className="flex gap-4">
                   <Link href={`mailto:${person.email}`} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"><Mail className="h-4 w-4" /> Email</Link>
-                  <Link href={person.website || `/profile/${person.id}`} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"><Globe className="h-4 w-4" /> Profile</Link>
+                  <Link href={`/profile/${person.id}`} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"><Globe className="h-4 w-4" /> Profile</Link>
                 </div>
               </article>
             ))}

@@ -27,6 +27,23 @@ const departmentCode = (department) => (departmentById.get(department)?.shortNam
 const facultyNames = "Aditi-Sharma,Raghav-Mehta,Sunita-Bansal,Vivek-Singh,Neha-Kapoor,Arjun-Malhotra,Kavita-Rao,Sameer-Khanna,Priya-Nair,Rohit-Verma,Meenal-Gupta,Ankit-Sethi,Nandini-Iyer,Harish-Yadav,Swati-Arora,Kunal-Joshi,Ritu-Chandra,Abhinav-Jain,Pooja-Menon,Siddharth-Bose,Charu-Aggarwal,Manish-Tandon,Divya-Kulkarni,Gaurav-Saxena".split(",").map((name) => `Dr. ${name.replace("-", " ")}`);
 const studentNames = "Aarav-Sharma,Aanya-Gupta,Vivaan-Mehta,Diya-Kapoor,Aditya-Verma,Myra-Nair,Arjun-Singh,Ananya-Joshi,Kabir-Malhotra,Ishita-Rao,Reyansh-Jain,Meher-Sethi,Atharv-Khanna,Sara-Iyer,Dhruv-Yadav,Navya-Arora,Rohan-Bose,Kiara-Menon,Yash-Tandon,Avni-Saxena,Laksh-Chandra,Pari-Kulkarni,Nikhil-Bhatia,Saanvi-Mishra".split(",").map((name) => name.replace("-", " "));
 const research = ["Artificial Intelligence", "Embedded Systems", "Computer Vision", "Wireless Networks", "Cybersecurity", "Renewable Energy", "Natural Language Processing", "Robotics", "Data Science", "Semiconductor Devices", "Cloud Systems", "Human-Computer Interaction"];
+const facultyEducation = [
+  "Ph.D. in Computer Science, IIT Delhi\nM.Tech. in Information Systems, DTU",
+  "Ph.D. in Electrical Engineering, IIT Kanpur\nM.E. in Control Systems, PEC Chandigarh",
+  "Ph.D. in Electronics and Communication, IISc Bengaluru\nM.Tech. in VLSI Design, NIT Kurukshetra",
+  "Ph.D. in Applied Mathematics, University of Delhi\nM.Sc. in Mathematics, Hindu College",
+  "Ph.D. in Mechanical Engineering, IIT Roorkee\nM.Tech. in Design Engineering, NIT Jaipur",
+  "Ph.D. in Management Studies, IIT Bombay\nMBA in Technology Management, FMS Delhi",
+];
+const studentEducation = [
+  "Currently pursuing B.Tech. at Netaji Subhas University of Technology.\nSenior secondary education completed in Delhi NCR.",
+  "Undergraduate researcher at Netaji Subhas University of Technology.\nCoursework includes data structures, probability and technical communication.",
+  "Currently pursuing an engineering degree at NSUT.\nCompleted school with a focus on mathematics, physics and computer science.",
+  "NSUT student combining core engineering coursework with project-based research and open-source practice.",
+];
+const studentInterests = ["responsible machine learning", "embedded prototyping", "computer vision", "wireless systems", "cybersecurity", "clean-energy analytics", "language technology", "robotics", "data visualization", "semiconductor design", "cloud engineering", "accessible interfaces"];
+const learningGoals = ["reproducible experiments", "field-ready prototypes", "clear technical writing", "open-source collaboration", "ethical data practice", "user-centred evaluation"];
+const pick = (values, index, salt = 0) => values[(index * 7 + salt * 3) % values.length];
 
 const uuid = (key) => {
   const hex = createHash("sha256").update(`nsut-demo:${key}`).digest("hex");
@@ -66,10 +83,40 @@ async function authUsers() {
 }
 
 function records() {
-  const users = accounts.map((a, i) => ({ id: a.id, name: a.name, email: a.email, role: a.role, is_content_handler: a.role === "faculty" && i % 4 === 0, account_status: "active", approved_at: ago(60), created_at: ago(180 - i), updated_at: ago(i % 8) }));
+  const users = accounts.map((a, i) => ({ id: a.id, name: a.name, email: a.email, role: a.role, is_content_handler: a.role === "faculty" && i % 4 === 0, account_status: "active", approved_at: ago(60), profile_completed_at: ago(45 - i / 4), created_at: ago(180 - i), updated_at: ago(i % 8) }));
   const profiles = accounts.map((a, i) => ({ id: a.id, email: a.email, nsut_roll_number: a.roll || null, role: a.role === "moderator" ? "student" : a.role, full_name: a.name, department: a.department, is_content_handler: a.role === "faculty" && i % 4 === 0, created_at: ago(180 - i) }));
-  const facultyProfiles = faculty.map((a, i) => ({ user_id: a.id, department: a.department, designation: a.designation, research_area: a.research, bio: `${a.name} researches ${a.research.toLowerCase()} and mentors interdisciplinary student teams.`, office_location: `${a.department} Block, Room ${201 + i}`, office_hours: ["Mon/Wed 2-4 PM", "Tue/Thu 11 AM-1 PM", "Friday 10 AM-12 PM"][i % 3], scholar_url: `https://scholar.google.com/scholar?q=${encodeURIComponent(a.name)}`, website_url: null, verification_status: i < 18 ? "approved" : ["pending", "reviewing", "changes_requested"][i % 3] }));
-  const studentProfiles = students.map((a) => ({ user_id: a.id, roll_number: a.roll, course: a.course, year: a.year, department: a.department }));
+  const facultyProfiles = faculty.map((a, i) => ({
+    user_id: a.id,
+    department: a.department,
+    designation: a.designation,
+    research_area: `${a.research}; ${pick(["digital public infrastructure", "sustainable systems", "trustworthy automation", "health technology", "urban resilience", "education technology"], i, 1)}`,
+    bio: `${a.name} studies ${a.research.toLowerCase()} with an emphasis on ${pick(["reliable deployment", "responsible evaluation", "resource-efficient design", "interdisciplinary translation", "real-world validation", "inclusive engineering"], i, 2)}. ${pick(["Their group mentors undergraduate research teams and maintains reproducible project documentation.", "They collaborate with student teams on prototypes, datasets and peer-reviewed research.", "Their teaching connects foundational methods with practical campus and public-interest problems."], i, 3)}`,
+    education: pick(facultyEducation, i, 4),
+    contact_email: a.email,
+    office_location: `${departmentById.get(a.department)?.shortName || "NSUT"} Block, Room ${201 + i}`,
+    office_hours: pick(["Monday and Wednesday, 2:00-4:00 PM", "Tuesday and Thursday, 11:00 AM-1:00 PM", "Friday, 10:00 AM-12:00 PM", "Wednesday, 3:00-5:00 PM by appointment"], i, 5),
+    scholar_url: `https://scholar.google.com/scholar?q=${encodeURIComponent(a.name)}`,
+    orcid: `0000-0002-${String(1200 + i).padStart(4, "0")}-${String((i * 7) % 10)}`,
+    website_url: "NA",
+    github_url: `https://github.com/topics/${pick(["machine-learning", "embedded-systems", "computer-vision", "cybersecurity", "robotics", "data-science"], i, 6)}`,
+    linkedin_url: "https://www.linkedin.com/school/nsut-delhi/",
+    cv_url: "NA",
+    verification_status: i < 18 ? "approved" : ["pending", "reviewing", "changes_requested"][i % 3],
+  }));
+  const studentProfiles = students.map((a, i) => ({
+    user_id: a.id,
+    roll_number: a.roll,
+    course: a.course,
+    year: a.year,
+    department: a.department,
+    bio: `${a.name} is a ${a.year}${a.year === 1 ? "st" : a.year === 2 ? "nd" : a.year === 3 ? "rd" : "th"}-year ${a.course} student interested in ${pick(studentInterests, i, 1)}. They are building experience through ${pick(learningGoals, i, 2)} and interdisciplinary project work.`,
+    education: pick(studentEducation, i, 3),
+    contact_email: a.email,
+    website_url: "NA",
+    github_url: `https://github.com/topics/${pick(["student-project", "open-source", "web-development", "python", "robotics", "data-analysis"], i, 4)}`,
+    linkedin_url: "https://www.linkedin.com/school/nsut-delhi/",
+    cv_url: i === 0 ? "/demo-cvs/aarav-sharma-research-cv.pdf" : i === 4 ? "/demo-cvs/aditya-verma-research-cv.pdf" : "NA",
+  }));
   const projects = showcase.projects.map((item, i) => ({ id: item.id, title: item.title, description: item.summary, department: item.department, status: item.status, faculty_id: faculty[item.leadIndex].id, max_students: item.maxStudents, brief_url: item.pdf, progress_percent: [45, 30, 20, 55][i], health_status: i === 2 ? "at_risk" : "on_track", progress_note: ["Dataset protocol complete; embedded baseline validation is in progress.", "Study-area data audit complete; uncertainty model is being designed.", "Biosafety review is required before laboratory validation.", "Ontology and licensing audit complete; bilingual retrieval evaluation is active."][i], last_assessed_at: ago(i), created_at: ago(14 - i * 3), updated_at: ago(i) }));
   const applications = students.slice(0, 8).map((student, i) => { const project = projects[i % projects.length]; return { id: uuid(`application:${i}`), project_id: project.id, student_id: student.id, statement_of_purpose: `I want to contribute to ${project.title}. My proposed first milestone is to reproduce the baseline, document its limits and agree an eight-hour weekly plan with the project lead.`, resume_url: null, status: ["pending", "accepted", "pending", "rejected"][i % 4], applied_at: ago(8 - i % 6) }; });
   const publications = [
@@ -133,8 +180,9 @@ async function clean(data) {
 }
 
 for (const [table, columns] of [
-  ["portal_users", "id,account_status"],
-  ["faculty_profiles", "user_id,verification_status"],
+  ["portal_users", "id,account_status,profile_completed_at"],
+  ["faculty_profiles", "user_id,department,designation,research_area,bio,education,contact_email,office_location,office_hours,scholar_url,orcid,website_url,github_url,linkedin_url,cv_url,verification_status"],
+  ["student_profiles", "user_id,roll_number,course,year,department,bio,education,contact_email,website_url,github_url,linkedin_url,cv_url"],
   ["content_reports", "id,status"],
   ["faculty_verification_requests", "id,status"],
   ["user_roles", "user_id,role_key"],

@@ -118,7 +118,7 @@ As of 30 July 2026, the repository contains:
 - JWT-backed identity and normalized RBAC tables for student, faculty, moderator, and administrator roles.
 - Database permissions, RLS policies, faculty verification, content reports, moderation actions, audit events, skills, project requirements, milestones, and application history.
 - Public discovery pages and protected student, faculty, moderator, and administrator workspaces.
-- A repeatable development seed containing 24 students, 24 faculty members, one moderator, and linked page content.
+- A repeatable development seed containing 24 students, 24 faculty members, one moderator, linked page content, and complete varied academic profiles. Faculty directory cards and attributed forum activity link to public on-platform profile pages; demo CV files are synthetic and other unavailable documents are marked `NA` rather than pointing to dead resources.
 - A production build that successfully generates 40 application routes.
 
 The configured Supabase project URL is currently retired and does not resolve. A new live Supabase project must be provisioned, the schema and migrations applied, authentication hooks configured, and environment variables replaced before demo accounts or production sign-ins will work.
