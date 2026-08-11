@@ -5,7 +5,10 @@ import { RequestReviewCard, type FacultyProjectRequest } from "./RequestReviewCa
 type ProjectRelation = { id: string; title: string } | { id: string; title: string }[];
 
 export default async function FacultyRequestsPage() {
-  const identity = await requirePageIdentity({ roles: ["faculty"], permissions: ["contribution.review", "collaboration.review"] });
+  // Existing faculty workspace permission keeps the page reachable while a
+  // deployment is between application code and migration 011. RLS and the
+  // review RPCs still require the workflow-specific permissions.
+  const identity = await requirePageIdentity({ roles: ["faculty"], permissions: ["application.review"] });
   const supabase = await createClient();
   const [contributionResult, collaborationResult, sentCollaborationResult] = await Promise.all([
     supabase.from("project_contribution_requests").select("id, student_id, contribution_statement, skills_summary, availability_hours, status, faculty_note, created_at, projects!inner(id, title, faculty_id)").eq("projects.faculty_id", identity.id).order("created_at", { ascending: false }),
