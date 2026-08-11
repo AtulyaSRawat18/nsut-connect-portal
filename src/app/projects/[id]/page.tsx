@@ -2,9 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, FileText, Calendar } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { ApplyProjectButton } from "@/components/projects/ApplyProjectButton";
+import { StudentProjectAction } from "@/components/projects/StudentProjectAction";
+import { FacultyCollaborationButton } from "@/components/projects/FacultyCollaborationButton";
 import { getShowcaseProject } from "@/content/showcase";
 import { getDepartmentCompactLabel, getDepartmentLabel } from "@/lib/departments";
+import { getPortalIdentity } from "@/lib/auth/server";
 
 export default async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
@@ -47,8 +49,10 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
     .neq("id", id)
     .limit(3);
 
-  // Check if current user is logged in
-  const { data: { user } } = await supabase.auth.getUser();
+  const identity = await getPortalIdentity();
+  const isStudentViewer = Boolean(identity?.roles.includes("student"));
+  const isFacultyViewer = Boolean(identity?.roles.includes("faculty"));
+  const isOwner = Boolean(identity && projectFaculty?.id === identity.id);
 
   return (
     <div className="min-h-screen bg-background font-sans py-16">
@@ -105,15 +109,21 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
           <div className="space-y-8">
             {/* Action Card */}
             <div className="bg-secondary p-8 rounded-xl text-center shadow-xl border border-outline">
-              <h3 className="text-foreground font-bold text-xl mb-4">Ready to Apply?</h3>
-              <p className="text-foreground/70 text-sm mb-6">Submit your resume and statement of purpose directly to the principal investigator.</p>
+              <h3 className="text-foreground font-bold text-xl mb-4">{isFacultyViewer ? "Faculty collaboration" : "Student participation"}</h3>
+              <p className="text-foreground/70 text-sm mb-6">{isFacultyViewer ? "Propose a peer research collaboration without affecting student capacity." : "Open vacancies use seat applications. Full projects accept separate non-seat contribution requests."}</p>
               {isDemoOnly ? (
                 <Link href={`/contact?subject=${encodeURIComponent(`Project interest: ${project.title}`)}`} className="block w-full rounded bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary transition-colors hover:brightness-110">Express interest</Link>
-              ) : user ? (
-                 <ApplyProjectButton projectId={project.id} availableSeats={project.available_seats ?? project.max_students} isClosed={project.status !== 'open' || (project.available_seats ?? project.max_students) <= 0} />
+              ) : isOwner ? (
+                <Link href="/dashboard/faculty/requests" className="block w-full rounded bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary">Review project requests</Link>
+              ) : isFacultyViewer ? (
+                <FacultyCollaborationButton projectId={project.id} isClosed={project.status !== "open"} />
+              ) : isStudentViewer ? (
+                <StudentProjectAction projectId={project.id} availableSeats={project.available_seats ?? project.max_students} isClosed={project.status !== "open"} />
+              ) : identity ? (
+                <p className="rounded border border-outline bg-background p-4 text-sm text-foreground/60">Your current role can view this project but cannot submit a participation request.</p>
               ) : (
                 <Link href="/login" className="block w-full bg-primary text-on-primary py-4 font-bold uppercase tracking-widest text-sm rounded hover:brightness-110 transition-colors">
-                  Log in to Apply
+                  Log in to participate
                 </Link>
               )}
             </div>

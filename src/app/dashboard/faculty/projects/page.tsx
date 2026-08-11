@@ -21,7 +21,7 @@ export default async function FacultyProjectsPage({
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("projects")
-    .select("id, title, description, department, status, max_students, available_seats, created_at, brief_url, progress_percent, health_status, progress_note, last_assessed_at")
+    .select("id, title, description, department, status, created_at, brief_url, progress_percent, health_status, progress_note, last_assessed_at")
     .eq("faculty_id", identity.id)
     .order("created_at", { ascending: false });
 
@@ -35,7 +35,7 @@ export default async function FacultyProjectsPage({
   return (
     <div className="space-y-8">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div><p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Research management</p><h1 className="text-4xl font-black text-foreground">My projects</h1><p className="mt-3 text-foreground/55">Control visibility, capacity, and student intake.</p></div>
+        <div><p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Research management</p><h1 className="text-4xl font-black text-foreground">My projects</h1><p className="mt-3 text-foreground/55">Control visibility, evidence, student intake and peer collaboration workflows.</p></div>
         <Link href="/dashboard/faculty/projects/new" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs font-bold uppercase tracking-widest text-primary-foreground"><Plus className="h-4 w-4" /> New project</Link>
       </header>
 
@@ -61,7 +61,7 @@ export default async function FacultyProjectsPage({
                 <ToggleProjectStatus projectId={project.id} initialStatus={project.status} />
               </div>
               <p className="line-clamp-3 text-sm leading-relaxed text-foreground/60">{project.description}</p>
-              <div className="mt-6 flex items-center justify-between border-t border-outline pt-4 text-xs text-foreground/45"><span><strong className="text-foreground">{project.available_seats ?? project.max_students}</strong> of {project.max_students} seats available</span><span>{new Date(project.created_at).toLocaleDateString()}</span></div>
+              <div className="mt-6 flex items-center justify-between border-t border-outline pt-4 text-xs text-foreground/45"><span>{project.status === "open" ? "Receiving student intake and collaboration requests" : "Requests closed"}</span><span>{new Date(project.created_at).toLocaleDateString()}</span></div>
               <ProjectAssessment projectId={project.id} briefUrl={project.brief_url} initialProgress={project.progress_percent || 0} initialHealth={project.health_status || "on_track"} initialNote={project.progress_note} />
             </article>
           ))}

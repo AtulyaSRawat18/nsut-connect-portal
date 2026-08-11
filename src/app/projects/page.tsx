@@ -3,6 +3,7 @@ import { ArrowRight, Filter, Search } from "lucide-react";
 import Pagination from "@/components/shared/Pagination";
 import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
 import { getPublicProjects } from "@/lib/public-data";
+import { getPortalIdentity } from "@/lib/auth/server";
 
 const statuses = ["all", "open", "closed"] as const;
 
@@ -17,6 +18,8 @@ export default async function Projects({
   const status = statuses.includes(params?.status as (typeof statuses)[number]) ? params?.status || "all" : "all";
   const result = await getPublicProjects({ q, department, status, page: Number(params?.page || 1) });
   const projects = result.data;
+  const identity = await getPortalIdentity();
+  const facultyViewer = Boolean(identity?.roles.includes("faculty"));
 
   return (
     <div className="min-h-screen bg-background py-16 font-sans">
@@ -47,7 +50,7 @@ export default async function Projects({
               return (
                 <article key={project.id} className="group flex flex-col gap-6 border border-outline bg-surface p-8 transition-all hover:border-primary md:p-10">
                   <div className="flex items-start justify-between">
-                    <div className="flex flex-wrap gap-2"><span className={`rounded px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${project.status === "open" && project.available_seats > 0 ? "bg-green-500/10 text-green-700" : "bg-red-500/10 text-red-700"}`}>{project.status === "open" && project.available_seats <= 0 ? "full" : project.status}</span><span className="rounded bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">{project.available_seats} / {project.max_students} seats available</span></div>
+                    <div className="flex flex-wrap gap-2"><span className={`rounded px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${project.status === "open" ? "bg-green-500/10 text-green-700" : "bg-red-500/10 text-red-700"}`}>{project.status === "open" && !facultyViewer && project.available_seats <= 0 ? "student seats filled" : project.status}</span>{facultyViewer ? <span className="rounded bg-blue-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blue-700">{project.status === "open" ? "Faculty collaboration available" : "Collaboration closed"}</span> : <span className="rounded bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">{project.available_seats} / {project.max_students} student seats available</span>}</div>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">{new Date(project.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>
                   </div>
                   <div>

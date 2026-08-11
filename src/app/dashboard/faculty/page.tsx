@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, ClipboardList, FolderKanban, Users } from "lucide-react";
+import { BookOpen, ClipboardList, FolderKanban, Handshake, Users } from "lucide-react";
 import { requirePageIdentity } from "@/lib/auth/server";
 import { createClient } from "@/utils/supabase/server";
 import WorkspaceStatCard from "@/components/workspace/WorkspaceStatCard";
@@ -8,7 +8,7 @@ import { getDepartmentCompactLabel } from "@/lib/departments";
 export default async function FacultyWorkspaceOverview() {
   const identity = await requirePageIdentity({ permissions: ["project.create"] });
   const supabase = await createClient();
-  const [projectsResult, pending, accepted, publications] = await Promise.all([
+  const [projectsResult, pending, accepted, publications, contributions, collaborations] = await Promise.all([
     supabase
       .from("projects")
       .select("id, title, department, status, max_students, available_seats, created_at")
@@ -25,6 +25,8 @@ export default async function FacultyWorkspaceOverview() {
       .eq("projects.faculty_id", identity.id)
       .eq("status", "accepted"),
     supabase.from("publications").select("id", { count: "exact", head: true }).eq("faculty_id", identity.id),
+    supabase.from("project_contribution_requests").select("id, projects!inner(faculty_id)", { count: "exact", head: true }).eq("projects.faculty_id", identity.id).eq("status", "pending"),
+    supabase.from("faculty_collaboration_requests").select("id, projects!inner(faculty_id)", { count: "exact", head: true }).eq("projects.faculty_id", identity.id).eq("status", "pending"),
   ]);
   const projects = projectsResult.data || [];
 
@@ -41,11 +43,12 @@ export default async function FacultyWorkspaceOverview() {
         </Link>
       </header>
 
-      <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
         <WorkspaceStatCard label="Research projects" value={(projects || []).length} detail="Owned" icon={<FolderKanban className="h-5 w-5" />} />
         <WorkspaceStatCard label="Pending applications" value={pending.count || 0} detail="Review" icon={<ClipboardList className="h-5 w-5" />} />
         <WorkspaceStatCard label="Accepted students" value={accepted.count || 0} detail="Active" icon={<Users className="h-5 w-5" />} />
         <WorkspaceStatCard label="Publications" value={publications.count || 0} detail="Profile" icon={<BookOpen className="h-5 w-5" />} />
+        <WorkspaceStatCard label="Relationship requests" value={(contributions.count || 0) + (collaborations.count || 0)} detail="Contribute / collaborate" icon={<Handshake className="h-5 w-5" />} />
       </section>
 
       <section className="rounded-2xl border border-outline bg-surface p-6 md:p-8">
@@ -55,10 +58,10 @@ export default async function FacultyWorkspaceOverview() {
         </div>
         <div className="divide-y divide-outline">
           {(projects || []).slice(0, 6).map((project) => (
-            <div key={project.id} className="grid gap-3 py-5 md:grid-cols-[1fr_7rem_7rem_6rem] md:items-center">
+            <div key={project.id} className="grid gap-3 py-5 md:grid-cols-[1fr_8rem_10rem] md:items-center">
               <div><p className="font-bold text-foreground">{project.title}</p><p className="mt-1 text-xs text-foreground/45">Created {new Date(project.created_at).toLocaleDateString()}</p></div>
               <span className="text-xs font-semibold text-foreground/55">{getDepartmentCompactLabel(project.department)}</span>
-              <span className="text-xs text-foreground/55">{project.available_seats ?? project.max_students} / {project.max_students} seats available</span>
+              <span className="text-xs text-foreground/55">{project.status === "open" ? "Requests enabled" : "Requests closed"}</span>
               <span className={`w-fit rounded-full px-3 py-1 text-[10px] font-bold uppercase ${project.status === "open" ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-500"}`}>{project.status}</span>
             </div>
           ))}

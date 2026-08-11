@@ -121,7 +121,9 @@ function records() {
   const projectProgress = [45, 30, 20, 55, 25, 35, 100];
   const projectNotes = ["Dataset protocol complete; embedded baseline validation is in progress.", "Study-area data audit complete; uncertainty model is being designed.", "Biosafety review is required before laboratory validation.", "Ontology and licensing audit complete; bilingual retrieval evaluation is active.", "Sensor selection and privacy requirements are approved for prototype collection.", "Accessibility tasks and bilingual intent coverage are under evaluation.", "Scenario analysis and final reproducibility review are complete."];
   const projects = showcase.projects.map((item, i) => ({ id: item.id, title: item.title, description: item.summary, department: item.department, status: item.status, faculty_id: faculty[item.leadIndex].id, max_students: item.maxStudents, brief_url: item.pdf, progress_percent: projectProgress[i % projectProgress.length], health_status: i === 2 ? "at_risk" : "on_track", progress_note: projectNotes[i % projectNotes.length], last_assessed_at: ago(i), created_at: ago(20 - i * 2), updated_at: ago(i) }));
-  const applications = students.slice(0, 8).map((student, i) => { const project = projects[i % projects.length]; return { id: uuid(`application:${i}`), project_id: project.id, student_id: student.id, statement_of_purpose: `I want to contribute to ${project.title}. My proposed first milestone is to reproduce the baseline, document its limits and agree an eight-hour weekly plan with the project lead.`, resume_url: null, status: ["pending", "accepted", "pending", "rejected"][i % 4], applied_at: ago(8 - i % 6) }; });
+  const applications = students.slice(0, 8).map((student, i) => { const project = i < 4 ? projects[0] : projects[i - 3]; return { id: uuid(`application:${i}`), project_id: project.id, student_id: student.id, statement_of_purpose: `I want to contribute to ${project.title}. My proposed first milestone is to reproduce the baseline, document its limits and agree an eight-hour weekly plan with the project lead.`, skills_summary: `Course and project experience in ${pick(studentInterests, i, 2)}, reproducible analysis and collaborative technical documentation.`, availability_hours: 8 + i % 4, google_form_response_url: `https://docs.google.com/forms/d/e/demo-${i + 1}/viewform`, resume_url: i === 0 ? "/demo-cvs/aarav-sharma-research-cv.pdf" : i === 4 ? "/demo-cvs/aditya-verma-research-cv.pdf" : "NA", status: i < 4 ? "accepted" : ["pending", "rejected"][i % 2], applied_at: ago(8 - i % 6) }; });
+  const contributionRequests = [students[8], students[9]].map((student, i) => ({ id: uuid(`contribution-request:${i}`), project_id: projects[0].id, student_id: student.id, contribution_statement: [`I can prepare a reproducibility audit and independent evaluation notebook for the battery-health model without joining the allocated student team. The output will be a bounded validation report with documented failure cases.`, `I propose to contribute a compact visualization and documentation module that explains model uncertainty to non-specialist reviewers. This is a standalone output and does not require a project seat.`][i], skills_summary: [`Python evaluation workflows, time-series visualization and reproducible experiment documentation developed through course projects.`, `Accessible interface design, data visualization and technical writing supported by a public student project portfolio.`][i], availability_hours: 5 + i, status: "pending", created_at: ago(3 - i) }));
+  const collaborationRequests = [{ requester: faculty[0], project: projects[0], type: "methodology", proposal: "I propose a cross-laboratory collaboration on uncertainty calibration and evaluation design for the edge battery-health model. My group can define independent validation splits and contribute a provenance-first reporting workflow.", expertise: "Natural-language and knowledge-representation methods for evidence provenance, evaluation design and reproducible research documentation.", status: "pending" }, { requester: faculty[2], project: projects[1], type: "data", proposal: "I can collaborate on the geospatial data-quality and uncertainty layer, including missing-data diagnostics and reproducible feature documentation for the InSAR screening workflow.", expertise: "Computer-vision evaluation, data-quality auditing and uncertainty communication for field-facing engineering prototypes.", status: "accepted" }].map((item, i) => ({ id: uuid(`collaboration-request:${i}`), project_id: item.project.id, requester_faculty_id: item.requester.id, collaboration_type: item.type, proposal: item.proposal, expertise_summary: item.expertise, status: item.status, owner_note: item.status === "accepted" ? "Accepted for the next methodology review." : null, reviewed_by: item.status === "accepted" ? faculty[item.project === projects[1] ? 6 : 1].id : null, reviewed_at: item.status === "accepted" ? ago(1) : null, created_at: ago(4 - i) }));
   const publications = [
     { title: "Quantized Temporal Models for Edge Battery Diagnostics", faculty: 1 },
     { title: "Uncertainty-Aware InSAR Screening for Slope Inspection", faculty: 6 },
@@ -139,11 +141,13 @@ function records() {
     ["application", applications[0].id, "Check that the application contains no sensitive information."],
   ].map(([entity_type, entity_id, summary], i) => ({ id: uuid(`report:${i}`), reporter_id: students[i].id, entity_type, entity_id, category: ["misinformation", "other", "academic_integrity", "privacy"][i], summary, evidence: { source: "demo-seed", reference: `DEMO-${1000 + i}` }, priority: ["normal", "low", "high", "normal"][i], status: ["open", "reviewing", "resolved", "dismissed"][i], assigned_to: i > 0 ? moderator.id : null, resolution_note: i > 1 ? "Reviewed by the demo moderation team." : null, created_at: ago(5 - i), updated_at: ago(i), resolved_at: i > 1 ? ago(i) : null }));
   const verifications = faculty.map((a, i) => { const status = i < 18 ? "approved" : ["pending", "reviewing", "changes_requested"][i % 3]; return { id: uuid(`verification:${i}`), faculty_id: a.id, department: a.department, designation: a.designation, employee_reference: `NSUT-${departmentCode(a.department)}-${4100 + i}`, evidence_url: `https://example.com/demo/faculty-evidence/${i + 1}.pdf`, status, submitted_at: ago(70 - i), reviewed_by: status === "approved" ? moderator.id : null, reviewed_at: status === "approved" ? ago(45 - i) : null, review_note: status === "approved" ? "Institutional identity verified." : null, updated_at: ago(i % 12) }; });
-  return { users, profiles, facultyProfiles, studentProfiles, projects, applications, publications, forum, forumReplies, announcements, highlights, reports, verifications };
+  return { users, profiles, facultyProfiles, studentProfiles, projects, applications, contributionRequests, collaborationRequests, publications, forum, forumReplies, announcements, highlights, reports, verifications };
 }
 
 async function replaceOldDemoContent() {
   const oldIds = {
+    project_contribution_requests: Array.from({ length: 8 }, (_, i) => uuid(`contribution-request:${i}`)),
+    faculty_collaboration_requests: Array.from({ length: 8 }, (_, i) => uuid(`collaboration-request:${i}`)),
     content_reports: Array.from({ length: 16 }, (_, i) => uuid(`report:${i}`)),
     applications: Array.from({ length: 72 }, (_, i) => uuid(`application:${Math.floor(i / 3)}:${i % 3}`)).concat(Array.from({ length: 8 }, (_, i) => uuid(`application:${i}`))),
     publications: Array.from({ length: 40 }, (_, i) => uuid(`publication:${i}`)),
@@ -152,7 +156,7 @@ async function replaceOldDemoContent() {
     highlights: Array.from({ length: 24 }, (_, i) => uuid(`highlight:${i}`)),
     projects: Array.from({ length: 30 }, (_, i) => uuid(`project:${i}`)),
   };
-  for (const table of ["content_reports", "applications", "publications", "forum_posts", "announcements", "highlights", "projects"]) {
+  for (const table of ["project_contribution_requests", "faculty_collaboration_requests", "content_reports", "applications", "publications", "forum_posts", "announcements", "highlights", "projects"]) {
     await must(`Replace old demo ${table}`, db.from(table).delete().in("id", oldIds[table]));
   }
 }
@@ -168,10 +172,18 @@ async function seed(data) {
   for (const [table, rows] of [["projects", data.projects], ["applications", data.applications], ["publications", data.publications], ["forum_posts", data.forum], ["announcements", data.announcements], ["highlights", data.highlights], ["content_reports", data.reports]]) {
     await must(table, db.from(table).upsert(rows, { onConflict: "id" }));
   }
+  for (const project of data.projects) {
+    const accepted = data.applications.filter((application) => application.project_id === project.id && application.status === "accepted").length;
+    await must(`Reconcile seats for ${project.id}`, db.from("projects").update({ available_seats: Math.max(project.max_students - accepted, 0) }).eq("id", project.id));
+  }
+  await must("Contribution requests", db.from("project_contribution_requests").upsert(data.contributionRequests, { onConflict: "id" }));
+  await must("Faculty collaboration requests", db.from("faculty_collaboration_requests").upsert(data.collaborationRequests, { onConflict: "id" }));
   await must("Forum replies", db.from("forum_replies").upsert(data.forumReplies, { onConflict: "id" }));
 }
 
 async function clean(data) {
+  await must("Clean contribution requests", db.from("project_contribution_requests").delete().in("id", data.contributionRequests.map((request) => request.id)));
+  await must("Clean collaboration requests", db.from("faculty_collaboration_requests").delete().in("id", data.collaborationRequests.map((request) => request.id)));
   await must("Clean forum replies", db.from("forum_replies").delete().in("id", data.forumReplies.map((reply) => reply.id)));
   for (const [table, rows] of [["content_reports", data.reports], ["applications", data.applications], ["publications", data.publications], ["forum_posts", data.forum], ["announcements", data.announcements], ["highlights", data.highlights], ["projects", data.projects]]) {
     await must(`Clean ${table}`, db.from(table).delete().in("id", rows.map((r) => r.id)));
@@ -191,6 +203,8 @@ for (const [table, columns] of [
   ["user_roles", "user_id,role_key"],
   ["projects", "id,brief_url,progress_percent,health_status"],
   ["forum_replies", "id,score"],
+  ["project_contribution_requests", "id,project_id,student_id,status"],
+  ["faculty_collaboration_requests", "id,project_id,requester_faculty_id,status"],
 ]) {
   await must(`Schema preflight for ${table}`, db.from(table).select(columns).limit(1));
 }

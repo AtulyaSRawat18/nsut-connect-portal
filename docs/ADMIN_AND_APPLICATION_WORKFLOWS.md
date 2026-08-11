@@ -130,6 +130,27 @@ Validation must cover:
 - Anonymous and student denial of /admin.
 - Successful student, faculty, moderator-as-faculty, and admin-as-faculty logins.
 
+## Project participation workflows
+
+Apply `202608110011_project_contribution_and_collaboration_requests.sql` after
+migrations `008` through `010`.
+
+- Student vacancy applications remain in `applications`. Accepting one consumes
+  exactly one `projects.available_seats` vacancy through
+  `review_project_application`.
+- When `available_seats` reaches zero, students no longer receive an application
+  button. They may create one `project_contribution_requests` record proposing a
+  bounded, non-seat contribution. Accepting it never changes seat accounting.
+- Faculty viewers never receive vacancy or seat actions. A faculty member who
+  does not own the project may create one `faculty_collaboration_requests`
+  proposal describing the collaboration type, scope and expertise offered.
+- Project owners review contribution and collaboration records through separate
+  owner-only security-definer functions. Direct table updates are not granted to
+  application clients.
+- The faculty workspace keeps student applications, incoming student
+  contributions, incoming faculty collaborations and outgoing collaborations
+  visibly distinct.
+
 ## Rollback
 
 Keep the pre-migration JSON snapshot outside the repository. To roll back:
