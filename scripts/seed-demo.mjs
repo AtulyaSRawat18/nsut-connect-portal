@@ -71,12 +71,13 @@ async function authUsers() {
   const existing = new Map(all.filter((u) => u.email).map((u) => [u.email.toLowerCase(), u]));
   for (const account of accounts) {
     const metadata = { full_name: account.name, role: account.role === "faculty" ? "faculty" : "student", department: account.department, designation: account.designation || "", roll_number: account.roll || "", course: account.course || "", year: account.year ? String(account.year) : "", demo_account: true };
+    const appMetadata = { demo_account: true };
     const current = existing.get(account.email);
     if (current) {
-      await must(`Update ${account.email}`, db.auth.admin.updateUserById(current.id, { password, email_confirm: true, user_metadata: metadata }));
+      await must(`Update ${account.email}`, db.auth.admin.updateUserById(current.id, { password, email_confirm: true, user_metadata: metadata, app_metadata: appMetadata }));
       account.id = current.id;
     } else {
-      const created = await must(`Create ${account.email}`, db.auth.admin.createUser({ email: account.email, password, email_confirm: true, user_metadata: metadata }));
+      const created = await must(`Create ${account.email}`, db.auth.admin.createUser({ email: account.email, password, email_confirm: true, user_metadata: metadata, app_metadata: appMetadata }));
       account.id = created.user.id;
     }
   }
