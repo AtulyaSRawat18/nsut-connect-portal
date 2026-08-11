@@ -5,6 +5,7 @@ import { AuthenticationError, AuthorizationError, requirePortalIdentity } from "
 import { authError } from "@/lib/auth/responses";
 import { checkRateLimit, isSameOrigin } from "@/lib/auth/rate-limit";
 import { createClient } from "@/utils/supabase/server";
+import { isApplicationFormReference } from "@/lib/application-forms";
 
 const assessmentSchema = z.object({
   status: z.enum(["open", "closed"]).optional(),
@@ -12,6 +13,7 @@ const assessmentSchema = z.object({
   healthStatus: z.enum(["on_track", "at_risk", "blocked", "completed"]).optional(),
   progressNote: z.string().trim().min(10).max(1000).optional(),
   briefReference: z.string().trim().min(1).max(700).optional(),
+  applicationFormUrl: z.string().trim().min(1).max(700).refine(isApplicationFormReference, "Use a Google Forms URL, approved demo form, or NA").optional(),
 }).refine((value) => Object.values(value).some((item) => item !== undefined), "No project changes supplied");
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -34,6 +36,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (parsed.data.healthStatus !== undefined) changes.health_status = parsed.data.healthStatus;
     if (parsed.data.progressNote !== undefined) changes.progress_note = parsed.data.progressNote;
     if (parsed.data.briefReference !== undefined) changes.brief_url = parsed.data.briefReference;
+    if (parsed.data.applicationFormUrl !== undefined) changes.application_form_url = parsed.data.applicationFormUrl;
     if (parsed.data.progressPercent !== undefined || parsed.data.healthStatus !== undefined || parsed.data.progressNote !== undefined) changes.last_assessed_at = new Date().toISOString();
     const { error } = await supabase.from("projects").update(changes).eq("id", id);
     if (error) return authError(400, "ASSESSMENT_FAILED", error.message);

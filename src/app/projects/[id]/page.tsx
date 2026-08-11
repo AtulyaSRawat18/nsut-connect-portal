@@ -29,6 +29,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
     max_students: brief.maxStudents,
     available_seats: brief.status === "open" ? brief.maxStudents : 0,
     brief_url: brief.pdf,
+    application_form_url: brief.applicationFormUrl,
     progress_percent: brief.status === "closed" ? 100 : 25,
     health_status: "on_track",
     progress_note: "Demo project listing. Live progress becomes available after the staging database is seeded.",
@@ -40,6 +41,8 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
   const projectFaculty = Array.isArray(project.profiles) ? project.profiles[0] : project.profiles;
   const briefUrl = project.brief_url || brief?.pdf || null;
   const linkedBrief = Boolean(briefUrl && (briefUrl.startsWith("https://") || briefUrl.startsWith("/")));
+  const applicationFormUrl = project.application_form_url || brief?.applicationFormUrl || "NA";
+  const linkedApplicationForm = applicationFormUrl !== "NA" && (applicationFormUrl.startsWith("https://") || applicationFormUrl.startsWith("/demo-forms/"));
 
   // Fetch related projects (same department, excluding current)
   const { data: relatedProjects } = await supabase
@@ -101,6 +104,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
                 <span>Posted on {new Date(project.created_at).toLocaleDateString()}</span>
               </div>
               {linkedBrief ? <div className="mb-6 flex items-center gap-4 text-foreground/80"><FileText className="h-5 w-5 text-primary" /><a href={briefUrl!} target="_blank" rel="noreferrer" className="font-bold text-primary hover:underline">Open project material</a></div> : <div className="mb-6 rounded border border-outline bg-background p-4 text-sm text-foreground/65"><strong className="text-foreground">Project material:</strong> {briefUrl || "NA"}</div>}
+              {linkedApplicationForm ? <div className="mb-6 flex items-center gap-4 text-foreground/80"><FileText className="h-5 w-5 text-blue-600" /><a href={applicationFormUrl} target="_blank" rel="noreferrer" className="font-bold text-blue-700 hover:underline">Open application questionnaire</a></div> : <div className="mb-6 rounded border border-outline bg-background p-4 text-sm text-foreground/65"><strong className="text-foreground">Application questionnaire:</strong> Not assigned</div>}
               {brief && <ol className="mt-6 list-decimal space-y-2 pl-5 text-sm text-foreground/65">{brief.timeline.map((item) => <li key={item}>{item}</li>)}</ol>}
             </div>
           </div>
@@ -118,7 +122,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
               ) : isFacultyViewer ? (
                 <FacultyCollaborationButton projectId={project.id} isClosed={project.status !== "open"} />
               ) : isStudentViewer ? (
-                <StudentProjectAction projectId={project.id} availableSeats={project.available_seats ?? project.max_students} isClosed={project.status !== "open"} />
+                <StudentProjectAction projectId={project.id} availableSeats={project.available_seats ?? project.max_students} isClosed={project.status !== "open"} applicationFormUrl={applicationFormUrl} />
               ) : identity ? (
                 <p className="rounded border border-outline bg-background p-4 text-sm text-foreground/60">Your current role can view this project but cannot submit a participation request.</p>
               ) : (

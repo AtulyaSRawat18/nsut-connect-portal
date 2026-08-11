@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, FileCheck2, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileCheck2, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import ResearchBackdrop from "@/components/shared/ResearchBackdrop";
 import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
+import { isApplicationFormReference } from "@/lib/application-forms";
 
 const projectSchema = z.object({
   title: z.string().trim().min(5, "Title must be at least 5 characters").max(180),
@@ -15,6 +16,7 @@ const projectSchema = z.object({
   department: z.string().refine(isDepartmentId, "Select a valid department"),
   maxStudents: z.number().int().min(1, "At least 1 student is required").max(50, "Capacity cannot exceed 50"),
   briefUrl: z.string().trim().min(1, "Add a reference or enter NA").max(700),
+  applicationFormUrl: z.string().trim().min(1, "Add a Google Form, demo form, or enter NA").max(700).refine(isApplicationFormReference, "Use a Google Forms URL, an approved /demo-forms/ path, or NA"),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -23,7 +25,7 @@ export default function NewProjectPage() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
-    defaultValues: { maxStudents: 1, briefUrl: "NA" },
+    defaultValues: { maxStudents: 1, briefUrl: "NA", applicationFormUrl: "NA" },
   });
 
   async function onSubmit(data: ProjectFormValues) {
@@ -69,6 +71,12 @@ export default function NewProjectPage() {
             <div className="flex items-start gap-3"><FileCheck2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" /><div><label htmlFor="project-brief" className="block text-xs font-bold uppercase tracking-widest text-foreground">Project material / reference</label><p className="mt-1 text-xs leading-5 text-foreground/55">Add a Drive, Docs, Word, PDF, or portal link; you may also enter descriptive text or NA when no material is assigned.</p></div></div>
             <input id="project-brief" type="text" className={`mt-4 w-full border bg-background px-4 py-3 text-foreground outline-none transition-all focus:border-primary ${errors.briefUrl ? "border-red-500" : "border-outline"}`} placeholder="Drive/Docs/Word/PDF link, notes, or NA" {...register("briefUrl")} />
             {errors.briefUrl && <p className="mt-1 text-xs font-semibold text-red-500">{errors.briefUrl.message}</p>}
+          </div>
+
+          <div className="rounded-xl border border-blue-500/25 bg-blue-500/5 p-5">
+            <div className="flex items-start gap-3"><ExternalLink className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" /><div><label htmlFor="project-application-form" className="block text-xs font-bold uppercase tracking-widest text-foreground">Application questionnaire</label><p className="mt-1 text-xs leading-5 text-foreground/55">Paste the published Google Forms URL students must complete before applying. Use NA if this project has no questionnaire; approved local demo paths are supported in staging.</p></div></div>
+            <input id="project-application-form" type="text" className={`mt-4 w-full border bg-background px-4 py-3 text-foreground outline-none transition-all focus:border-primary ${errors.applicationFormUrl ? "border-red-500" : "border-outline"}`} placeholder="https://forms.gle/... or NA" {...register("applicationFormUrl")} />
+            {errors.applicationFormUrl && <p className="mt-1 text-xs font-semibold text-red-500">{errors.applicationFormUrl.message}</p>}
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">

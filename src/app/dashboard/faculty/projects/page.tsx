@@ -19,11 +19,23 @@ export default async function FacultyProjectsPage({
   const status = statuses.includes(params?.status as (typeof statuses)[number]) ? params?.status || "all" : "all";
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const currentProjects = await supabase
     .from("projects")
-    .select("id, title, description, department, status, created_at, brief_url, progress_percent, health_status, progress_note, last_assessed_at")
+    .select("id, title, description, department, status, created_at, brief_url, application_form_url, progress_percent, health_status, progress_note, last_assessed_at")
     .eq("faculty_id", identity.id)
     .order("created_at", { ascending: false });
+
+  let data = currentProjects.data;
+  let error = currentProjects.error;
+  if (error && error.message.includes("application_form_url")) {
+    const legacyProjects = await supabase
+      .from("projects")
+      .select("id, title, description, department, status, created_at, brief_url, progress_percent, health_status, progress_note, last_assessed_at")
+      .eq("faculty_id", identity.id)
+      .order("created_at", { ascending: false });
+    data = legacyProjects.data?.map((project) => ({ ...project, application_form_url: "NA" })) || null;
+    error = legacyProjects.error;
+  }
 
   const allProjects = data || [];
   const department = isDepartmentId(params?.department) ? params.department : "all";
@@ -62,7 +74,7 @@ export default async function FacultyProjectsPage({
               </div>
               <p className="line-clamp-3 text-sm leading-relaxed text-foreground/60">{project.description}</p>
               <div className="mt-6 flex items-center justify-between border-t border-outline pt-4 text-xs text-foreground/45"><span>{project.status === "open" ? "Receiving student intake and collaboration requests" : "Requests closed"}</span><span>{new Date(project.created_at).toLocaleDateString()}</span></div>
-              <ProjectAssessment projectId={project.id} briefUrl={project.brief_url} initialProgress={project.progress_percent || 0} initialHealth={project.health_status || "on_track"} initialNote={project.progress_note} />
+              <ProjectAssessment projectId={project.id} briefUrl={project.brief_url} applicationFormUrl={project.application_form_url || "NA"} initialProgress={project.progress_percent || 0} initialHealth={project.health_status || "on_track"} initialNote={project.progress_note} />
             </article>
           ))}
           {projects.length === 0 && <div className="col-span-full rounded-2xl border border-dashed border-outline p-16 text-center text-foreground/45">No projects match these filters.</div>}

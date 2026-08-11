@@ -120,6 +120,7 @@ As of 30 July 2026, the repository contains:
 - Public discovery pages and protected student, faculty, moderator, and administrator workspaces.
 - A repeatable development seed containing 24 students, 24 faculty members, one moderator, linked page content, and complete varied academic profiles. Faculty directory cards and attributed forum activity link to public on-platform profile pages; demo CV files are synthetic and other unavailable documents are marked `NA` rather than pointing to dead resources.
 - Role-specific project participation: students apply against a visible vacancy while seats remain, then may request a non-seat contribution after capacity is filled. Faculty see no seat action and instead use an independent peer-collaboration workflow. Project owners receive separate review queues and neither contribution nor collaboration decisions alter student seat accounting.
+- Faculty-configured application questionnaires: each project can link a published Google Form, while four clearly labelled local staging forms demonstrate completion and evidence handoff without storing answers.
 - A production build that successfully generates 40 application routes.
 
 The configured Supabase project URL is currently retired and does not resolve. A new live Supabase project must be provisioned, the schema and migrations applied, authentication hooks configured, and environment variables replaced before demo accounts or production sign-ins will work.

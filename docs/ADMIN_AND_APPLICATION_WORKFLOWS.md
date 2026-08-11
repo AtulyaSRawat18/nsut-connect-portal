@@ -4,7 +4,8 @@ This document describes the staging prototype implemented by migrations
 202608030005_application_admin_workflow.sql,
 202608030006_forum_moderation_guards.sql,
 202608030007_application_submission_guards.sql, and
-202608110008_editable_profiles_flexible_evidence_and_seats.sql.
+202608110008_editable_profiles_flexible_evidence_and_seats.sql, and
+202608110012_project_application_questionnaires.sql.
 
 ## Login modes
 
@@ -29,7 +30,8 @@ application contains:
 - A 40–1,200 character skills and evidence summary.
 - Weekly availability from 1 to 40 hours.
 - A CV/resume reference (link, document reference, descriptive text, or `NA`).
-- An HTTPS Google Forms response or questionnaire link.
+- A questionnaire completion reference when the faculty lead has assigned a
+  published Google Form or approved portal-local staging form.
 - The applicant's explicit confirmation that the links are appropriate to share
   with the faculty reviewer.
 
@@ -43,10 +45,12 @@ project rows, decrements `projects.available_seats` exactly once, and refuses an
 acceptance when no seat remains. Reversing an acceptance restores one seat.
 Direct application updates are revoked from the authenticated role.
 
-Staging contains two complete pending examples for the first demo faculty account.
-Their CVs are synthetic PDFs under public/demo-cvs/. Their Google Forms URLs are
-explicitly synthetic placeholders and must be replaced with live institutional
-forms before real applicant testing.
+Staging contains complete examples for the first demo faculty account. Their CVs
+are synthetic PDFs under public/demo-cvs/. Four local questionnaires under
+`/demo-forms/[slug]` imitate the Google Forms handoff without transmitting or
+storing answers. They create local completion references for application review.
+These forms are staging demonstrations, not Google Forms or institutional records;
+faculty should replace them with published institutional Google Forms for real use.
 
 ## Prototype administrator
 
@@ -150,6 +154,21 @@ migrations `008` through `010`.
 - The faculty workspace keeps student applications, incoming student
   contributions, incoming faculty collaborations and outgoing collaborations
   visibly distinct.
+
+## Project application questionnaires
+
+Apply `202608110012_project_application_questionnaires.sql` after migration `011`.
+
+- Every project stores `application_form_url`: a published Google Forms URL, an
+  approved `/demo-forms/` staging path, or `NA`.
+- Faculty set the questionnaire while publishing a project and can update it in
+  the project assessment workspace.
+- Students open the assigned form from the project or application modal. When a
+  form is assigned, the server refuses applications whose evidence is `NA`.
+- When no form is assigned, the server stores `NA` and refuses an unrelated form
+  reference. This prevents the client from deciding whether evidence is required.
+- Existing staging databases remain readable before migration `012`; form-aware
+  writes require the migration.
 
 ## Rollback
 

@@ -7,12 +7,14 @@ import { useRouter } from "next/navigation";
 export default function ProjectAssessment({
   projectId,
   briefUrl,
+  applicationFormUrl,
   initialProgress,
   initialHealth,
   initialNote,
 }: {
   projectId: string;
   briefUrl: string | null;
+  applicationFormUrl: string | null;
   initialProgress: number;
   initialHealth: string;
   initialNote: string | null;
@@ -22,6 +24,7 @@ export default function ProjectAssessment({
   const [health, setHealth] = useState(initialHealth);
   const [note, setNote] = useState(initialNote || "");
   const [materialReference, setMaterialReference] = useState(briefUrl || "NA");
+  const [questionnaireReference, setQuestionnaireReference] = useState(applicationFormUrl || "NA");
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const linkedBrief = materialReference.startsWith("https://") || materialReference.startsWith("/");
@@ -33,7 +36,7 @@ export default function ProjectAssessment({
     const response = await fetch("/api/faculty/projects/" + projectId, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ progressPercent: progress, healthStatus: health, progressNote: note, briefReference: materialReference }),
+      body: JSON.stringify({ progressPercent: progress, healthStatus: health, progressNote: note, briefReference: materialReference, applicationFormUrl: questionnaireReference }),
     });
     const result = await response.json().catch(() => ({}));
     setPending(false);
@@ -73,6 +76,9 @@ export default function ProjectAssessment({
         </label>
         <label className="text-xs font-bold text-foreground/55">Project material / reference
           <input value={materialReference} onChange={(event) => setMaterialReference(event.target.value)} minLength={1} maxLength={700} required className="mt-2 w-full rounded border border-outline bg-background px-3 py-2 text-sm text-foreground" placeholder="Drive/Docs/Word/PDF link, notes, or NA" />
+        </label>
+        <label className="text-xs font-bold text-foreground/55">Application questionnaire
+          <input value={questionnaireReference} onChange={(event) => setQuestionnaireReference(event.target.value)} minLength={1} maxLength={700} required className="mt-2 w-full rounded border border-outline bg-background px-3 py-2 text-sm text-foreground" placeholder="https://forms.gle/... or NA" />
         </label>
         <div className="flex items-center justify-between gap-3">
           <span className={"text-xs " + (message.includes("saved") ? "text-green-600" : "text-red-600")} role="status">{message}</span>
