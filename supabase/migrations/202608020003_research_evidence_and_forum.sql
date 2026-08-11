@@ -96,6 +96,19 @@ alter table public.forum_replies enable row level security;
 alter table public.forum_post_votes enable row level security;
 alter table public.forum_reply_votes enable row level security;
 
+drop policy if exists "Forum replies are public" on public.forum_replies;
+drop policy if exists "Active members create replies" on public.forum_replies;
+drop policy if exists "Authors and moderators update replies" on public.forum_replies;
+drop policy if exists "Authors and moderators delete replies" on public.forum_replies;
+drop policy if exists "Members read own post votes" on public.forum_post_votes;
+drop policy if exists "Active members create post votes" on public.forum_post_votes;
+drop policy if exists "Members update own post votes" on public.forum_post_votes;
+drop policy if exists "Members delete own post votes" on public.forum_post_votes;
+drop policy if exists "Members read own reply votes" on public.forum_reply_votes;
+drop policy if exists "Active members create reply votes" on public.forum_reply_votes;
+drop policy if exists "Members update own reply votes" on public.forum_reply_votes;
+drop policy if exists "Members delete own reply votes" on public.forum_reply_votes;
+
 create policy "Forum replies are public" on public.forum_replies for select using (true);
 create policy "Active members create replies" on public.forum_replies for insert to authenticated
   with check (author_id = auth.uid() and public.is_active_member());
