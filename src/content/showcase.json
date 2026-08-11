@@ -158,6 +158,32 @@
       "support": ["Curated official and peer-reviewed reading list", "Protocol review template", "Cross-disciplinary discussion facilitation"],
       "howToApply": ["Choose one BioE3 thematic vertical", "Submit two research questions", "State the measurement or modelling skill you can contribute"],
       "note": "Prototype academic activity for staging review; schedule and organizer must be approved before publication."
+    },
+    {
+      "id": "52e7d4c2-aef6-4a2b-bc15-938a8c2f83a1",
+      "title": "Research Software Internship: Reproducible Campus Data Tools",
+      "summary": "A six-week mentored internship prototype for students to improve testing, documentation and accessibility in open research-software tools used by campus project teams.",
+      "type": "internship",
+      "department": "computer-science-engineering-main",
+      "deadline": "2026-09-18",
+      "sourceUrl": "/contact?subject=Research%20Software%20Internship",
+      "eligibility": ["NSUT students comfortable with one programming language", "A public code sample, course project or reproducible notebook", "Availability for a documented six-week contribution"],
+      "support": ["Weekly code and research-method review", "Issue-scoping and accessibility checklist", "Portfolio-ready contribution report and mentor feedback"],
+      "howToApply": ["Share one code or notebook sample", "Describe a reproducibility or accessibility problem you want to solve", "Propose a small first-week deliverable"],
+      "note": "Demonstration internship listing for prototype evaluation. It does not represent an official appointment or paid offer until approved by the responsible NSUT unit."
+    },
+    {
+      "id": "01ca17eb-c00f-4a88-a2bd-4a3b4dcfd2ab",
+      "title": "Student Research Enablement Grant: Validation Micro-Awards",
+      "summary": "A prototype micro-grant call supporting modest datasets, components or testing services that help student teams validate one clearly defined research claim.",
+      "type": "scholarship",
+      "department": "innovation-entrepreneurship-venture-development",
+      "deadline": "2026-10-02",
+      "sourceUrl": "/contact?subject=Student%20Research%20Enablement%20Grant",
+      "eligibility": ["Student-led NSUT project with a faculty mentor", "One falsifiable technical claim and a bounded validation plan", "Budget request tied directly to evidence generation"],
+      "support": ["Prototype award of up to INR 15,000 subject to institutional approval", "Experiment-design review", "Research-integrity and expenditure documentation templates"],
+      "howToApply": ["Submit a two-page validation brief", "State the claim, method, success threshold and risks", "Attach a simple budget and four-to-eight-week timeline"],
+      "note": "Demonstration funding call for staging only. No funding is promised; amount, eligibility and approval workflow require confirmation by authorized NSUT offices before publication."
     }
   ],
   "forum": [

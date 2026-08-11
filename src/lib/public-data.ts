@@ -1,6 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
+import { showcaseNews, showcaseOpportunities } from "@/content/showcase";
 import { DEPARTMENT_IDS } from "@/lib/departments";
 import { createPublicClient } from "@/utils/supabase/public";
 
@@ -345,7 +346,10 @@ export function getPublicPublications(filters: { q?: string; year?: string; page
 const loadNewsCategories = unstable_cache(
   async () => {
     const { data } = await createPublicClient().from("announcements").select("category").limit(500);
-    return Array.from(new Set((data || []).map((item) => item.category || "general"))).sort();
+    return Array.from(new Set([
+      ...(data || []).map((item) => item.category || "general"),
+      ...showcaseNews.map((item) => item.category || "general"),
+    ])).sort();
   },
   ["public-news-categories-v1"],
   { revalidate: 120, tags: ["public-news"] },
@@ -353,6 +357,31 @@ const loadNewsCategories = unstable_cache(
 
 export function getPublicNewsCategories() {
   return loadNewsCategories();
+}
+
+function showcaseNewsResult(filters: { q: string; category: string; department: string; page: number }) {
+  const q = searchTerm(filters.q).toLowerCase();
+  const filtered = showcaseNews
+    .filter((item) => !q || `${item.title} ${item.summary}`.toLowerCase().includes(q))
+    .filter((item) => filters.category === "all" || item.category === filters.category)
+    .filter((item) => filters.department === "all" || item.department === filters.department)
+    .sort((left, right) => right.date.localeCompare(left.date));
+  const { from, page, to } = rangeFor(filters.page);
+  return {
+    data: filtered.slice(from, to + 1).map((item) => ({
+      id: item.id,
+      title: item.title,
+      content: item.summary,
+      category: item.category,
+      department: item.department,
+      created_at: item.date,
+      profiles: { full_name: "NSUT Connect Editorial" },
+    })),
+    count: filtered.length,
+    error: null,
+    page,
+    pageSize: PUBLIC_PAGE_SIZE,
+  } satisfies PagedResult<PublicNewsItem>;
 }
 
 const loadNews = unstable_cache(
@@ -373,6 +402,7 @@ const loadNews = unstable_cache(
     else if (filters.category !== "all") query = query.eq("category", filters.category);
     if (filters.department !== "all") query = query.eq("department", filters.department);
     const { data, count, error } = await query;
+    if (error || !data?.length) return showcaseNewsResult(filters);
     return {
       data: (data || []) as PublicNewsItem[],
       count: count || 0,
@@ -407,6 +437,33 @@ const loadOpportunities = unstable_cache(
     if (filters.deadline === "none") query = query.is("deadline", null);
     if (filters.department !== "all") query = query.eq("department", filters.department);
     const { data, count, error } = await query;
+    if (error || !data?.length) {
+      const filtered = showcaseOpportunities
+        .filter((item) => !q || `${item.title} ${item.summary}`.toLowerCase().includes(q.toLowerCase()))
+        .filter((item) => filters.type === "all" || item.type === filters.type)
+        .filter((item) => filters.department === "all" || item.department === filters.department)
+        .filter((item) => {
+          if (filters.deadline === "open") return Boolean(item.deadline && item.deadline >= today);
+          if (filters.deadline === "closed") return Boolean(item.deadline && item.deadline < today);
+          if (filters.deadline === "none") return !item.deadline;
+          return true;
+        });
+      return {
+        data: filtered.slice(from, to + 1).map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.summary,
+          type: item.type,
+          deadline: item.deadline,
+          link_url: item.sourceUrl,
+          department: item.department,
+        })),
+        count: filtered.length,
+        error: null,
+        page,
+        pageSize: PUBLIC_PAGE_SIZE,
+      } satisfies PagedResult<PublicOpportunity>;
+    }
     return {
       data: (data || []) as PublicOpportunity[],
       count: count || 0,
