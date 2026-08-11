@@ -1,7 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { showcaseNews, showcaseOpportunities } from "@/content/showcase";
+import { showcaseNews, showcaseOpportunities, showcaseProjects } from "@/content/showcase";
 import { DEPARTMENT_IDS } from "@/lib/departments";
 import { createPublicClient } from "@/utils/supabase/public";
 
@@ -141,6 +141,29 @@ const loadProjects = unstable_cache(
     if (filters.status !== "all") query = query.eq("status", filters.status);
 
     const { data, count, error } = await query;
+    if (error || !data?.length) {
+      const filtered = showcaseProjects
+        .filter((item) => !q || `${item.title} ${item.summary}`.toLowerCase().includes(q.toLowerCase()))
+        .filter((item) => filters.department === "all" || item.department === filters.department)
+        .filter((item) => filters.status === "all" || item.status === filters.status);
+      return {
+        data: filtered.slice(from, to + 1).map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.summary,
+          department: item.department,
+          status: item.status,
+          max_students: item.maxStudents,
+          available_seats: item.status === "open" ? item.maxStudents : 0,
+          created_at: "2026-08-01T08:00:00.000Z",
+          profiles: { full_name: item.leadName, id: "" },
+        })),
+        count: filtered.length,
+        error: null,
+        page,
+        pageSize: PUBLIC_PAGE_SIZE,
+      } satisfies PagedResult<PublicProject>;
+    }
     return {
       data: (data || []) as PublicProject[],
       count: count || 0,

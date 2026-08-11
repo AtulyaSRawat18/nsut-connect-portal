@@ -12,13 +12,30 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
   const brief = getShowcaseProject(id);
 
   // Fetch project details
-  const { data: project } = await supabase
+  const { data: liveProject } = await supabase
     .from("projects")
     .select("*, profiles!projects_faculty_id_fkey(id, full_name, role)")
     .eq("id", id)
     .single();
 
+  const project = liveProject || (brief ? {
+    id: brief.id,
+    title: brief.title,
+    description: brief.summary,
+    department: brief.department,
+    status: brief.status,
+    max_students: brief.maxStudents,
+    available_seats: brief.status === "open" ? brief.maxStudents : 0,
+    brief_url: brief.pdf,
+    progress_percent: brief.status === "closed" ? 100 : 25,
+    health_status: "on_track",
+    progress_note: "Demo project listing. Live progress becomes available after the staging database is seeded.",
+    created_at: "2026-08-01T08:00:00.000Z",
+    profiles: { id: "", full_name: brief.leadName, role: "faculty" },
+  } : null);
   if (!project) notFound();
+  const isDemoOnly = !liveProject;
+  const projectFaculty = Array.isArray(project.profiles) ? project.profiles[0] : project.profiles;
   const briefUrl = project.brief_url || brief?.pdf || null;
   const linkedBrief = Boolean(briefUrl && (briefUrl.startsWith("https://") || briefUrl.startsWith("/")));
 
@@ -90,7 +107,9 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
             <div className="bg-secondary p-8 rounded-xl text-center shadow-xl border border-outline">
               <h3 className="text-foreground font-bold text-xl mb-4">Ready to Apply?</h3>
               <p className="text-foreground/70 text-sm mb-6">Submit your resume and statement of purpose directly to the principal investigator.</p>
-              {user ? (
+              {isDemoOnly ? (
+                <Link href={`/contact?subject=${encodeURIComponent(`Project interest: ${project.title}`)}`} className="block w-full rounded bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary transition-colors hover:brightness-110">Express interest</Link>
+              ) : user ? (
                  <ApplyProjectButton projectId={project.id} availableSeats={project.available_seats ?? project.max_students} isClosed={project.status !== 'open' || (project.available_seats ?? project.max_students) <= 0} />
               ) : (
                 <Link href="/login" className="block w-full bg-primary text-on-primary py-4 font-bold uppercase tracking-widest text-sm rounded hover:brightness-110 transition-colors">
@@ -104,16 +123,14 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
               <h4 className="font-bold text-xs text-foreground/50 tracking-widest uppercase mb-4">Principal Investigator</h4>
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-primary/20 border border-outline flex items-center justify-center text-primary font-bold text-xl">
-                  {project.profiles?.full_name?.charAt(0) || 'D'}
+                  {projectFaculty?.full_name?.charAt(0) || 'D'}
                 </div>
                 <div>
-                  <h4 className="font-bold text-foreground text-lg">{project.profiles?.full_name || 'Dr. Unknown'}</h4>
+                  <h4 className="font-bold text-foreground text-lg">{projectFaculty?.full_name || 'Dr. Unknown'}</h4>
                   <p className="text-sm text-foreground/70">{getDepartmentLabel(project.department)}</p>
                 </div>
               </div>
-              <Link href={`/profile/${project.profiles?.id}`} className="block mt-6 text-center border border-primary text-primary py-2 font-bold uppercase tracking-widest text-xs rounded hover:bg-primary/5 transition-colors">
-                View Full Profile
-              </Link>
+              {projectFaculty?.id ? <Link href={`/profile/${projectFaculty.id}`} className="block mt-6 text-center border border-primary text-primary py-2 font-bold uppercase tracking-widest text-xs rounded hover:bg-primary/5 transition-colors">View Full Profile</Link> : <p className="mt-6 rounded border border-outline bg-background p-3 text-center text-xs text-foreground/55">Demo faculty profile links activate after the database seed is applied.</p>}
             </div>
 
             {/* Related Projects */}
