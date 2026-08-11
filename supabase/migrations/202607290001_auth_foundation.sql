@@ -9,7 +9,7 @@ alter table public.portal_users
 
 alter table public.portal_users
   add constraint portal_users_role_check
-  check (role in ('student', 'faculty', 'admin'));
+  check (role in ('student', 'faculty', 'moderator', 'admin'));
 
 alter table public.portal_users
   add column if not exists account_status text not null default 'active',

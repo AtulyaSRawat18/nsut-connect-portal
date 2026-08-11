@@ -44,3 +44,6 @@ next-env.d.ts
 
 # Codex local development server logs
 .codex-dev.*.log
+
+# Supabase CLI project-link metadata
+/supabase/.temp/
