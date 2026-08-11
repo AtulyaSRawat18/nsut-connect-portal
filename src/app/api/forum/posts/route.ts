@@ -8,14 +8,13 @@ import {
 } from "@/lib/auth/server";
 import { authError } from "@/lib/auth/responses";
 import { checkRateLimit, isSameOrigin } from "@/lib/auth/rate-limit";
+import { isDepartmentId } from "@/lib/departments";
 import { createClient } from "@/utils/supabase/server";
-
-const departments = ["CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"] as const;
 
 const forumPostSchema = z.object({
   title: z.string().trim().min(8).max(180),
   content: z.string().trim().min(30).max(5000),
-  department: z.enum(departments),
+  department: z.string().refine(isDepartmentId, "Select a valid department"),
 });
 
 export async function POST(request: Request) {

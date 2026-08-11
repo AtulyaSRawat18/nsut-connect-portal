@@ -84,7 +84,7 @@ export async function proxy(request: NextRequest) {
       if (user) {
         const { data: profile, error: profileError } = await supabase
           .from("portal_users")
-          .select("role, account_status, banned_until")
+          .select("role, account_status, banned_until, profile_completed_at")
           .eq("id", user.id)
           .single();
 
@@ -111,6 +111,10 @@ export async function proxy(request: NextRequest) {
 
         if (isProtectedRoute && !isActive) {
           return redirectTo(request, "/unauthorized", "account_inactive", supabaseResponse);
+        }
+
+        if (isProtectedRoute && !profile.profile_completed_at) {
+          return redirectTo(request, "/onboarding", "profile_setup_required", supabaseResponse);
         }
 
         if (

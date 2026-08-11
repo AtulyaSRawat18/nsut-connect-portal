@@ -19,7 +19,7 @@ const emptyDraft: ApplicationDraft = {
   googleFormResponseUrl: "",
 };
 
-export function ApplyProjectButton({ projectId, maxStudents, isClosed }: { projectId: string; maxStudents: number; isClosed: boolean }) {
+export function ApplyProjectButton({ projectId, availableSeats, isClosed }: { projectId: string; availableSeats: number; isClosed: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [draft, setDraft] = useState(emptyDraft);
   const [confirmedForm, setConfirmedForm] = useState(false);
@@ -63,7 +63,7 @@ export function ApplyProjectButton({ projectId, maxStudents, isClosed }: { proje
   return (
     <>
       <button onClick={() => { setIsOpen(true); setSuccess(false); }} className="block w-full rounded bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary transition-colors hover:brightness-110">
-        Apply Now ({maxStudents} slots)
+        Apply now ({availableSeats} {availableSeats === 1 ? "seat" : "seats"} left)
       </button>
 
       {isOpen && (
@@ -100,8 +100,8 @@ export function ApplyProjectButton({ projectId, maxStudents, isClosed }: { proje
                     <div className="relative"><input type="number" min={1} max={40} required value={draft.availabilityHours} onChange={(event) => setField("availabilityHours", event.target.value)} className="w-full rounded-lg border border-outline bg-background px-4 py-3 pr-20 text-sm outline-none focus:border-primary" /><span className="absolute right-4 top-3 text-xs font-semibold text-foreground/45">hours</span></div>
                   </label>
                   <label className="block">
-                    <span className="mb-2 block text-xs font-black uppercase tracking-widest text-foreground/65">CV PDF link *</span>
-                    <input type="text" required value={draft.resumeUrl} onChange={(event) => setField("resumeUrl", event.target.value)} placeholder="https://.../cv.pdf" className="w-full rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
+                    <span className="mb-2 block text-xs font-black uppercase tracking-widest text-foreground/65">CV / résumé reference *</span>
+                    <input type="text" required value={draft.resumeUrl} onChange={(event) => setField("resumeUrl", event.target.value)} placeholder="Drive/Docs/Word/PDF link, text, or NA" className="w-full rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
                   </label>
                 </div>
 

@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-const departments = ["CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"];
+import { DEPARTMENTS, getDepartmentLabel } from "@/lib/departments";
 
 export default function ForumPostForm() {
   const router = useRouter();
@@ -67,7 +66,7 @@ export default function ForumPostForm() {
           className="w-full rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary"
         >
           <option value="" disabled>Select a department</option>
-          {departments.map((department) => <option key={department} value={department}>{department}</option>)}
+          {DEPARTMENTS.map((department) => <option key={department.id} value={department.id}>{getDepartmentLabel(department.id)}</option>)}
         </select>
       </label>
 

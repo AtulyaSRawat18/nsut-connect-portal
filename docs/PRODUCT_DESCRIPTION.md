@@ -69,7 +69,7 @@ The portal creates a coherent, searchable representation of academic activity an
 - Student dashboard
 - Project discovery and applications
 - Application-status tracking
-- Student profile and academic details
+- Editable student biography, education, academic details, public contacts, links, and CV/resume
 - Personalized feed and community participation
 
 ### Faculty workspace
@@ -80,7 +80,7 @@ The portal creates a coherent, searchable representation of academic activity an
 - Applicant review and accept/reject workflow
 - Publication management
 - Departmental news and opportunity publishing
-- Faculty profile and verification status
+- Editable faculty biography, education, office/contact details, academic links, CV/resume, and verification status
 
 ### Moderator workspace
 

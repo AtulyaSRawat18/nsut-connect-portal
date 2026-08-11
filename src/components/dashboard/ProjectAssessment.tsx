@@ -21,8 +21,10 @@ export default function ProjectAssessment({
   const [progress, setProgress] = useState(initialProgress);
   const [health, setHealth] = useState(initialHealth);
   const [note, setNote] = useState(initialNote || "");
+  const [materialReference, setMaterialReference] = useState(briefUrl || "NA");
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
+  const linkedBrief = materialReference.startsWith("https://") || materialReference.startsWith("/");
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,7 +33,7 @@ export default function ProjectAssessment({
     const response = await fetch("/api/faculty/projects/" + projectId, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ progressPercent: progress, healthStatus: health, progressNote: note }),
+      body: JSON.stringify({ progressPercent: progress, healthStatus: health, progressNote: note, briefReference: materialReference }),
     });
     const result = await response.json().catch(() => ({}));
     setPending(false);
@@ -50,7 +52,7 @@ export default function ProjectAssessment({
           <div className="mb-2 flex items-center justify-between text-[10px] font-black uppercase tracking-widest"><span>Research progress</span><span>{progress}%</span></div>
           <div className="h-2 overflow-hidden rounded-full bg-foreground/10"><div className="h-full bg-primary transition-all" style={{ width: progress + "%" }} /></div>
         </div>
-        {briefUrl ? <a href={briefUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary hover:underline"><FileText className="h-4 w-4" /> Working PDF</a> : <span className="text-xs font-bold text-red-600">PDF evidence missing</span>}
+        {linkedBrief ? <a href={materialReference} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary hover:underline"><FileText className="h-4 w-4" /> Project material</a> : <span className="max-w-64 truncate text-xs font-bold text-foreground/55">Material: {materialReference}</span>}
       </div>
       <form onSubmit={save} className="grid gap-3">
         <div className="grid gap-3 sm:grid-cols-[1fr_12rem]">
@@ -68,6 +70,9 @@ export default function ProjectAssessment({
         </div>
         <label className="text-xs font-bold text-foreground/55">Assessment note
           <textarea value={note} onChange={(event) => setNote(event.target.value)} minLength={10} maxLength={1000} required className="mt-2 min-h-20 w-full rounded border border-outline bg-background p-3 text-sm text-foreground" placeholder="State the evidence completed, next milestone, risk and owner." />
+        </label>
+        <label className="text-xs font-bold text-foreground/55">Project material / reference
+          <input value={materialReference} onChange={(event) => setMaterialReference(event.target.value)} minLength={1} maxLength={700} required className="mt-2 w-full rounded border border-outline bg-background px-3 py-2 text-sm text-foreground" placeholder="Drive/Docs/Word/PDF link, notes, or NA" />
         </label>
         <div className="flex items-center justify-between gap-3">
           <span className={"text-xs " + (message.includes("saved") ? "text-green-600" : "text-red-600")} role="status">{message}</span>

@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import { ApplyProjectButton } from "@/components/projects/ApplyProjectButton";
 import { getShowcaseProject } from "@/content/showcase";
+import { getDepartmentCompactLabel, getDepartmentLabel } from "@/lib/departments";
 
 export default async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
@@ -19,6 +20,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
 
   if (!project) notFound();
   const briefUrl = project.brief_url || brief?.pdf || null;
+  const linkedBrief = Boolean(briefUrl && (briefUrl.startsWith("https://") || briefUrl.startsWith("/")));
 
   // Fetch related projects (same department, excluding current)
   const { data: relatedProjects } = await supabase
@@ -44,7 +46,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
             <div>
               <div className="flex gap-3 mb-4">
                 <span className="bg-primary/10 text-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded">
-                  {project.department}
+                  {getDepartmentCompactLabel(project.department)}
                 </span>
                 <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded ${project.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                   {project.status}
@@ -77,7 +79,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
                 <Calendar className="w-5 h-5 text-primary" />
                 <span>Posted on {new Date(project.created_at).toLocaleDateString()}</span>
               </div>
-              {briefUrl ? <div className="flex items-center gap-4 text-foreground/80 mb-6"><FileText className="w-5 h-5 text-primary" /><a href={briefUrl} target="_blank" rel="noreferrer" className="font-bold text-primary hover:underline">Download compulsory working brief (PDF)</a></div> : <div className="mb-6 border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-600">This project is missing its required working PDF and should not accept applications until the faculty owner adds it.</div>}
+              {linkedBrief ? <div className="mb-6 flex items-center gap-4 text-foreground/80"><FileText className="h-5 w-5 text-primary" /><a href={briefUrl!} target="_blank" rel="noreferrer" className="font-bold text-primary hover:underline">Open project material</a></div> : <div className="mb-6 rounded border border-outline bg-background p-4 text-sm text-foreground/65"><strong className="text-foreground">Project material:</strong> {briefUrl || "NA"}</div>}
               {brief && <ol className="mt-6 list-decimal space-y-2 pl-5 text-sm text-foreground/65">{brief.timeline.map((item) => <li key={item}>{item}</li>)}</ol>}
             </div>
           </div>
@@ -89,7 +91,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
               <h3 className="text-foreground font-bold text-xl mb-4">Ready to Apply?</h3>
               <p className="text-foreground/70 text-sm mb-6">Submit your resume and statement of purpose directly to the principal investigator.</p>
               {user ? (
-                 <ApplyProjectButton projectId={project.id} maxStudents={project.max_students} isClosed={project.status !== 'open' || !briefUrl} />
+                 <ApplyProjectButton projectId={project.id} availableSeats={project.available_seats ?? project.max_students} isClosed={project.status !== 'open' || (project.available_seats ?? project.max_students) <= 0} />
               ) : (
                 <Link href="/login" className="block w-full bg-primary text-on-primary py-4 font-bold uppercase tracking-widest text-sm rounded hover:brightness-110 transition-colors">
                   Log in to Apply
@@ -106,7 +108,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
                 </div>
                 <div>
                   <h4 className="font-bold text-foreground text-lg">{project.profiles?.full_name || 'Dr. Unknown'}</h4>
-                  <p className="text-sm text-foreground/70">{project.department} Dept</p>
+                  <p className="text-sm text-foreground/70">{getDepartmentLabel(project.department)}</p>
                 </div>
               </div>
               <Link href={`/profile/${project.profiles?.id}`} className="block mt-6 text-center border border-primary text-primary py-2 font-bold uppercase tracking-widest text-xs rounded hover:bg-primary/5 transition-colors">

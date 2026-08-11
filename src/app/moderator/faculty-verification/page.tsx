@@ -1,5 +1,6 @@
 import { ExternalLink, UserCheck } from "lucide-react";
 import { requirePageIdentity } from "@/lib/auth/server";
+import { getDepartmentLabel } from "@/lib/departments";
 import { createClient } from "@/utils/supabase/server";
 import VerificationActions from "./VerificationActions";
 
@@ -11,6 +12,7 @@ export default async function FacultyVerificationPage() {
     .select("id, faculty_id, department, designation, employee_reference, evidence_url, status, submitted_at, portal_users!faculty_verification_requests_faculty_id_fkey(name, email)")
     .in("status", ["pending", "reviewing"])
     .order("submitted_at", { ascending: true });
+  requests?.forEach((request) => { request.department = getDepartmentLabel(request.department); });
 
   return (
     <div className="space-y-8">

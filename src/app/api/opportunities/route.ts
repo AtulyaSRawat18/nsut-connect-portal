@@ -4,6 +4,7 @@ import { z } from "zod";
 import { AuthenticationError, AuthorizationError, requirePortalIdentity } from "@/lib/auth/server";
 import { authError } from "@/lib/auth/responses";
 import { checkRateLimit, isSameOrigin } from "@/lib/auth/rate-limit";
+import { isDepartmentId } from "@/lib/departments";
 import { createClient } from "@/utils/supabase/server";
 
 const opportunitySchema = z.object({
@@ -12,6 +13,7 @@ const opportunitySchema = z.object({
   type: z.enum(["internship", "scholarship", "event", "highlight"]),
   linkUrl: z.string().trim().refine((value) => value.startsWith("https://") || value.startsWith("/"), "An HTTPS or site-local action link is required"),
   deadline: z.string().date(),
+  department: z.string().refine(isDepartmentId, "Select a valid department"),
 });
 
 export async function POST(request: Request) {
@@ -29,6 +31,7 @@ export async function POST(request: Request) {
       type: parsed.data.type,
       link_url: parsed.data.linkUrl,
       deadline: parsed.data.deadline,
+      department: parsed.data.department,
     }).select("id").single();
     if (error) return authError(400, "OPPORTUNITY_FAILED", error.message);
     revalidateTag("public-opportunities", "max");

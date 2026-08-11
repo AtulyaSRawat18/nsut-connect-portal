@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { AuthenticationError, AuthorizationError, requirePortalIdentity } from "@/lib/auth/server";
 import { authError } from "@/lib/auth/responses";
@@ -32,6 +33,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       review_note: parsed.data.note || null,
     });
     if (error) return authError(400, "REVIEW_FAILED", error.message);
+    revalidateTag("public-projects", "max");
     return NextResponse.json({ error: false, status: parsed.data.status });
   } catch (error) {
     if (error instanceof AuthenticationError) return authError(401, "UNAUTHENTICATED", error.message);

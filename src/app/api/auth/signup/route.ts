@@ -17,19 +17,6 @@ const signupSchema = z
       .regex(/[a-z]/)
       .regex(/[0-9]/)
       .regex(/[^A-Za-z0-9]/),
-    rollNumber: z.string().trim().max(30).optional(),
-    course: z.string().trim().max(80).optional(),
-    year: z.preprocess((value) => value === "" || value == null ? undefined : value, z.coerce.number().int().min(1).max(8).optional()),
-    department: z.string().trim().max(80).optional(),
-    designation: z.string().trim().max(100).optional(),
-  })
-  .superRefine((value, context) => {
-    if (value.role === "student" && (!value.rollNumber || !value.course || !value.year)) {
-      context.addIssue({ code: "custom", message: "Student academic details are required" });
-    }
-    if (value.role === "faculty" && (!value.department || !value.designation)) {
-      context.addIssue({ code: "custom", message: "Faculty department and designation are required" });
-    }
   });
 
 export async function POST(request: Request) {
@@ -73,11 +60,6 @@ export async function POST(request: Request) {
         data: {
           full_name: data.fullName,
           role: data.role,
-          roll_number: data.rollNumber,
-          course: data.course,
-          year: data.year,
-          department: data.department,
-          designation: data.designation,
         },
       },
     });
@@ -91,8 +73,8 @@ export async function POST(request: Request) {
         error: false,
         message:
           data.role === "faculty"
-            ? "Verify your email. Faculty access will activate after institutional approval."
-            : "Registration successful. Check your NSUT email to verify your account.",
+            ? "Confirm your email, complete your faculty profile, then await institutional approval."
+            : "Confirm your email, complete your profile, then continue to the dashboard.",
       },
       { status: 201 },
     );

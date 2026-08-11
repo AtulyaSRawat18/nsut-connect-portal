@@ -4,6 +4,7 @@ import { ArrowLeft, User } from "lucide-react";
 import { getShowcaseForumPost } from "@/content/showcase";
 import ResearchBackdrop from "@/components/shared/ResearchBackdrop";
 import ForumDiscussion, { type DiscussionReply } from "./ForumDiscussion";
+import { getDepartmentLabel } from "@/lib/departments";
 import { createPublicClient } from "@/utils/supabase/public";
 
 type LivePost = { id: string; title: string; content: string; department: string; upvotes: number | null; created_at: string; author_id: string; profiles: { full_name: string; role: string } | { full_name: string; role: string }[] | null };
@@ -61,7 +62,7 @@ export default async function ForumDetail({ params }: { params: Promise<{ id: st
         <Link href="/forum" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary"><ArrowLeft className="h-4 w-4" /> Academic forum</Link>
         <header className="mt-10 rounded-2xl border border-outline bg-background/90 p-7 shadow-sm backdrop-blur-sm md:p-10">
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-widest">
-            <span className="rounded bg-primary/10 px-3 py-1 text-primary">{post.department}</span>
+            <span className="rounded bg-primary/10 px-3 py-1 text-primary">{getDepartmentLabel(post.department)}</span>
             {post.created_at && <time className="text-foreground/45">{new Date(post.created_at).toLocaleDateString()}</time>}
           </div>
           <h1 className="mt-6 text-4xl font-black leading-tight tracking-tight md:text-5xl">{post.title}</h1>

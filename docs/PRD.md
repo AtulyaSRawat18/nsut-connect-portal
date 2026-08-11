@@ -42,6 +42,7 @@ Become NSUT's trusted digital commons for research discovery, academic collabora
 - Public visitors can browse populated faculty, project, publication, news, forum, and opportunity pages.
 - Unauthorized users cannot retrieve or mutate protected data through routes or Supabase APIs.
 - The application is reproducible from committed schema, migrations, documentation, and seed tooling.
+- All 22 NSUT department/campus combinations use a canonical database catalogue and consistent selectors across public discovery, profiles, dashboards, and governed content workflows.
 
 ## 4. Goals and non-goals
 
@@ -121,8 +122,10 @@ No protected operation may rely solely on UI visibility or client state. Server 
 2. Supabase sends a PKCE-compatible verification link.
 3. Callback exchanges the code and establishes a session.
 4. Student account begins active with the student role.
-5. Student opens an available project and submits a statement of purpose and optional resume.
-6. Student tracks pending, accepted, or rejected status.
+5. Registration shows three explicit stages: account details, institutional email confirmation, and academic profile setup.
+6. After profile setup, an active student continues to the dashboard; pending faculty complete setup before institutional approval.
+7. Student opens an available project and submits a statement of purpose and flexible resume reference.
+8. Student tracks pending, accepted, or rejected status.
 
 Acceptance: duplicates are rejected; another student cannot read the application; unrelated faculty cannot review it.
 
@@ -183,7 +186,8 @@ Priority is P0 release-blocking, P1 pilot-important, and P2 later enhancement.
 - **FR-PRO-002 (P0):** Members edit only allowed fields of their own profile.
 - **FR-PRO-003 (P0):** Faculty profiles include department, designation, research, bio, office data, approved links, and verification.
 - **FR-PRO-004 (P0):** Student profiles expose appropriate academic fields without private application data.
-- **FR-PRO-005 (P1):** Directory search and filters work against persisted data.
+- **FR-PRO-005 (P0):** Students and faculty maintain biography, education, public contact details, approved links, and a CV/resume reference.
+- **FR-PRO-006 (P1):** Directory search and filters work against persisted data.
 
 ### Projects and applications
 
@@ -192,8 +196,10 @@ Priority is P0 release-blocking, P1 pilot-important, and P2 later enhancement.
 - **FR-PRJ-003 (P0):** Students apply once to an open project.
 - **FR-PRJ-004 (P0):** Faculty review only applications for owned projects.
 - **FR-PRJ-005 (P0):** Application status changes are recorded in history.
-- **FR-PRJ-006 (P1):** Faculty manage milestones and skill requirements.
-- **FR-PRJ-007 (P1):** Resume objects are private to student and authorized reviewers.
+- **FR-PRJ-006 (P0):** Project material accepts links, document references, descriptive text, or `NA`; it is not restricted to PDF.
+- **FR-PRJ-007 (P0):** Available seats are stored per project and updated transactionally when an application is accepted or an acceptance is reversed.
+- **FR-PRJ-008 (P1):** Faculty manage milestones and skill requirements.
+- **FR-PRJ-009 (P1):** Resume objects are private to student and authorized reviewers.
 
 ### Publications and content
 

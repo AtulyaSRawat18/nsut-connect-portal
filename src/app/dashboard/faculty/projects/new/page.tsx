@@ -7,14 +7,14 @@ import { ArrowLeft, FileCheck2, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import ResearchBackdrop from "@/components/shared/ResearchBackdrop";
+import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
 
-const departments = ["CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"] as const;
 const projectSchema = z.object({
   title: z.string().trim().min(5, "Title must be at least 5 characters").max(180),
   description: z.string().trim().min(20, "Description must be at least 20 characters").max(8000),
-  department: z.enum(departments),
+  department: z.string().refine(isDepartmentId, "Select a valid department"),
   maxStudents: z.number().int().min(1, "At least 1 student is required").max(50, "Capacity cannot exceed 50"),
-  briefUrl: z.string().trim().refine((value) => /^(https:\/\/|\/).+\.pdf(?:[?#].*)?$/i.test(value), "A direct HTTPS or site-local PDF link is required"),
+  briefUrl: z.string().trim().min(1, "Add a reference or enter NA").max(700),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -23,7 +23,7 @@ export default function NewProjectPage() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
-    defaultValues: { maxStudents: 1 },
+    defaultValues: { maxStudents: 1, briefUrl: "NA" },
   });
 
   async function onSubmit(data: ProjectFormValues) {
@@ -66,15 +66,15 @@ export default function NewProjectPage() {
           </div>
 
           <div className="rounded-xl border border-primary/25 bg-primary/5 p-5">
-            <div className="flex items-start gap-3"><FileCheck2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" /><div><label htmlFor="project-brief" className="block text-xs font-bold uppercase tracking-widest text-foreground">Project working PDF <span className="text-primary">(required)</span></label><p className="mt-1 text-xs leading-5 text-foreground/55">Link a direct PDF covering the problem, method, milestones, evidence plan, risks and expected outputs. A project cannot be published without it.</p></div></div>
-            <input id="project-brief" type="url" className={`mt-4 w-full border bg-background px-4 py-3 text-foreground outline-none transition-all focus:border-primary ${errors.briefUrl ? "border-red-500" : "border-outline"}`} placeholder="https://example.edu/project-working-brief.pdf" {...register("briefUrl")} />
+            <div className="flex items-start gap-3"><FileCheck2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" /><div><label htmlFor="project-brief" className="block text-xs font-bold uppercase tracking-widest text-foreground">Project material / reference</label><p className="mt-1 text-xs leading-5 text-foreground/55">Add a Drive, Docs, Word, PDF, or portal link; you may also enter descriptive text or NA when no material is assigned.</p></div></div>
+            <input id="project-brief" type="text" className={`mt-4 w-full border bg-background px-4 py-3 text-foreground outline-none transition-all focus:border-primary ${errors.briefUrl ? "border-red-500" : "border-outline"}`} placeholder="Drive/Docs/Word/PDF link, notes, or NA" {...register("briefUrl")} />
             {errors.briefUrl && <p className="mt-1 text-xs font-semibold text-red-500">{errors.briefUrl.message}</p>}
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
             <div>
               <label htmlFor="project-department" className="mb-2 block text-xs font-bold uppercase tracking-widest text-foreground">Primary department</label>
-              <select id="project-department" defaultValue="" className={`w-full border bg-background px-4 py-3 text-foreground outline-none focus:border-primary ${errors.department ? "border-red-500" : "border-outline"}`} {...register("department")}><option value="" disabled>Select department</option>{departments.map((department) => <option key={department} value={department}>{department}</option>)}</select>
+              <select id="project-department" defaultValue="" className={`w-full border bg-background px-4 py-3 text-foreground outline-none focus:border-primary ${errors.department ? "border-red-500" : "border-outline"}`} {...register("department")}><option value="" disabled>Select department</option>{DEPARTMENTS.map((department) => <option key={department.id} value={department.id}>{getDepartmentLabel(department.id)}</option>)}</select>
               {errors.department && <p className="mt-1 text-xs font-semibold text-red-500">{errors.department.message}</p>}
             </div>
             <div>

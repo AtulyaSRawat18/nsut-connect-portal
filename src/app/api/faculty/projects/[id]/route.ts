@@ -11,6 +11,7 @@ const assessmentSchema = z.object({
   progressPercent: z.number().int().min(0).max(100).optional(),
   healthStatus: z.enum(["on_track", "at_risk", "blocked", "completed"]).optional(),
   progressNote: z.string().trim().min(10).max(1000).optional(),
+  briefReference: z.string().trim().min(1).max(700).optional(),
 }).refine((value) => Object.values(value).some((item) => item !== undefined), "No project changes supplied");
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -32,6 +33,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (parsed.data.progressPercent !== undefined) changes.progress_percent = parsed.data.progressPercent;
     if (parsed.data.healthStatus !== undefined) changes.health_status = parsed.data.healthStatus;
     if (parsed.data.progressNote !== undefined) changes.progress_note = parsed.data.progressNote;
+    if (parsed.data.briefReference !== undefined) changes.brief_url = parsed.data.briefReference;
     if (parsed.data.progressPercent !== undefined || parsed.data.healthStatus !== undefined || parsed.data.progressNote !== undefined) changes.last_assessed_at = new Date().toISOString();
     const { error } = await supabase.from("projects").update(changes).eq("id", id);
     if (error) return authError(400, "ASSESSMENT_FAILED", error.message);

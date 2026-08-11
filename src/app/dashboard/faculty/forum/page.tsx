@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { MessageSquare, Search } from "lucide-react";
 import { requirePageIdentity } from "@/lib/auth/server";
+import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
 import { createClient } from "@/utils/supabase/server";
 import ForumPostForm from "./ForumPostForm";
-
-const departments = ["all", "CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"] as const;
 
 type ForumPostRow = {
   id: string;
@@ -23,9 +22,7 @@ export default async function FacultyForumPage({
   const identity = await requirePageIdentity({ roles: ["faculty", "admin"] });
   const params = await searchParams;
   const q = (params?.q || "").trim().toLowerCase();
-  const department = departments.includes(params?.department as (typeof departments)[number])
-    ? params?.department || "all"
-    : "all";
+  const department = isDepartmentId(params?.department) ? params.department : "all";
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -71,7 +68,8 @@ export default async function FacultyForumPage({
               defaultValue={department}
               className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary"
             >
-              {departments.map((item) => <option key={item} value={item}>{item === "all" ? "All departments" : item}</option>)}
+              <option value="all">All departments</option>
+              {DEPARTMENTS.map((item) => <option key={item.id} value={item.id}>{getDepartmentLabel(item.id)}</option>)}
             </select>
             <button className="rounded-lg bg-foreground px-5 py-3 text-xs font-bold uppercase tracking-widest text-background">Filter</button>
           </form>
@@ -85,7 +83,7 @@ export default async function FacultyForumPage({
           {!error && posts.map((post) => (
             <article key={post.id} className="rounded-2xl border border-outline bg-surface p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">{post.department}</span>
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">{getDepartmentLabel(post.department)}</span>
                 <span className="text-xs text-foreground/45">{new Date(post.created_at).toLocaleDateString()}</span>
               </div>
               <h2 className="mt-4 text-xl font-black text-foreground">{post.title}</h2>

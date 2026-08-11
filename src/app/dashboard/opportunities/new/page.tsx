@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
 
 const opportunitySchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -15,6 +16,7 @@ const opportunitySchema = z.object({
   type: z.enum(["internship", "scholarship", "event", "highlight"]),
   link_url: z.string().min(1, "An application or source link is required").refine((value) => value.startsWith("https://") || value.startsWith("/"), "Use an HTTPS or site-local link"),
   deadline: z.string().min(1, "Deadline date is required"),
+  department: z.string().refine(isDepartmentId, "Department is required"),
 });
 
 type OpportunityFormValues = z.infer<typeof opportunitySchema>;
@@ -164,6 +166,15 @@ export default function NewOpportunityPage() {
               {...register("deadline")}
             />
             {errors.deadline && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.deadline.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Department</label>
+            <select className={`w-full px-4 py-3 bg-background border ${errors.department ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`} defaultValue="" {...register("department")}>
+              <option value="" disabled>Select department</option>
+              {DEPARTMENTS.map((department) => <option key={department.id} value={department.id}>{getDepartmentLabel(department.id)}</option>)}
+            </select>
+            {errors.department && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.department.message}</p>}
           </div>
 
           <button

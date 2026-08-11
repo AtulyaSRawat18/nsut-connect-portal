@@ -3,6 +3,7 @@ import { BookOpen, ClipboardList, FolderKanban, Users } from "lucide-react";
 import { requirePageIdentity } from "@/lib/auth/server";
 import { createClient } from "@/utils/supabase/server";
 import WorkspaceStatCard from "@/components/workspace/WorkspaceStatCard";
+import { getDepartmentCompactLabel } from "@/lib/departments";
 
 export default async function FacultyWorkspaceOverview() {
   const identity = await requirePageIdentity({ permissions: ["project.create"] });
@@ -10,7 +11,7 @@ export default async function FacultyWorkspaceOverview() {
   const [projectsResult, pending, accepted, publications] = await Promise.all([
     supabase
       .from("projects")
-      .select("id, title, department, status, max_students, created_at")
+      .select("id, title, department, status, max_students, available_seats, created_at")
       .eq("faculty_id", identity.id)
       .order("created_at", { ascending: false }),
     supabase
@@ -56,8 +57,8 @@ export default async function FacultyWorkspaceOverview() {
           {(projects || []).slice(0, 6).map((project) => (
             <div key={project.id} className="grid gap-3 py-5 md:grid-cols-[1fr_7rem_7rem_6rem] md:items-center">
               <div><p className="font-bold text-foreground">{project.title}</p><p className="mt-1 text-xs text-foreground/45">Created {new Date(project.created_at).toLocaleDateString()}</p></div>
-              <span className="text-xs font-semibold text-foreground/55">{project.department}</span>
-              <span className="text-xs text-foreground/55">{project.max_students} seats</span>
+              <span className="text-xs font-semibold text-foreground/55">{getDepartmentCompactLabel(project.department)}</span>
+              <span className="text-xs text-foreground/55">{project.available_seats ?? project.max_students} / {project.max_students} seats available</span>
               <span className={`w-fit rounded-full px-3 py-1 text-[10px] font-bold uppercase ${project.status === "open" ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-500"}`}>{project.status}</span>
             </div>
           ))}

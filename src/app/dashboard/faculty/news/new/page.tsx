@@ -6,11 +6,13 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
 
 const newsSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   content: z.string().min(20, "Content must be at least 20 characters"),
   category: z.string().min(1, "Category is required"),
+  department: z.string().refine(isDepartmentId, "Department is required"),
   sourceUrl: z.string().url("A valid source URL is required").refine((value) => value.startsWith("https://"), "Use an HTTPS source URL"),
 });
 
@@ -97,6 +99,15 @@ export default function NewNewsPage() {
               <option value="event">Event Announcement</option>
             </select>
             {errors.category && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.category.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Department</label>
+            <select className={`w-full px-4 py-3 bg-background border ${errors.department ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`} defaultValue="" {...register("department")}>
+              <option value="" disabled>Select department</option>
+              {DEPARTMENTS.map((department) => <option key={department.id} value={department.id}>{getDepartmentLabel(department.id)}</option>)}
+            </select>
+            {errors.department && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.department.message}</p>}
           </div>
 
           <button

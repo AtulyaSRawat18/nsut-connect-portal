@@ -1,5 +1,6 @@
 import { ExternalLink, UserCheck } from "lucide-react";
 import { requirePageIdentity } from "@/lib/auth/server";
+import { getDepartmentLabel } from "@/lib/departments";
 import { createClient } from "@/utils/supabase/server";
 import VerificationActions from "@/app/moderator/faculty-verification/VerificationActions";
 
@@ -7,6 +8,7 @@ export default async function AdminFacultyVerificationPage() {
   await requirePageIdentity({ roles: ["admin"], permissions: ["faculty.verify"] });
   const supabase = await createClient();
   const { data: requests, error } = await supabase.from("faculty_verification_requests").select("id, faculty_id, department, designation, employee_reference, evidence_url, status, submitted_at, portal_users!faculty_verification_requests_faculty_id_fkey(name, email)").in("status", ["pending", "reviewing", "changes_requested"]).order("submitted_at", { ascending: true });
+  requests?.forEach((request) => { request.department = getDepartmentLabel(request.department); });
 
   return <div className="space-y-8">
     <header><p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Institutional identity</p><h1 className="text-4xl font-black text-foreground">Faculty verification</h1><p className="mt-3 max-w-2xl text-foreground/55">Review institutional evidence before activating faculty publishing and student-application privileges.</p></header>

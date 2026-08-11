@@ -9,10 +9,7 @@ const applicationSchema = z.object({
   statementOfPurpose: z.string().trim().min(100).max(3000),
   skillsSummary: z.string().trim().min(40).max(1200),
   availabilityHours: z.coerce.number().int().min(1).max(40),
-  resumeUrl: z.string().trim().max(700).refine(
-    (value) => /^https:\/\/\S+\.pdf(?:[?#].*)?$/i.test(value) || /^\/\S+\.pdf(?:[?#].*)?$/i.test(value),
-    "Provide a direct HTTPS or portal-local PDF link for the CV",
-  ),
+  resumeUrl: z.string().trim().min(1).max(700),
   googleFormResponseUrl: z.string().trim().url().max(700).refine((value) => {
     try {
       const url = new URL(value);
@@ -36,11 +33,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (!parsed.success) return authError(400, "INVALID_APPLICATION", parsed.error.issues[0]?.message || "Complete every required application field");
 
     const supabase = await createClient();
-    const { data: project, error: projectError } = await supabase.from("projects").select("id, status, brief_url").eq("id", id).maybeSingle();
+    const { data: project, error: projectError } = await supabase.from("projects").select("id, status, available_seats").eq("id", id).maybeSingle();
     if (projectError) return authError(503, "PROJECT_UNAVAILABLE", "The project could not be checked");
     if (!project) return authError(404, "PROJECT_NOT_FOUND", "Project not found");
     if (project.status !== "open") return authError(409, "PROJECT_CLOSED", "This project is not accepting applications");
-    if (!project.brief_url) return authError(409, "PROJECT_BRIEF_REQUIRED", "The faculty owner must add the working PDF before applications open");
+    if (project.available_seats <= 0) return authError(409, "PROJECT_FULL", "This project has no seats available");
 
     const { data, error } = await supabase.from("applications").insert({
       project_id: id,

@@ -1,6 +1,19 @@
 import { createClient } from "@/utils/supabase/server";
+import { getDepartmentCompactLabel } from "@/lib/departments";
 import Link from "next/link";
 import { ArrowLeft, Clock, CheckCircle2, XCircle } from "lucide-react";
+
+type StudentApplication = {
+  id: string;
+  status: "pending" | "accepted" | "rejected";
+  applied_at: string;
+  projects: {
+    id: string;
+    title: string;
+    department: string | null;
+    portal_users: { name: string } | null;
+  };
+};
 
 export default async function StudentApplicationsPage() {
   const supabase = await createClient();
@@ -26,6 +39,7 @@ export default async function StudentApplicationsPage() {
     `)
     .eq("student_id", user.id)
     .order("applied_at", { ascending: false });
+  const studentApplications = (applications ?? []) as unknown as StudentApplication[];
 
   return (
     <div className="min-h-screen bg-background py-16 px-6">
@@ -45,15 +59,15 @@ export default async function StudentApplicationsPage() {
           </div>
 
           <div className="divide-y divide-outline">
-            {applications && applications.length > 0 ? (
-              applications.map((app: any) => (
+            {studentApplications.length > 0 ? (
+              studentApplications.map((app) => (
                 <div key={app.id} className="grid grid-cols-4 sm:grid-cols-12 gap-4 p-4 items-center hover:bg-surface-container-lowest transition-colors">
                   <div className="col-span-2 sm:col-span-6">
                     <Link href={`/projects/${app.projects.id}`} className="font-bold text-foreground hover:text-primary transition-colors block truncate">
                       {app.projects.title}
                     </Link>
                     <p className="text-xs text-foreground/70 mt-1">
-                      {app.projects.portal_users?.name} • {app.projects.department}
+                      {app.projects.portal_users?.name} • {getDepartmentCompactLabel(app.projects.department)}
                     </p>
                   </div>
                   <div className="col-span-1 sm:col-span-3 text-sm text-foreground/70">
@@ -75,7 +89,7 @@ export default async function StudentApplicationsPage() {
               ))
             ) : (
               <div className="p-8 text-center text-foreground/50 text-sm">
-                You haven't applied to any projects yet.
+                You haven&apos;t applied to any projects yet.
               </div>
             )}
           </div>

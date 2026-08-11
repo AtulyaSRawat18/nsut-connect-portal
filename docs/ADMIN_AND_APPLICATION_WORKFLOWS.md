@@ -2,8 +2,9 @@
 
 This document describes the staging prototype implemented by migrations
 202608030005_application_admin_workflow.sql,
-202608030006_forum_moderation_guards.sql, and
-202608030007_application_submission_guards.sql.
+202608030006_forum_moderation_guards.sql,
+202608030007_application_submission_guards.sql, and
+202608110008_editable_profiles_flexible_evidence_and_seats.sql.
 
 ## Login modes
 
@@ -20,24 +21,27 @@ RLS and server permission guards remain authoritative.
 
 ## Structured project applications
 
-An open project must publish a project-brief PDF before it can accept
-applications. A complete application contains:
+An open project may publish its working material as a Drive/Docs link, Word or
+PDF link, portal-local file, descriptive reference, or `NA`. A complete
+application contains:
 
 - A 100–3,000 character statement of purpose.
 - A 40–1,200 character skills and evidence summary.
 - Weekly availability from 1 to 40 hours.
-- A direct HTTPS or portal-local PDF CV link.
+- A CV/resume reference (link, document reference, descriptive text, or `NA`).
 - An HTTPS Google Forms response or questionnaire link.
 - The applicant's explicit confirmation that the links are appropriate to share
   with the faculty reviewer.
 
 Submissions pass through POST /api/projects/[id]/applications, which verifies
-the active student identity, application.create, the open project, the project
-brief, field formats, and duplicate applications. Faculty decisions pass through
+the active student identity, application.create, the open project, remaining
+seat availability, field formats, and duplicate applications. Faculty decisions pass through
 PATCH /api/faculty/applications/[id] and the review_project_application
 security-definer function. The function checks application.review and verifies
-that the reviewer owns the target project. Direct application updates are revoked
-from the authenticated role.
+that the reviewer owns the target project. Acceptance locks the application and
+project rows, decrements `projects.available_seats` exactly once, and refuses an
+acceptance when no seat remains. Reversing an acceptance restores one seat.
+Direct application updates are revoked from the authenticated role.
 
 Staging contains two complete pending examples for the first demo faculty account.
 Their CVs are synthetic PDFs under public/demo-cvs/. Their Google Forms URLs are

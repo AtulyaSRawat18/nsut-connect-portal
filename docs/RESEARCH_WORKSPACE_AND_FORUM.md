@@ -3,7 +3,7 @@
 ## User-facing behavior
 
 - `/dashboard` is the role entry point. Faculty are redirected to the single faculty workspace at `/dashboard/faculty`; administrators and standalone moderators are redirected to their governed workspaces. This removes the earlier duplicate faculty portal.
-- Faculty projects require a direct HTTPS or site-local PDF working brief at creation time. The brief should document the problem, method, milestones, evidence plan, risks, responsible-use limits, and expected outputs.
+- Faculty projects accept a Drive/Docs link, Word or PDF link, portal-local file, descriptive reference, or `NA` at creation time. Linked material should document the problem, method, milestones, evidence plan, risks, responsible-use limits, and expected outputs where applicable.
 - Faculty can record project progress from 0–100%, health (`on_track`, `at_risk`, `blocked`, or `completed`), and a dated assessment note.
 - New news records require a primary HTTPS source. New opportunities require an HTTPS or site-local action/source link.
 - The public forum supports signed up/down scores and inline replies on the forum feed. Full thread pages remain available for complete discussion history.
