@@ -1,5 +1,5 @@
 ﻿import Link from "next/link";
-import { Filter, Plus, Search } from "lucide-react";
+import { Filter, Pencil, Plus, Search } from "lucide-react";
 import { requirePageIdentity } from "@/lib/auth/server";
 import { createClient } from "@/utils/supabase/server";
 import { ToggleProjectStatus } from "@/components/dashboard/ToggleProjectStatus";
@@ -21,7 +21,7 @@ export default async function FacultyProjectsPage({
   const supabase = await createClient();
   const currentProjects = await supabase
     .from("projects")
-    .select("id, title, description, department, status, created_at, brief_url, application_form_url, progress_percent, health_status, progress_note, last_assessed_at")
+    .select("id, title, description, department, status, created_at, max_students, available_seats, brief_url, application_form_url, progress_percent, health_status, progress_note, last_assessed_at")
     .eq("faculty_id", identity.id)
     .order("created_at", { ascending: false });
 
@@ -30,7 +30,7 @@ export default async function FacultyProjectsPage({
   if (error && error.message.includes("application_form_url")) {
     const legacyProjects = await supabase
       .from("projects")
-      .select("id, title, description, department, status, created_at, brief_url, progress_percent, health_status, progress_note, last_assessed_at")
+      .select("id, title, description, department, status, created_at, max_students, available_seats, brief_url, progress_percent, health_status, progress_note, last_assessed_at")
       .eq("faculty_id", identity.id)
       .order("created_at", { ascending: false });
     data = legacyProjects.data?.map((project) => ({ ...project, application_form_url: "NA" })) || null;
@@ -73,7 +73,7 @@ export default async function FacultyProjectsPage({
                 <ToggleProjectStatus projectId={project.id} initialStatus={project.status} />
               </div>
               <p className="line-clamp-3 text-sm leading-relaxed text-foreground/60">{project.description}</p>
-              <div className="mt-6 flex items-center justify-between border-t border-outline pt-4 text-xs text-foreground/45"><span>{project.status === "open" ? "Receiving student intake and collaboration requests" : "Requests closed"}</span><span>{new Date(project.created_at).toLocaleDateString()}</span></div>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-outline pt-4 text-xs text-foreground/45"><span>{project.status === "open" ? "Receiving student intake and collaboration requests" : "Requests closed"} · {project.available_seats}/{project.max_students} seats available</span><Link href={`/dashboard/faculty/projects/${project.id}/edit`} className="inline-flex items-center gap-2 rounded border border-outline px-3 py-2 text-[10px] font-black uppercase tracking-widest text-primary hover:border-primary"><Pencil className="h-3.5 w-3.5" /> Edit all fields</Link></div>
               <ProjectAssessment projectId={project.id} briefUrl={project.brief_url} applicationFormUrl={project.application_form_url || "NA"} initialProgress={project.progress_percent || 0} initialHealth={project.health_status || "on_track"} initialNote={project.progress_note} />
             </article>
           ))}

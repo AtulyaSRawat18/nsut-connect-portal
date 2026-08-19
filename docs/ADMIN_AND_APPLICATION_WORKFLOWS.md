@@ -161,8 +161,11 @@ Apply `202608110012_project_application_questionnaires.sql` after migration `011
 
 - Every project stores `application_form_url`: a published Google Forms URL, an
   approved `/demo-forms/` staging path, or `NA`.
-- Faculty set the questionnaire while publishing a project and can update it in
-  the project assessment workspace.
+- Faculty set the questionnaire while publishing a project and can update it,
+  together with the title, description, department, capacity, PDF/material,
+  listing status, progress, health and notes, in the owner-only project editor.
+- Capacity changes reuse the database seat-accounting trigger and cannot reduce
+  capacity below the number of accepted students.
 - Students open the assigned form from the project or application modal. When a
   form is assigned, the server refuses applications whose evidence is `NA`.
 - When no form is assigned, the server stores `NA` and refuses an unrelated form

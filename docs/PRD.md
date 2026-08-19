@@ -200,6 +200,7 @@ Priority is P0 release-blocking, P1 pilot-important, and P2 later enhancement.
 - **FR-PRJ-007 (P0):** Available seats are stored per project and updated transactionally when an application is accepted or an acceptance is reversed.
 - **FR-PRJ-008 (P1):** Faculty manage milestones and skill requirements.
 - **FR-PRJ-009 (P1):** Resume objects are private to student and authorized reviewers.
+- **FR-PRJ-010 (P0):** Project owners can update every published listing field, including title, description, department, status, capacity, PDF/material reference, application questionnaire, progress, health, and assessment notes. Capacity reductions below accepted-student count are rejected by the database.
 
 ### Publications and content
 
@@ -391,7 +392,7 @@ NEXT_PUBLIC_SITE_URL
 CRON_SECRET
 ```
 
-**Current blocker:** workstation configuration points to a retired Supabase hostname. Do not seed until a live project URL and matching keys replace it.
+**Current staging status:** migrations `001` through `012` and the namespaced demo seed are applied to the verified staging Supabase target. Any production environment must use separate keys and data, approved redirects and authentication hooks, backups, monitoring, and institutional security/privacy authorization.
 
 ## 16. Testing and release gates
 

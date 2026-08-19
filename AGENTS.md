@@ -17,20 +17,19 @@ institutional approval.
 - Stack: Next.js 16, React 19, TypeScript, Tailwind CSS, Supabase Auth and Postgres
 - Source: `src/`
 - Schema baseline: `supabase/schema.sql`
-- Migrations, in order:
-  1. `supabase/migrations/202607290001_auth_foundation.sql`
-  2. `supabase/migrations/202607290002_rbac_moderation_faculty.sql`
+- Migrations: ordered versioned files `001` through `012` under
+  `supabase/migrations/`; never skip an earlier pending version.
 - Auth notes: `BACKEND_AUTH.md`
 - Seeder: `scripts/seed-demo.mjs`
 - Commands: `npm run dev`, `npm run build`, `npm run seed:demo`, `npm run seed:demo:clean`
 
-## Known blocker
+## Environment status
 
-The configured Supabase hostname is retired and does not resolve. Do not seed,
-apply remote migrations, or attempt live authentication/database work until a
-new live staging Supabase project URL and matching keys are confirmed. Verify
-the exact target before running any seed or migration command. Never guess or
-fabricate a project.
+The verified staging Supabase project has migrations `001` through `012` and the
+namespaced demo seed applied. Before any remote migration or seed, verify the
+exact linked project is this non-production staging target. Never guess a target,
+reuse staging credentials in production, or treat staging validation as
+production approval.
 
 ## Non-goals
 
