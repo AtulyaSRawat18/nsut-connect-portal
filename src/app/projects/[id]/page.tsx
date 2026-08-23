@@ -2,8 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, FileText, Calendar } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { ApplyProjectButton } from "@/components/projects/ApplyProjectButton";
+import { StudentProjectAction } from "@/components/projects/StudentProjectAction";
+import { FacultyCollaborationButton } from "@/components/projects/FacultyCollaborationButton";
 import { getShowcaseProject } from "@/content/showcase";
+import { getDepartmentCompactLabel, getDepartmentLabel } from "@/lib/departments";
+import { getPortalIdentity } from "@/lib/auth/server";
 
 export default async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
@@ -11,14 +14,35 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
   const brief = getShowcaseProject(id);
 
   // Fetch project details
-  const { data: project } = await supabase
+  const { data: liveProject } = await supabase
     .from("projects")
     .select("*, profiles!projects_faculty_id_fkey(id, full_name, role)")
     .eq("id", id)
     .single();
 
+  const project = liveProject || (brief ? {
+    id: brief.id,
+    title: brief.title,
+    description: brief.summary,
+    department: brief.department,
+    status: brief.status,
+    max_students: brief.maxStudents,
+    available_seats: brief.status === "open" ? brief.maxStudents : 0,
+    brief_url: brief.pdf,
+    application_form_url: brief.applicationFormUrl,
+    progress_percent: brief.status === "closed" ? 100 : 25,
+    health_status: "on_track",
+    progress_note: "Demo project listing. Live progress becomes available after the staging database is seeded.",
+    created_at: "2026-08-01T08:00:00.000Z",
+    profiles: { id: "", full_name: brief.leadName, role: "faculty" },
+  } : null);
   if (!project) notFound();
+  const isDemoOnly = !liveProject;
+  const projectFaculty = Array.isArray(project.profiles) ? project.profiles[0] : project.profiles;
   const briefUrl = project.brief_url || brief?.pdf || null;
+  const linkedBrief = Boolean(briefUrl && (briefUrl.startsWith("https://") || briefUrl.startsWith("/")));
+  const applicationFormUrl = project.application_form_url || brief?.applicationFormUrl || "NA";
+  const linkedApplicationForm = applicationFormUrl !== "NA" && (applicationFormUrl.startsWith("https://") || applicationFormUrl.startsWith("/demo-forms/"));
 
   // Fetch related projects (same department, excluding current)
   const { data: relatedProjects } = await supabase
@@ -28,8 +52,10 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
     .neq("id", id)
     .limit(3);
 
-  // Check if current user is logged in
-  const { data: { user } } = await supabase.auth.getUser();
+  const identity = await getPortalIdentity();
+  const isStudentViewer = Boolean(identity?.roles.includes("student"));
+  const isFacultyViewer = Boolean(identity?.roles.includes("faculty"));
+  const isOwner = Boolean(identity && projectFaculty?.id === identity.id);
 
   return (
     <div className="min-h-screen bg-background font-sans py-16">
@@ -44,7 +70,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
             <div>
               <div className="flex gap-3 mb-4">
                 <span className="bg-primary/10 text-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded">
-                  {project.department}
+                  {getDepartmentCompactLabel(project.department)}
                 </span>
                 <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded ${project.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                   {project.status}
@@ -77,7 +103,8 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
                 <Calendar className="w-5 h-5 text-primary" />
                 <span>Posted on {new Date(project.created_at).toLocaleDateString()}</span>
               </div>
-              {briefUrl ? <div className="flex items-center gap-4 text-foreground/80 mb-6"><FileText className="w-5 h-5 text-primary" /><a href={briefUrl} target="_blank" rel="noreferrer" className="font-bold text-primary hover:underline">Download compulsory working brief (PDF)</a></div> : <div className="mb-6 border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-600">This project is missing its required working PDF and should not accept applications until the faculty owner adds it.</div>}
+              {linkedBrief ? <div className="mb-6 flex items-center gap-4 text-foreground/80"><FileText className="h-5 w-5 text-primary" /><a href={briefUrl!} target="_blank" rel="noreferrer" className="font-bold text-primary hover:underline">Open project material</a></div> : <div className="mb-6 rounded border border-outline bg-background p-4 text-sm text-foreground/65"><strong className="text-foreground">Project material:</strong> {briefUrl || "NA"}</div>}
+              {linkedApplicationForm ? <div className="mb-6 flex items-center gap-4 text-foreground/80"><FileText className="h-5 w-5 text-blue-600" /><a href={applicationFormUrl} target="_blank" rel="noreferrer" className="font-bold text-blue-700 hover:underline">Open application questionnaire</a></div> : <div className="mb-6 rounded border border-outline bg-background p-4 text-sm text-foreground/65"><strong className="text-foreground">Application questionnaire:</strong> Not assigned</div>}
               {brief && <ol className="mt-6 list-decimal space-y-2 pl-5 text-sm text-foreground/65">{brief.timeline.map((item) => <li key={item}>{item}</li>)}</ol>}
             </div>
           </div>
@@ -86,13 +113,21 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
           <div className="space-y-8">
             {/* Action Card */}
             <div className="bg-secondary p-8 rounded-xl text-center shadow-xl border border-outline">
-              <h3 className="text-foreground font-bold text-xl mb-4">Ready to Apply?</h3>
-              <p className="text-foreground/70 text-sm mb-6">Submit your resume and statement of purpose directly to the principal investigator.</p>
-              {user ? (
-                 <ApplyProjectButton projectId={project.id} maxStudents={project.max_students} isClosed={project.status !== 'open' || !briefUrl} />
+              <h3 className="text-foreground font-bold text-xl mb-4">{isFacultyViewer ? "Faculty collaboration" : "Student participation"}</h3>
+              <p className="text-foreground/70 text-sm mb-6">{isFacultyViewer ? "Propose a peer research collaboration without affecting student capacity." : "Open vacancies use seat applications. Full projects accept separate non-seat contribution requests."}</p>
+              {isDemoOnly ? (
+                <Link href={`/contact?subject=${encodeURIComponent(`Project interest: ${project.title}`)}`} className="block w-full rounded bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary transition-colors hover:brightness-110">Express interest</Link>
+              ) : isOwner ? (
+                <Link href="/dashboard/faculty/requests" className="block w-full rounded bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary">Review project requests</Link>
+              ) : isFacultyViewer ? (
+                <FacultyCollaborationButton projectId={project.id} isClosed={project.status !== "open"} />
+              ) : isStudentViewer ? (
+                <StudentProjectAction projectId={project.id} availableSeats={project.available_seats ?? project.max_students} isClosed={project.status !== "open"} applicationFormUrl={applicationFormUrl} />
+              ) : identity ? (
+                <p className="rounded border border-outline bg-background p-4 text-sm text-foreground/60">Your current role can view this project but cannot submit a participation request.</p>
               ) : (
                 <Link href="/login" className="block w-full bg-primary text-on-primary py-4 font-bold uppercase tracking-widest text-sm rounded hover:brightness-110 transition-colors">
-                  Log in to Apply
+                  Log in to participate
                 </Link>
               )}
             </div>
@@ -102,16 +137,14 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
               <h4 className="font-bold text-xs text-foreground/50 tracking-widest uppercase mb-4">Principal Investigator</h4>
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-primary/20 border border-outline flex items-center justify-center text-primary font-bold text-xl">
-                  {project.profiles?.full_name?.charAt(0) || 'D'}
+                  {projectFaculty?.full_name?.charAt(0) || 'D'}
                 </div>
                 <div>
-                  <h4 className="font-bold text-foreground text-lg">{project.profiles?.full_name || 'Dr. Unknown'}</h4>
-                  <p className="text-sm text-foreground/70">{project.department} Dept</p>
+                  <h4 className="font-bold text-foreground text-lg">{projectFaculty?.full_name || 'Dr. Unknown'}</h4>
+                  <p className="text-sm text-foreground/70">{getDepartmentLabel(project.department)}</p>
                 </div>
               </div>
-              <Link href={`/profile/${project.profiles?.id}`} className="block mt-6 text-center border border-primary text-primary py-2 font-bold uppercase tracking-widest text-xs rounded hover:bg-primary/5 transition-colors">
-                View Full Profile
-              </Link>
+              {projectFaculty?.id ? <Link href={`/profile/${projectFaculty.id}`} className="block mt-6 text-center border border-primary text-primary py-2 font-bold uppercase tracking-widest text-xs rounded hover:bg-primary/5 transition-colors">View Full Profile</Link> : <p className="mt-6 rounded border border-outline bg-background p-3 text-center text-xs text-foreground/55">Demo faculty profile links activate after the database seed is applied.</p>}
             </div>
 
             {/* Related Projects */}

@@ -3,6 +3,16 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type PortalRole = "student" | "faculty" | "moderator" | "admin";
 
+function isSeededDemoAccount(user: {
+  email?: string | null;
+  app_metadata?: Record<string, unknown>;
+}) {
+  if (user.app_metadata?.demo_account === true) return true;
+  return /^demo\.(?:student\d{2}|faculty\d{2}|moderator)@nsut\.ac\.in$/i.test(
+    user.email || "",
+  );
+}
+
 function rolesForPath(pathname: string): readonly PortalRole[] | null {
   if (pathname.startsWith("/admin")) return ["admin"];
   if (pathname.startsWith("/moderator")) return ["moderator", "admin"];
@@ -108,9 +118,31 @@ export async function proxy(request: NextRequest) {
           (profile.banned_until &&
             new Date(profile.banned_until).getTime() > Date.now());
         const isActive = profile.account_status === "active" && !isBanned;
+        const isDemoAccount = isSeededDemoAccount(user);
+
+        // Demo accounts are provisioned with complete role-specific profiles and
+        // must open their workspace immediately. Keep completion in a separate
+        // query so a lagging staging migration cannot invalidate the required
+        // account/RBAC lookup for these accounts.
+        const completionResult = isDemoAccount
+          ? { data: { profile_completed_at: "demo-seed" }, error: null }
+          : await supabase
+              .from("portal_users")
+              .select("profile_completed_at")
+              .eq("id", user.id)
+              .single();
+        const profileCompleted = Boolean(completionResult.data?.profile_completed_at);
 
         if (isProtectedRoute && !isActive) {
           return redirectTo(request, "/unauthorized", "account_inactive", supabaseResponse);
+        }
+
+        if (isProtectedRoute && completionResult.error) {
+          return redirectTo(request, "/login", "profile_incomplete", supabaseResponse);
+        }
+
+        if (isProtectedRoute && !profileCompleted) {
+          return redirectTo(request, "/onboarding", "profile_setup_required", supabaseResponse);
         }
 
         if (
@@ -121,8 +153,13 @@ export async function proxy(request: NextRequest) {
           return redirectTo(request, "/unauthorized", "insufficient_role", supabaseResponse);
         }
 
-        if (isAuthRoute && isActive) {
-          return redirectTo(request, "/dashboard", undefined, supabaseResponse);
+        if (isAuthRoute && isActive && !completionResult.error) {
+          return redirectTo(
+            request,
+            profileCompleted ? "/dashboard" : "/onboarding",
+            undefined,
+            supabaseResponse,
+          );
         }
       }
     }

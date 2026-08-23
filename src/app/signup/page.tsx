@@ -1,303 +1,66 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Loader2, MailCheck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import zxcvbn from "zxcvbn";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import Link from "next/link";
+import RegistrationSteps from "@/components/auth/RegistrationSteps";
 
 const signupSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address").endsWith("@nsut.ac.in", "Must use official @nsut.ac.in email"),
+  fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
+  email: z.email("Enter a valid email").endsWith("@nsut.ac.in", "Use your official @nsut.ac.in email"),
   role: z.enum(["student", "faculty"]),
-  password: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "At least one uppercase")
-    .regex(/[a-z]/, "At least one lowercase")
-    .regex(/[0-9]/, "At least one number")
-    .regex(/[^A-Za-z0-9]/, "At least one special character"),
-  rollNumber: z.string().optional(),
-  course: z.string().optional(),
-  year: z.string().optional(),
-  department: z.string().optional(),
-  designation: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (data.role === "student") {
-    if (!data.rollNumber) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Roll number is required", path: ["rollNumber"] });
-    if (!data.course) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Course is required", path: ["course"] });
-    if (!data.year) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Year is required", path: ["year"] });
-  } else {
-    if (!data.department) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Department is required", path: ["department"] });
-    if (!data.designation) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Designation is required", path: ["designation"] });
-  }
+  password: z.string().min(8, "Use at least 8 characters").regex(/[A-Z]/, "Add an uppercase letter").regex(/[a-z]/, "Add a lowercase letter").regex(/[0-9]/, "Add a number").regex(/[^A-Za-z0-9]/, "Add a special character"),
 });
 
-type SignupFormValues = z.infer<typeof signupSchema>;
+type SignupValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordScore, setPasswordScore] = useState(0);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<SignupValues>({ resolver: zodResolver(signupSchema), defaultValues: { role: "student" } });
+  const role = useWatch({ control, name: "role" });
+  const password = useWatch({ control, name: "password" });
+  const passwordScore = password ? zxcvbn(password).score : 0;
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      role: "student",
-    },
-  });
-
-  const selectedRole = watch("role");
-  const passwordValue = watch("password");
-
-  useEffect(() => {
-    if (passwordValue) {
-      const result = zxcvbn(passwordValue);
-      setPasswordScore(result.score);
-    } else {
-      setPasswordScore(0);
+  async function onSubmit(data: SignupValues) {
+    setServerError("");
+    const response = await fetch("/api/auth/signup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      setServerError(result.message || "Registration failed");
+      return;
     }
-  }, [passwordValue]);
+    setSubmittedEmail(data.email);
+  }
 
-  const onSubmit = async (data: SignupFormValues) => {
-    setServerError(null);
+  if (submittedEmail) {
+    return <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12"><div className="w-full max-w-lg rounded-2xl border border-outline bg-surface p-8 text-center shadow-xl"><RegistrationSteps current={2} /><MailCheck className="mx-auto h-14 w-14 text-primary" /><h1 className="mt-5 text-3xl font-black text-foreground">Confirm your email</h1><p className="mt-4 leading-7 text-foreground/65">We sent a verification link to <strong className="text-foreground">{submittedEmail}</strong>. Open it to continue to profile setup.</p><p className="mt-4 rounded-lg border border-outline bg-background p-4 text-sm text-foreground/55">After confirmation: build your public academic profile, then continue to the dashboard. Faculty accounts still require institutional approval before faculty tools unlock.</p><Link href="/login" className="mt-7 inline-block text-xs font-bold uppercase tracking-widest text-primary hover:underline">Return to sign in</Link></div></div>;
+  }
 
-    try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = (await response.json()) as { message?: string };
-
-      if (!response.ok) {
-        setServerError(result.message || "Registration failed");
-        return;
-      }
-
-      alert(result.message || "Registration successful. Check your NSUT email.");
-      router.push("/login");
-    } catch {
-      setServerError("Registration is temporarily unavailable");
-    }
-  };
-
-  const getStrengthColor = () => {
-    switch (passwordScore) {
-      case 0: return "bg-red-500 w-1/5";
-      case 1: return "bg-orange-500 w-2/5";
-      case 2: return "bg-yellow-500 w-3/5";
-      case 3: return "bg-blue-400 w-4/5";
-      case 4: return "bg-green-500 w-full";
-      default: return "bg-gray-200 w-0";
-    }
-  };
-
-  const getStrengthText = () => {
-    if (!passwordValue) return "";
-    switch (passwordScore) {
-      case 0:
-      case 1: return "Weak";
-      case 2: return "Fair";
-      case 3: return "Good";
-      case 4: return "Strong";
-      default: return "";
-    }
-  };
+  const strengthWidth = ["w-1/5", "w-2/5", "w-3/5", "w-4/5", "w-full"][passwordScore] || "w-0";
+  const strengthColor = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-green-500"][passwordScore] || "bg-transparent";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12 transition-colors">
-      <div className="max-w-md w-full bg-surface p-8 rounded-xl border border-outline shadow-xl relative z-10 overflow-hidden">
-
-        {/* Top Aesthetic Line */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
-
-        <div className="text-center mb-8 mt-4">
-          <img src="/nsut-logo.png" alt="NSUT Logo" className="w-16 h-16 mx-auto mb-4" />
-          <h2 className="text-3xl font-extrabold text-foreground uppercase tracking-wider">
-            Portal Unified Registration
-          </h2>
-          <p className="text-foreground/70 mt-2 text-sm font-medium">
-            Create your account to access NSUT resources
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {serverError && (
-            <div className="bg-primary/10 border-l-2 border-primary p-4 text-primary text-sm font-bold">
-              {serverError}
-            </div>
-          )}
-
-          {/* Role Selection */}
-          <div className="flex gap-4 p-1 bg-background border border-outline rounded-md">
-            <label className={`flex-1 text-center py-2 text-sm font-bold uppercase tracking-widest cursor-pointer transition-colors ${selectedRole === "student" ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-foreground/5"}`}>
-              <input type="radio" value="student" className="hidden" {...register("role")} />
-              Student
-            </label>
-            <label className={`flex-1 text-center py-2 text-sm font-bold uppercase tracking-widest cursor-pointer transition-colors ${selectedRole === "faculty" ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-foreground/5"}`}>
-              <input type="radio" value="faculty" className="hidden" {...register("role")} />
-              Faculty
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Full Name</label>
-            <input
-              type="text"
-              className={`w-full px-4 py-3 bg-background border ${errors.fullName ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30`}
-              placeholder="Full Name"
-              {...register("fullName")}
-            />
-            {errors.fullName && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.fullName.message}</p>}
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Institutional Email</label>
-            <input
-              type="email"
-              className={`w-full px-4 py-3 bg-background border ${errors.email ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30`}
-              placeholder="name@nsut.ac.in"
-              {...register("email")}
-            />
-            {errors.email && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.email.message}</p>}
-          </div>
-
-          {selectedRole === "student" && (
-            <>
-              <div>
-                <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">NSUT Roll Number</label>
-                <input
-                  type="text"
-                  className={`w-full px-4 py-3 bg-background border ${errors.rollNumber ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30`}
-                  placeholder="2024UEXXXX"
-                  {...register("rollNumber")}
-                />
-                {errors.rollNumber && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.rollNumber.message}</p>}
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Course</label>
-                  <select
-                    className={`w-full px-4 py-3 bg-background border ${errors.course ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all`}
-                    {...register("course")}
-                  >
-                    <option value="">Select</option>
-                    <option value="B.Tech">B.Tech</option>
-                    <option value="M.Tech">M.Tech</option>
-                    <option value="Ph.D">Ph.D</option>
-                    <option value="BBA">BBA</option>
-                    <option value="MBA">MBA</option>
-                  </select>
-                  {errors.course && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.course.message}</p>}
-                </div>
-                <div className="w-1/3">
-                  <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Year</label>
-                  <select
-                    className={`w-full px-4 py-3 bg-background border ${errors.year ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all`}
-                    {...register("year")}
-                  >
-                    <option value="">Year</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                  </select>
-                  {errors.year && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.year.message}</p>}
-                </div>
-              </div>
-            </>
-          )}
-
-          {selectedRole === "faculty" && (
-            <>
-              <div>
-                <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Department</label>
-                <select
-                  className={`w-full px-4 py-3 bg-background border ${errors.department ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all`}
-                  {...register("department")}
-                >
-                  <option value="">Select Department</option>
-                  <option value="CSE">Computer Science</option>
-                  <option value="ECE">Electronics & Comm.</option>
-                  <option value="IT">Information Tech</option>
-                  <option value="MAC">Mathematics & Comp.</option>
-                  <option value="MECH">Mechanical Eng.</option>
-                  <option value="BT">Biotechnology</option>
-                </select>
-                {errors.department && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.department.message}</p>}
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Designation</label>
-                <input
-                  type="text"
-                  className={`w-full px-4 py-3 bg-background border ${errors.designation ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30`}
-                  placeholder="Assistant Professor, etc."
-                  {...register("designation")}
-                />
-                {errors.designation && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.designation.message}</p>}
-              </div>
-            </>
-          )}
-
-          <div>
-            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Password</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                className={`w-full px-4 py-3 pr-10 bg-background border ${errors.password ? "border-red-500" : "border-outline"} text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-foreground/30`}
-                placeholder="••••••••"
-                {...register("password")}
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-foreground/50 hover:text-foreground outline-none"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-
-            {/* Password Strength Meter */}
-            <div className="mt-2 h-1 w-full bg-outline rounded-full overflow-hidden">
-              <div className={`h-full transition-all duration-300 ${getStrengthColor()}`}></div>
-            </div>
-            <div className="flex justify-between items-center mt-1">
-              {errors.password ? (
-                <span className="text-red-500 text-xs font-semibold">{errors.password.message}</span>
-              ) : (
-                <span className="text-foreground/50 text-xs truncate max-w-[70%]">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special</span>
-              )}
-              <span className="text-xs font-bold text-foreground">{getStrengthText()}</span>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full flex justify-center items-center gap-2 bg-primary text-primary-foreground py-4 text-sm font-bold uppercase tracking-widest hover:brightness-110 transition-all disabled:opacity-50"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="animate-spin w-4 h-4" /> Processing...
-              </>
-            ) : "Register Account"}
-          </button>
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-outline bg-surface p-8 shadow-xl">
+        <div className="absolute left-0 top-0 h-1 w-full bg-primary" />
+        <RegistrationSteps current={1} />
+        <div className="mb-7 text-center"><Image src="/nsut-logo.png" alt="NSUT logo" width={64} height={64} className="mx-auto mb-4" /><h1 className="text-3xl font-black uppercase tracking-tight text-foreground">Create your account</h1><p className="mt-2 text-sm text-foreground/60">Start with secure account details. Academic information comes after email confirmation.</p></div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {serverError && <p role="alert" className="border-l-2 border-primary bg-primary/10 p-4 text-sm font-bold text-primary">{serverError}</p>}
+          <div className="grid grid-cols-2 gap-3 rounded-lg border border-outline bg-background p-1">{(["student", "faculty"] as const).map((item) => <label key={item} className={`cursor-pointer rounded-md py-3 text-center text-xs font-bold uppercase tracking-widest ${role === item ? "bg-primary text-on-primary" : "text-foreground/60 hover:bg-foreground/5"}`}><input type="radio" value={item} className="sr-only" {...register("role")} />{item}</label>)}</div>
+          <label className="block"><span className="mb-2 block text-xs font-bold uppercase tracking-widest">Full name</span><input autoComplete="name" {...register("fullName")} className={`w-full border bg-background px-4 py-3 outline-none focus:border-primary ${errors.fullName ? "border-red-500" : "border-outline"}`} />{errors.fullName && <span className="mt-1 block text-xs text-red-500">{errors.fullName.message}</span>}</label>
+          <label className="block"><span className="mb-2 block text-xs font-bold uppercase tracking-widest">Institutional email</span><input type="email" autoComplete="email" placeholder="name@nsut.ac.in" {...register("email")} className={`w-full border bg-background px-4 py-3 outline-none focus:border-primary ${errors.email ? "border-red-500" : "border-outline"}`} />{errors.email && <span className="mt-1 block text-xs text-red-500">{errors.email.message}</span>}</label>
+          <label className="block"><span className="mb-2 block text-xs font-bold uppercase tracking-widest">Password</span><span className="relative block"><input type={showPassword ? "text" : "password"} autoComplete="new-password" {...register("password")} className={`w-full border bg-background px-4 py-3 pr-12 outline-none focus:border-primary ${errors.password ? "border-red-500" : "border-outline"}`} /><button type="button" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-3 text-foreground/50">{showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button></span><span className="mt-2 block h-1 overflow-hidden rounded-full bg-outline"><span className={`block h-full ${strengthWidth} ${strengthColor}`} /></span>{errors.password ? <span className="mt-1 block text-xs text-red-500">{errors.password.message}</span> : <span className="mt-1 block text-xs text-foreground/45">8+ characters with upper/lowercase, number, and symbol</span>}</label>
+          <button disabled={isSubmitting} className="flex w-full items-center justify-center gap-2 bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary hover:brightness-110 disabled:opacity-50">{isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}{isSubmitting ? "Creating account…" : "Continue to email confirmation"}</button>
         </form>
-
-        <div className="mt-8 text-center border-t border-outline pt-6">
-          <Link href="/login" className="text-primary text-xs font-bold uppercase tracking-widest hover:underline">
-            Already have an account? Sign In
-          </Link>
-        </div>
+        <div className="mt-7 border-t border-outline pt-6 text-center"><Link href="/login" className="text-xs font-bold uppercase tracking-widest text-primary hover:underline">Already registered? Sign in</Link></div>
       </div>
     </div>
   );

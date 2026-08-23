@@ -4,23 +4,14 @@ import { AuthenticationError, AuthorizationError, requirePortalIdentity } from "
 import { authError } from "@/lib/auth/responses";
 import { checkRateLimit, isSameOrigin } from "@/lib/auth/rate-limit";
 import { createClient } from "@/utils/supabase/server";
+import { isQuestionnaireResponseReference } from "@/lib/application-forms";
 
 const applicationSchema = z.object({
   statementOfPurpose: z.string().trim().min(100).max(3000),
   skillsSummary: z.string().trim().min(40).max(1200),
   availabilityHours: z.coerce.number().int().min(1).max(40),
-  resumeUrl: z.string().trim().max(700).refine(
-    (value) => /^https:\/\/\S+\.pdf(?:[?#].*)?$/i.test(value) || /^\/\S+\.pdf(?:[?#].*)?$/i.test(value),
-    "Provide a direct HTTPS or portal-local PDF link for the CV",
-  ),
-  googleFormResponseUrl: z.string().trim().url().max(700).refine((value) => {
-    try {
-      const url = new URL(value);
-      return url.protocol === "https:" && (url.hostname === "forms.gle" || (url.hostname === "docs.google.com" && url.pathname.startsWith("/forms/")));
-    } catch {
-      return false;
-    }
-  }, "Provide a Google Forms response or questionnaire link"),
+  resumeUrl: z.string().trim().min(1).max(700),
+  googleFormResponseUrl: z.string().trim().min(1).max(700).refine((value) => value === "NA" || isQuestionnaireResponseReference(value), "Provide the Google Forms URL or approved demo completion reference"),
 });
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -36,11 +27,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (!parsed.success) return authError(400, "INVALID_APPLICATION", parsed.error.issues[0]?.message || "Complete every required application field");
 
     const supabase = await createClient();
-    const { data: project, error: projectError } = await supabase.from("projects").select("id, status, brief_url").eq("id", id).maybeSingle();
+    const projectRead = await supabase.from("projects").select("id, status, available_seats, application_form_url").eq("id", id).maybeSingle();
+    let project = projectRead.data;
+    let projectError = projectRead.error;
+    if (projectError && projectError.message.includes("application_form_url")) {
+      const legacyRead = await supabase.from("projects").select("id, status, available_seats").eq("id", id).maybeSingle();
+      project = legacyRead.data ? { ...legacyRead.data, application_form_url: "NA" } : null;
+      projectError = legacyRead.error;
+    }
     if (projectError) return authError(503, "PROJECT_UNAVAILABLE", "The project could not be checked");
     if (!project) return authError(404, "PROJECT_NOT_FOUND", "Project not found");
     if (project.status !== "open") return authError(409, "PROJECT_CLOSED", "This project is not accepting applications");
-    if (!project.brief_url) return authError(409, "PROJECT_BRIEF_REQUIRED", "The faculty owner must add the working PDF before applications open");
+    if (project.available_seats <= 0) return authError(409, "PROJECT_FULL", "This project has no seats available");
+    const hasQuestionnaire = project.application_form_url && project.application_form_url !== "NA";
+    if (hasQuestionnaire && parsed.data.googleFormResponseUrl === "NA") return authError(400, "QUESTIONNAIRE_REQUIRED", "Complete the project questionnaire before applying");
+    if (!hasQuestionnaire && parsed.data.googleFormResponseUrl !== "NA") return authError(400, "QUESTIONNAIRE_NOT_ASSIGNED", "This project does not require questionnaire evidence");
 
     const { data, error } = await supabase.from("applications").insert({
       project_id: id,

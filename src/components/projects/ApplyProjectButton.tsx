@@ -19,13 +19,14 @@ const emptyDraft: ApplicationDraft = {
   googleFormResponseUrl: "",
 };
 
-export function ApplyProjectButton({ projectId, maxStudents, isClosed }: { projectId: string; maxStudents: number; isClosed: boolean }) {
+export function ApplyProjectButton({ projectId, availableSeats, isClosed, applicationFormUrl }: { projectId: string; availableSeats: number; isClosed: boolean; applicationFormUrl: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [draft, setDraft] = useState(emptyDraft);
   const [confirmedForm, setConfirmedForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const hasQuestionnaire = applicationFormUrl !== "NA";
 
   const setField = (field: keyof ApplicationDraft, value: string) => {
     setDraft((current) => ({ ...current, [field]: value }));
@@ -39,7 +40,7 @@ export function ApplyProjectButton({ projectId, maxStudents, isClosed }: { proje
       const response = await fetch(`/api/projects/${projectId}/applications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...draft, availabilityHours: Number(draft.availabilityHours) }),
+        body: JSON.stringify({ ...draft, googleFormResponseUrl: hasQuestionnaire ? draft.googleFormResponseUrl : "NA", availabilityHours: Number(draft.availabilityHours) }),
       });
       const body = (await response.json()) as { message?: string };
       if (!response.ok) {
@@ -63,7 +64,7 @@ export function ApplyProjectButton({ projectId, maxStudents, isClosed }: { proje
   return (
     <>
       <button onClick={() => { setIsOpen(true); setSuccess(false); }} className="block w-full rounded bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary transition-colors hover:brightness-110">
-        Apply Now ({maxStudents} slots)
+        Apply now ({availableSeats} {availableSeats === 1 ? "seat" : "seats"} left)
       </button>
 
       {isOpen && (
@@ -100,20 +101,23 @@ export function ApplyProjectButton({ projectId, maxStudents, isClosed }: { proje
                     <div className="relative"><input type="number" min={1} max={40} required value={draft.availabilityHours} onChange={(event) => setField("availabilityHours", event.target.value)} className="w-full rounded-lg border border-outline bg-background px-4 py-3 pr-20 text-sm outline-none focus:border-primary" /><span className="absolute right-4 top-3 text-xs font-semibold text-foreground/45">hours</span></div>
                   </label>
                   <label className="block">
-                    <span className="mb-2 block text-xs font-black uppercase tracking-widest text-foreground/65">CV PDF link *</span>
-                    <input type="text" required value={draft.resumeUrl} onChange={(event) => setField("resumeUrl", event.target.value)} placeholder="https://.../cv.pdf" className="w-full rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
+                    <span className="mb-2 block text-xs font-black uppercase tracking-widest text-foreground/65">CV / résumé reference *</span>
+                    <input type="text" required value={draft.resumeUrl} onChange={(event) => setField("resumeUrl", event.target.value)} placeholder="Drive/Docs/Word/PDF link, text, or NA" className="w-full rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
                   </label>
                 </div>
 
                 <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5">
-                  <div className="mb-3 flex items-start gap-3"><ExternalLink className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" /><div><h4 className="font-black text-foreground">Google Form evidence</h4><p className="mt-1 text-xs leading-5 text-foreground/55">Complete the project questionnaire supplied by the faculty lead, then paste its Google Forms response or questionnaire link.</p></div></div>
-                  <input type="url" required value={draft.googleFormResponseUrl} onChange={(event) => setField("googleFormResponseUrl", event.target.value)} placeholder="https://docs.google.com/forms/..." className="w-full rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
-                  <label className="mt-4 flex items-start gap-3 text-xs font-semibold text-foreground/65"><input type="checkbox" required checked={confirmedForm} onChange={(event) => setConfirmedForm(event.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />I confirm the linked questionnaire is relevant to this application and can be opened by the faculty reviewer.</label>
+                  <div className="mb-3 flex items-start gap-3"><ExternalLink className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" /><div><h4 className="font-black text-foreground">Application questionnaire</h4><p className="mt-1 text-xs leading-5 text-foreground/55">{hasQuestionnaire ? "Open the faculty-supplied questionnaire, complete it, then paste its completion reference or questionnaire URL below." : "The faculty lead has not assigned a separate questionnaire for this project."}</p></div></div>
+                  {hasQuestionnaire ? <>
+                    <a href={applicationFormUrl} target="_blank" rel="noreferrer" className="mb-4 inline-flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-xs font-black uppercase tracking-widest text-white hover:bg-blue-700"><ExternalLink className="h-4 w-4" /> Open project questionnaire</a>
+                    <input type="text" required value={draft.googleFormResponseUrl} onChange={(event) => setField("googleFormResponseUrl", event.target.value)} placeholder="Google Forms URL or demo completion reference" className="w-full rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary" />
+                    <label className="mt-4 flex items-start gap-3 text-xs font-semibold text-foreground/65"><input type="checkbox" required checked={confirmedForm} onChange={(event) => setConfirmedForm(event.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />I confirm I completed the assigned questionnaire and the supplied reference can be opened by the faculty reviewer.</label>
+                  </> : <p className="rounded border border-outline bg-background p-3 text-xs font-semibold text-foreground/60">No form evidence is required; the application will store NA for this field.</p>}
                 </div>
 
                 <div className="flex items-center gap-3 rounded-lg border border-outline bg-background p-4 text-xs text-foreground/55"><FileText className="h-5 w-5 shrink-0 text-primary" />Your CV and application are visible only to you and the faculty owner under database access policies.</div>
                 {errorText && <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm font-bold text-red-600">{errorText}</p>}
-                <button type="submit" disabled={loading || !confirmedForm} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary hover:brightness-110 disabled:opacity-50">{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit complete application"}</button>
+                <button type="submit" disabled={loading || (hasQuestionnaire && !confirmedForm)} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-4 text-sm font-bold uppercase tracking-widest text-on-primary hover:brightness-110 disabled:opacity-50">{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit complete application"}</button>
               </form>
             )}
           </div>

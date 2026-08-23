@@ -2,8 +2,10 @@
 
 This document describes the staging prototype implemented by migrations
 202608030005_application_admin_workflow.sql,
-202608030006_forum_moderation_guards.sql, and
-202608030007_application_submission_guards.sql.
+202608030006_forum_moderation_guards.sql,
+202608030007_application_submission_guards.sql, and
+202608110008_editable_profiles_flexible_evidence_and_seats.sql, and
+202608110012_project_application_questionnaires.sql.
 
 ## Login modes
 
@@ -20,29 +22,35 @@ RLS and server permission guards remain authoritative.
 
 ## Structured project applications
 
-An open project must publish a project-brief PDF before it can accept
-applications. A complete application contains:
+An open project may publish its working material as a Drive/Docs link, Word or
+PDF link, portal-local file, descriptive reference, or `NA`. A complete
+application contains:
 
 - A 100–3,000 character statement of purpose.
 - A 40–1,200 character skills and evidence summary.
 - Weekly availability from 1 to 40 hours.
-- A direct HTTPS or portal-local PDF CV link.
-- An HTTPS Google Forms response or questionnaire link.
+- A CV/resume reference (link, document reference, descriptive text, or `NA`).
+- A questionnaire completion reference when the faculty lead has assigned a
+  published Google Form or approved portal-local staging form.
 - The applicant's explicit confirmation that the links are appropriate to share
   with the faculty reviewer.
 
 Submissions pass through POST /api/projects/[id]/applications, which verifies
-the active student identity, application.create, the open project, the project
-brief, field formats, and duplicate applications. Faculty decisions pass through
+the active student identity, application.create, the open project, remaining
+seat availability, field formats, and duplicate applications. Faculty decisions pass through
 PATCH /api/faculty/applications/[id] and the review_project_application
 security-definer function. The function checks application.review and verifies
-that the reviewer owns the target project. Direct application updates are revoked
-from the authenticated role.
+that the reviewer owns the target project. Acceptance locks the application and
+project rows, decrements `projects.available_seats` exactly once, and refuses an
+acceptance when no seat remains. Reversing an acceptance restores one seat.
+Direct application updates are revoked from the authenticated role.
 
-Staging contains two complete pending examples for the first demo faculty account.
-Their CVs are synthetic PDFs under public/demo-cvs/. Their Google Forms URLs are
-explicitly synthetic placeholders and must be replaced with live institutional
-forms before real applicant testing.
+Staging contains complete examples for the first demo faculty account. Their CVs
+are synthetic PDFs under public/demo-cvs/. Four local questionnaires under
+`/demo-forms/[slug]` imitate the Google Forms handoff without transmitting or
+storing answers. They create local completion references for application review.
+These forms are staging demonstrations, not Google Forms or institutional records;
+faculty should replace them with published institutional Google Forms for real use.
 
 ## Prototype administrator
 
@@ -107,8 +115,17 @@ Only after explicitly verifying that the configured project is non-production:
 DEMO_ACCOUNT_PASSWORD must be supplied through ignored local configuration. No
 seed script prints it.
 
+The repeatable seed creates 24 students and 24 faculty members with completed,
+varied biographies, education, academic details, public contact fields and
+academic links. Every faculty directory card opens `/profile/[id]`; identified
+forum posts and replies also link to the same public profile route. Two students
+use the synthetic CV PDFs in `public/demo-cvs/`; unavailable demo documents use
+the explicit `NA` value so the interface does not publish broken links.
+
 Validation must cover:
 
+- Anonymous access to seeded faculty and student profile routes without exposing
+  private `portal_users` account-state fields.
 - Anonymous access to public forum content and denial of member data.
 - Student application creation permission and direct decision denial.
 - Faculty visibility of owned applications and the decision RPC.
@@ -116,6 +133,45 @@ Validation must cover:
 - The administrator's exact ten-permission assignment.
 - Anonymous and student denial of /admin.
 - Successful student, faculty, moderator-as-faculty, and admin-as-faculty logins.
+
+## Project participation workflows
+
+Apply `202608110011_project_contribution_and_collaboration_requests.sql` after
+migrations `008` through `010`.
+
+- Student vacancy applications remain in `applications`. Accepting one consumes
+  exactly one `projects.available_seats` vacancy through
+  `review_project_application`.
+- When `available_seats` reaches zero, students no longer receive an application
+  button. They may create one `project_contribution_requests` record proposing a
+  bounded, non-seat contribution. Accepting it never changes seat accounting.
+- Faculty viewers never receive vacancy or seat actions. A faculty member who
+  does not own the project may create one `faculty_collaboration_requests`
+  proposal describing the collaboration type, scope and expertise offered.
+- Project owners review contribution and collaboration records through separate
+  owner-only security-definer functions. Direct table updates are not granted to
+  application clients.
+- The faculty workspace keeps student applications, incoming student
+  contributions, incoming faculty collaborations and outgoing collaborations
+  visibly distinct.
+
+## Project application questionnaires
+
+Apply `202608110012_project_application_questionnaires.sql` after migration `011`.
+
+- Every project stores `application_form_url`: a published Google Forms URL, an
+  approved `/demo-forms/` staging path, or `NA`.
+- Faculty set the questionnaire while publishing a project and can update it,
+  together with the title, description, department, capacity, PDF/material,
+  listing status, progress, health and notes, in the owner-only project editor.
+- Capacity changes reuse the database seat-accounting trigger and cannot reduce
+  capacity below the number of accepted students.
+- Students open the assigned form from the project or application modal. When a
+  form is assigned, the server refuses applications whose evidence is `NA`.
+- When no form is assigned, the server stores `NA` and refuses an unrelated form
+  reference. This prevents the client from deciding whether evidence is required.
+- Existing staging databases remain readable before migration `012`; form-aware
+  writes require the migration.
 
 ## Rollback
 

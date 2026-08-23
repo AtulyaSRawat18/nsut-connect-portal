@@ -28,6 +28,7 @@ export function ApplicationReviewCard({ application }: { application: FacultyApp
   const router = useRouter();
   const project = Array.isArray(application.projects) ? application.projects[0] : application.projects;
   const student = Array.isArray(application.portal_users) ? application.portal_users[0] : application.portal_users;
+  const linkedResume = Boolean(application.resume_url && (application.resume_url.startsWith("https://") || application.resume_url.startsWith("/")));
 
   const handleAction = async (status: "accepted" | "rejected") => {
     setLoadingAction(status);
@@ -67,8 +68,8 @@ export function ApplicationReviewCard({ application }: { application: FacultyApp
         </div>
         <aside className="space-y-4">
           <div className="rounded-xl border border-outline bg-background p-5"><div className="flex items-center gap-2 text-foreground/45"><Clock3 className="h-4 w-4" /><span className="text-[10px] font-black uppercase tracking-widest">Availability</span></div><p className="mt-3 text-2xl font-black text-foreground">{application.availability_hours ? `${application.availability_hours} hrs/week` : "Not supplied"}</p></div>
-          {application.resume_url ? <a href={application.resume_url} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-primary/25 bg-primary/5 p-5 text-sm font-black text-primary hover:bg-primary/10"><span className="flex items-center gap-3"><FileText className="h-5 w-5" /> Review CV PDF</span><ExternalLink className="h-4 w-4" /></a> : <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-xs font-semibold text-amber-700">Legacy request: CV was not supplied.</div>}
-          {application.google_form_response_url ? <a href={application.google_form_response_url} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-blue-500/25 bg-blue-500/5 p-5 text-sm font-black text-blue-700 hover:bg-blue-500/10"><span>Open Google Form evidence</span><ExternalLink className="h-4 w-4" /></a> : <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-xs font-semibold text-amber-700">Legacy request: Google Form evidence was not supplied.</div>}
+          {linkedResume ? <a href={application.resume_url!} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-primary/25 bg-primary/5 p-5 text-sm font-black text-primary hover:bg-primary/10"><span className="flex items-center gap-3"><FileText className="h-5 w-5" /> Open CV / résumé</span><ExternalLink className="h-4 w-4" /></a> : <div className="rounded-xl border border-outline bg-background p-4 text-xs font-semibold text-foreground/65">CV / résumé: {application.resume_url || "Not supplied"}</div>}
+          {application.google_form_response_url && application.google_form_response_url !== "NA" ? <a href={application.google_form_response_url} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-blue-500/25 bg-blue-500/5 p-5 text-sm font-black text-blue-700 hover:bg-blue-500/10"><span>Open questionnaire evidence</span><ExternalLink className="h-4 w-4" /></a> : <div className="rounded-xl border border-outline bg-background p-4 text-xs font-semibold text-foreground/60">No separate questionnaire was assigned to this application.</div>}
         </aside>
       </div>
 

@@ -121,6 +121,7 @@ create index if not exists forum_posts_moderation_status_created_idx
   on public.forum_posts (moderation_status, created_at desc);
 
 drop policy if exists "Forum posts are viewable by everyone" on public.forum_posts;
+drop policy if exists "Visible forum posts are public" on public.forum_posts;
 create policy "Visible forum posts are public"
   on public.forum_posts for select
   using (
@@ -130,6 +131,7 @@ create policy "Visible forum posts are public"
   );
 
 drop policy if exists "Forum replies are public" on public.forum_replies;
+drop policy if exists "Replies follow parent post visibility" on public.forum_replies;
 create policy "Replies follow parent post visibility"
   on public.forum_replies for select
   using (

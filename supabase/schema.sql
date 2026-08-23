@@ -1,5 +1,47 @@
 -- Core Portal Database Schema
 
+-- Canonical academic departments. Campus is part of the identity because some
+-- departments operate independently at Main, East, and West campuses.
+create table departments (
+  id text primary key,
+  name text not null,
+  short_name text not null,
+  campus text check (campus is null or campus in ('Main', 'East', 'West')),
+  sort_order smallint not null unique,
+  is_active boolean not null default true,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+insert into departments (id, name, short_name, campus, sort_order) values
+  ('biological-sciences-engineering-main', 'Biological Sciences & Engineering', 'BSE', 'Main', 1),
+  ('chemistry-main', 'Chemistry', 'Chemistry', 'Main', 2),
+  ('civil-engineering-west', 'Civil Engineering', 'Civil', 'West', 3),
+  ('computer-science-engineering-main', 'Computer Science & Engineering', 'CSE', 'Main', 4),
+  ('computer-science-engineering-east', 'Computer Science & Engineering', 'CSE', 'East', 5),
+  ('electrical-engineering-main', 'Electrical Engineering', 'EE', 'Main', 6),
+  ('electronics-communication-engineering-main', 'Electronics & Communication Engineering', 'ECE', 'Main', 7),
+  ('electronics-communication-engineering-east', 'Electronics & Communication Engineering', 'ECE', 'East', 8),
+  ('humanities-social-sciences-main', 'Humanities & Social Sciences', 'HSS', 'Main', 9),
+  ('humanities-social-sciences-east', 'Humanities & Social Sciences', 'HSS', 'East', 10),
+  ('information-technology-main', 'Information Technology', 'IT', 'Main', 11),
+  ('instrumentation-control-engineering-main', 'Instrumentation & Control Engineering', 'ICE', 'Main', 12),
+  ('management-studies-main', 'Management Studies', 'Management', 'Main', 13),
+  ('mathematics-main', 'Mathematics', 'Mathematics', 'Main', 14),
+  ('mechanical-engineering-main', 'Mechanical Engineering', 'Mechanical', 'Main', 15),
+  ('mechanical-engineering-west', 'Mechanical Engineering', 'Mechanical', 'West', 16),
+  ('physics-main', 'Physics', 'Physics', 'Main', 17),
+  ('personality-development', 'Personality Development', 'Personality Development', null, 18),
+  ('design', 'Design', 'Design', null, 19),
+  ('architecture-planning', 'Architecture & Planning', 'Architecture', null, 20),
+  ('innovation-entrepreneurship-venture-development', 'Innovation, Entrepreneurship & Venture Development (IEV)', 'IEV', null, 21),
+  ('geoinformatics-west', 'Geoinformatics', 'Geoinformatics', 'West', 22);
+
+alter table departments enable row level security;
+create policy "Departments are publicly readable" on departments for select using (is_active);
+revoke all on departments from anon, authenticated;
+grant select on departments to anon, authenticated;
+
 -- 1. Create a table for Institutional Profiles
 create table profiles (
   id uuid references auth.users not null primary key,
@@ -57,7 +99,7 @@ create table projects (
   id uuid default gen_random_uuid() primary key,
   title text not null,
   description text not null,
-  department text check (department in ('CSE', 'ECE', 'IT', 'MAC', 'ICE', 'MECH', 'CIVIL', 'BT', 'BBA')) not null,
+  department text references public.departments(id) not null,
   status text check (status in ('open', 'closed')) default 'open',
   faculty_id uuid references public.profiles(id) not null,
   max_students integer default 1,
@@ -173,7 +215,7 @@ create table forum_posts (
   title text not null,
   content text not null,
   author_id uuid references public.profiles(id) not null,
-  department text check (department in ('CSE', 'ECE', 'IT', 'MAC', 'ICE', 'MECH', 'CIVIL', 'BT', 'BBA')),
+  department text references public.departments(id),
   upvotes integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -194,6 +236,7 @@ create table announcements (
   content text not null,
   author_id uuid references public.profiles(id) not null,
   category text default 'general',
+  department text references public.departments(id),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -219,6 +262,7 @@ create table highlights (
   type text check (type in ('internship', 'scholarship', 'event', 'highlight')) not null,
   link_url text,
   deadline date,
+  department text references public.departments(id),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -251,7 +295,7 @@ create policy "Users can view their own record" on portal_users for select using
 
 create table faculty_profiles (
   user_id uuid references public.portal_users(id) on delete cascade primary key,
-  department text,
+  department text references public.departments(id),
   designation text,
   research_area text
 );
@@ -263,7 +307,8 @@ create table student_profiles (
   user_id uuid references public.portal_users(id) on delete cascade primary key,
   roll_number text unique,
   course text,
-  year integer
+  year integer,
+  department text references public.departments(id)
 );
 
 alter table student_profiles enable row level security;

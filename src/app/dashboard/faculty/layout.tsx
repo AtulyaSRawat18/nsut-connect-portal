@@ -11,11 +11,11 @@ export default async function FacultyDashboardLayout({ children }: { children: R
     permissions: ["project.create"],
   });
   const supabase = await createClient();
-  const pendingApplications = await supabase
-    .from("applications")
-    .select("id, projects!inner(faculty_id)", { count: "exact", head: true })
-    .eq("projects.faculty_id", identity.id)
-    .eq("status", "pending");
+  const [pendingApplications, pendingContributions, pendingCollaborations] = await Promise.all([
+    supabase.from("applications").select("id, projects!inner(faculty_id)", { count: "exact", head: true }).eq("projects.faculty_id", identity.id).eq("status", "pending"),
+    supabase.from("project_contribution_requests").select("id, projects!inner(faculty_id)", { count: "exact", head: true }).eq("projects.faculty_id", identity.id).eq("status", "pending"),
+    supabase.from("faculty_collaboration_requests").select("id, projects!inner(faculty_id)", { count: "exact", head: true }).eq("projects.faculty_id", identity.id).eq("status", "pending"),
+  ]);
 
   return (
     <WorkspaceShell
@@ -31,6 +31,7 @@ export default async function FacultyDashboardLayout({ children }: { children: R
           icon: "applications",
           badge: pendingApplications.count || 0,
         },
+        { label: "Contribution & collaboration", href: "/dashboard/faculty/requests", icon: "applications", badge: (pendingContributions.count || 0) + (pendingCollaborations.count || 0) },
         { label: "Publications", href: "/dashboard/faculty/publications", icon: "publications" },
         { label: "Forum posts", href: "/dashboard/faculty/forum", icon: "forum" },
         { label: "Publish news", href: "/dashboard/faculty/news/new", icon: "news" },

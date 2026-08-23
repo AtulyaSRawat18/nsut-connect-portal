@@ -1,5 +1,6 @@
 import { Building2, Calendar, User } from "lucide-react";
 import Link from "next/link";
+import { getDepartmentCompactLabel } from "@/lib/departments";
 
 interface ProjectCardProps {
   id: string;
@@ -29,7 +30,7 @@ export default function ProjectCard({ id, title, department, mentor, deadline, t
         <div className="mt-auto space-y-3">
           <div className="flex items-center gap-2 text-foreground/50">
             <Building2 className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-sans font-bold tracking-wider uppercase">{department}</span>
+            <span className="text-[10px] font-sans font-bold tracking-wider uppercase">{getDepartmentCompactLabel(department)}</span>
           </div>
           
           <div className="flex items-center gap-2 text-foreground/50">

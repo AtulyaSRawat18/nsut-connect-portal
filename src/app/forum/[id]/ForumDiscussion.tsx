@@ -3,9 +3,11 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { ArrowDown, ArrowUp, Loader2, MessageSquareText, Send } from "lucide-react";
+import ForumReportButton from "../ForumReportButton";
 
 export type DiscussionReply = {
   id?: string;
+  authorId?: string;
   authorName: string;
   authorRole: string;
   content: string;
@@ -54,7 +56,7 @@ function VoteControl({ score: initialScore, endpoint, disabled = false }: { scor
   );
 }
 
-export default function ForumDiscussion({ postId, initialScore, initialReplies }: { postId: string; initialScore: number; initialReplies: DiscussionReply[] }) {
+export default function ForumDiscussion({ postId, initialScore, initialReplies, reportable = true }: { postId: string; initialScore: number; initialReplies: DiscussionReply[]; reportable?: boolean }) {
   const [replies, setReplies] = useState(initialReplies);
   const [content, setContent] = useState("");
   const [pending, setPending] = useState(false);
@@ -71,6 +73,7 @@ export default function ForumDiscussion({ postId, initialScore, initialReplies }
         ...current,
         {
           id: String(reply.id),
+          authorId: reply.author_id ? String(reply.author_id) : undefined,
           authorName: String(reply.authorName || "NSUT member"),
           authorRole: String(reply.authorRole || "member"),
           content: String(reply.content || content),
@@ -92,6 +95,7 @@ export default function ForumDiscussion({ postId, initialScore, initialReplies }
       <aside className="mt-8 flex items-center gap-4 rounded-xl border border-outline bg-surface p-4">
         <VoteControl score={initialScore} endpoint={"/api/forum/posts/" + postId + "/vote"} />
         <div><p className="text-xs font-black uppercase tracking-widest text-foreground/45">Community assessment</p><p className="mt-1 text-sm text-foreground/65">Upvote useful, evidence-based questions; downvote content that does not move the discussion forward.</p></div>
+        {reportable && <div className="ml-auto"><ForumReportButton entityType="forum_post" entityId={postId} /></div>}
       </aside>
 
       <section className="mt-10">
@@ -100,7 +104,7 @@ export default function ForumDiscussion({ postId, initialScore, initialReplies }
           <label htmlFor="forum-reply" className="text-xs font-black uppercase tracking-widest text-foreground/55">Reply on this page</label>
           <textarea id="forum-reply" value={content} onChange={(event) => setContent(event.target.value)} minLength={2} maxLength={5000} required placeholder="Add evidence, a method, a clarification, or a constructive follow-up?" className="mt-3 min-h-28 w-full resize-y rounded-lg border border-outline bg-background p-4 text-sm leading-6 outline-none focus:border-primary" />
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <p className={"text-xs " + (message.includes("Sign in") || message.includes("unavailable") ? "text-red-600" : "text-foreground/50")} role="status">{message || "Replies require an active NSUT Connect account."}</p>
+            <p className={"text-xs " + (message.includes("Sign in") || message.includes("unavailable") ? "text-red-600" : "text-foreground/50")} role="status">{message || "Your NSUT Connect profile name and role will be shown with this reply."}</p>
             <button disabled={pending || content.trim().length < 2} className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-xs font-black uppercase tracking-widest text-white disabled:opacity-45">{pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Post reply</button>
           </div>
         </form>
@@ -109,7 +113,7 @@ export default function ForumDiscussion({ postId, initialScore, initialReplies }
             <article key={reply.id || reply.authorName + "-" + index} className="grid grid-cols-[2.5rem_1fr] gap-4 rounded-xl border border-outline bg-surface p-5 md:p-7">
               <VoteControl score={reply.score} endpoint={reply.id ? "/api/forum/replies/" + reply.id + "/vote" : ""} disabled={!reply.id} />
               <div>
-                <div className="flex flex-wrap items-center gap-3"><span className="font-black">{reply.authorName}</span><span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-primary">{reply.authorRole}</span>{reply.createdAt && <time className="ml-auto text-[10px] font-bold uppercase tracking-widest text-foreground/40">{new Date(reply.createdAt).toLocaleDateString()}</time>}</div>
+                <div className="flex flex-wrap items-center gap-3">{reply.authorId ? <Link href={`/profile/${reply.authorId}`} className="font-black hover:text-primary hover:underline">{reply.authorName}</Link> : <span className="font-black">{reply.authorName}</span>}<span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-primary">{reply.authorRole}</span>{reply.createdAt && <time className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">{new Date(reply.createdAt).toLocaleDateString()}</time>}{reply.id && <div className="ml-auto"><ForumReportButton entityType="forum_reply" entityId={reply.id} /></div>}</div>
                 <p className="mt-4 whitespace-pre-wrap leading-7 text-foreground/70">{reply.content}</p>
               </div>
             </article>

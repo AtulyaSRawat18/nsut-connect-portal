@@ -61,7 +61,7 @@ The portal creates a coherent, searchable representation of academic activity an
 - Research project directory and project details
 - Research publications
 - News, developments, highlights, grants, and opportunities
-- Community forum and public activity feed
+- Attributed community forum with reportable posts and replies, plus a public activity feed
 - Ethics, university information, and informational pages
 
 ### Student workspace
@@ -69,7 +69,7 @@ The portal creates a coherent, searchable representation of academic activity an
 - Student dashboard
 - Project discovery and applications
 - Application-status tracking
-- Student profile and academic details
+- Editable student biography, education, academic details, public contacts, links, and CV/resume
 - Personalized feed and community participation
 
 ### Faculty workspace
@@ -80,7 +80,7 @@ The portal creates a coherent, searchable representation of academic activity an
 - Applicant review and accept/reject workflow
 - Publication management
 - Departmental news and opportunity publishing
-- Faculty profile and verification status
+- Editable faculty biography, education, office/contact details, academic links, CV/resume, and verification status
 
 ### Moderator workspace
 
@@ -110,7 +110,7 @@ The portal creates a coherent, searchable representation of academic activity an
 
 ## Current implementation snapshot
 
-As of 30 July 2026, the repository contains:
+As of 19 August 2026, the repository contains:
 
 - Next.js 16 App Router, React 19, TypeScript, and Tailwind CSS.
 - Supabase SSR and browser clients.
@@ -118,10 +118,13 @@ As of 30 July 2026, the repository contains:
 - JWT-backed identity and normalized RBAC tables for student, faculty, moderator, and administrator roles.
 - Database permissions, RLS policies, faculty verification, content reports, moderation actions, audit events, skills, project requirements, milestones, and application history.
 - Public discovery pages and protected student, faculty, moderator, and administrator workspaces.
-- A repeatable development seed containing 24 students, 24 faculty members, one moderator, and linked page content.
+- A repeatable development seed containing 24 students, 24 faculty members, one moderator, linked page content, and complete varied academic profiles. Faculty directory cards and attributed forum activity link to public on-platform profile pages; demo CV files are synthetic and other unavailable documents are marked `NA` rather than pointing to dead resources.
+- Role-specific project participation: students apply against a visible vacancy while seats remain, then may request a non-seat contribution after capacity is filled. Faculty see no seat action and instead use an independent peer-collaboration workflow. Project owners receive separate review queues and neither contribution nor collaboration decisions alter student seat accounting.
+- Faculty-configured application questionnaires: each project can link a published Google Form, while four clearly labelled local staging forms demonstrate completion and evidence handoff without storing answers.
+- Owner-only full project editing: faculty can revise title, description, department, status, capacity, project PDF/material, application questionnaire, progress, health, and assessment notes. Capacity cannot be reduced below accepted students and available seats are recalculated transactionally.
 - A production build that successfully generates 40 application routes.
 
-The configured Supabase project URL is currently retired and does not resolve. A new live Supabase project must be provisioned, the schema and migrations applied, authentication hooks configured, and environment variables replaced before demo accounts or production sign-ins will work.
+The staging Supabase project has migrations `001` through `012` applied and the namespaced demo dataset loaded. This is a verified staging environment, not a production-readiness claim; production still requires separate infrastructure, backups, monitoring, security/privacy review, institutional approval, and production-only configuration.
 
 ## Product positioning statement
 

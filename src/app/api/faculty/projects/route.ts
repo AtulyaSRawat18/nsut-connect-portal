@@ -5,14 +5,16 @@ import { AuthenticationError, AuthorizationError, requirePortalIdentity } from "
 import { authError } from "@/lib/auth/responses";
 import { checkRateLimit, isSameOrigin } from "@/lib/auth/rate-limit";
 import { createClient } from "@/utils/supabase/server";
+import { isDepartmentId } from "@/lib/departments";
+import { isApplicationFormReference } from "@/lib/application-forms";
 
-const departments = ["CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"] as const;
 const projectSchema = z.object({
   title: z.string().trim().min(5).max(180),
   description: z.string().trim().min(20).max(8000),
-  department: z.enum(departments),
+  department: z.string().refine(isDepartmentId, "Select a valid department"),
   maxStudents: z.number().int().min(1).max(50),
-  briefUrl: z.string().trim().refine((value) => /^(https:\/\/|\/).+\.pdf(?:[?#].*)?$/i.test(value), "A direct HTTPS or site-local PDF link is required"),
+  briefUrl: z.string().trim().min(1).max(700),
+  applicationFormUrl: z.string().trim().min(1).max(700).refine(isApplicationFormReference, "Use a Google Forms URL, approved demo form, or NA"),
 });
 
 export async function POST(request: Request) {
@@ -30,6 +32,7 @@ export async function POST(request: Request) {
       department: parsed.data.department,
       max_students: parsed.data.maxStudents,
       brief_url: parsed.data.briefUrl,
+      application_form_url: parsed.data.applicationFormUrl,
       faculty_id: identity.id,
       status: "open",
       progress_percent: 0,

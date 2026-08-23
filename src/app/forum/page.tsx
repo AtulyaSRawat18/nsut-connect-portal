@@ -2,10 +2,9 @@ import Link from "next/link";
 import { CheckCircle, Filter, MessageSquare, Search, User } from "lucide-react";
 import Pagination from "@/components/shared/Pagination";
 import ResearchBackdrop from "@/components/shared/ResearchBackdrop";
+import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
 import { getPublicForumPosts } from "@/lib/public-data";
 import ForumQuickActions from "./ForumQuickActions";
-
-const departments = ["all", "CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"] as const;
 
 export default async function Forum({
   searchParams,
@@ -14,7 +13,7 @@ export default async function Forum({
 }) {
   const params = await searchParams;
   const q = (params?.q || "").trim();
-  const department = departments.includes(params?.department as (typeof departments)[number]) ? params?.department || "all" : "all";
+  const department = isDepartmentId(params?.department) ? params.department : "all";
   const result = await getPublicForumPosts({ q, department, page: Number(params?.page || 1) });
 
   return (
@@ -33,7 +32,8 @@ export default async function Forum({
         <form className="mb-10 grid gap-3 rounded-2xl border border-outline bg-surface/95 p-4 shadow-sm backdrop-blur-sm md:grid-cols-[1fr_13rem_auto]">
           <label className="relative"><Search className="absolute left-3 top-3.5 h-5 w-5 text-foreground/45" /><input name="q" defaultValue={q} placeholder="Search discussions" className="w-full rounded-lg border border-outline bg-background py-3 pl-11 pr-4 text-sm outline-none focus:border-primary" /></label>
           <select name="department" defaultValue={department} aria-label="Filter by department" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary">
-            {departments.map((item) => <option key={item} value={item}>{item === "all" ? "All departments" : item}</option>)}
+            <option value="all">All departments</option>
+            {DEPARTMENTS.map((item) => <option key={item.id} value={item.id}>{getDepartmentLabel(item.id)}</option>)}
           </select>
           <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-3 text-xs font-bold uppercase tracking-widest text-background"><Filter className="h-4 w-4" /> Filter</button>
         </form>
@@ -49,14 +49,14 @@ export default async function Forum({
               return (
                 <article key={post.id} className="group rounded-2xl border border-outline bg-surface/95 p-6 shadow-sm backdrop-blur-sm transition-all hover:border-primary/50 md:p-8">
                   <div className="mb-3 flex flex-wrap items-center gap-3">
-                    <span className="rounded bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary">{post.department}</span>
+                    <span className="rounded bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary">{getDepartmentLabel(post.department)}</span>
                     {author?.role === "faculty" && <span className="flex items-center gap-1 rounded bg-secondary px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white"><CheckCircle className="h-3 w-3" /> Faculty verified</span>}
                     <time className="ml-auto text-[10px] font-bold uppercase tracking-widest text-foreground/50">{new Date(post.created_at).toLocaleDateString()}</time>
                   </div>
                   <h2 className="text-xl font-black text-foreground transition-colors group-hover:text-primary md:text-2xl"><Link href={`/forum/${post.id}`}>{post.title}</Link></h2>
                   <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/70">{post.content}</p>
                   <div className="mt-5 flex flex-wrap items-center gap-6 text-xs font-bold text-foreground/50">
-                    <span className="flex items-center gap-2"><User className="h-4 w-4" /> {author?.full_name || "NSUT member"}</span>
+                    <span className="flex items-center gap-2"><User className="h-4 w-4" /> {author?.full_name || "Account unavailable"}</span>
                     <Link href={`/forum/${post.id}`} className="flex items-center gap-2 text-primary"><MessageSquare className="h-4 w-4" /> Full discussion</Link>
                   </div>
                   <ForumQuickActions postId={post.id} initialScore={post.upvotes || 0} />

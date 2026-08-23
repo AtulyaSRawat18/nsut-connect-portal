@@ -1,6 +1,8 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
+import { showcaseNews, showcaseOpportunities, showcaseProjects } from "@/content/showcase";
+import { DEPARTMENT_IDS } from "@/lib/departments";
 import { createPublicClient } from "@/utils/supabase/public";
 
 export const PUBLIC_PAGE_SIZE = 20;
@@ -21,6 +23,8 @@ export type PublicProject = {
   description: string;
   department: string;
   status: string;
+  max_students: number;
+  available_seats: number;
   created_at: string;
   profiles: { full_name: string; id: string } | { full_name: string; id: string }[] | null;
 };
@@ -59,6 +63,7 @@ export type PublicNewsItem = {
   title: string;
   content: string;
   category: string | null;
+  department: string | null;
   created_at: string;
   profiles: { full_name: string } | { full_name: string }[] | null;
 };
@@ -70,6 +75,7 @@ export type PublicOpportunity = {
   type: string;
   deadline: string | null;
   link_url: string | null;
+  department: string | null;
   created_at?: string;
 };
 
@@ -124,7 +130,7 @@ const loadProjects = unstable_cache(
     let query = supabase
       .from("projects")
       .select(
-        "id, title, description, department, status, created_at, profiles!projects_faculty_id_fkey(full_name, id)",
+        "id, title, description, department, status, max_students, available_seats, created_at, profiles!projects_faculty_id_fkey(full_name, id)",
         { count: "exact" },
       )
       .order("created_at", { ascending: false })
@@ -135,6 +141,29 @@ const loadProjects = unstable_cache(
     if (filters.status !== "all") query = query.eq("status", filters.status);
 
     const { data, count, error } = await query;
+    if (error || !data?.length) {
+      const filtered = showcaseProjects
+        .filter((item) => !q || `${item.title} ${item.summary}`.toLowerCase().includes(q.toLowerCase()))
+        .filter((item) => filters.department === "all" || item.department === filters.department)
+        .filter((item) => filters.status === "all" || item.status === filters.status);
+      return {
+        data: filtered.slice(from, to + 1).map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.summary,
+          department: item.department,
+          status: item.status,
+          max_students: item.maxStudents,
+          available_seats: item.status === "open" ? item.maxStudents : 0,
+          created_at: "2026-08-01T08:00:00.000Z",
+          profiles: { full_name: item.leadName, id: "" },
+        })),
+        count: filtered.length,
+        error: null,
+        page,
+        pageSize: PUBLIC_PAGE_SIZE,
+      } satisfies PagedResult<PublicProject>;
+    }
     return {
       data: (data || []) as PublicProject[],
       count: count || 0,
@@ -156,21 +185,8 @@ export function getPublicProjects(filters: { q?: string; department?: string; st
   });
 }
 
-const loadFacultyDepartments = unstable_cache(
-  async () => {
-    const { data } = await createPublicClient()
-      .from("faculty_profiles")
-      .select("department")
-      .not("department", "is", null)
-      .limit(500);
-    return Array.from(new Set((data || []).map((item) => item.department).filter(Boolean))).sort() as string[];
-  },
-  ["public-faculty-departments-v1"],
-  { revalidate: 120, tags: ["public-faculty"] },
-);
-
 export function getPublicFacultyDepartments() {
-  return loadFacultyDepartments();
+  return Promise.resolve([...DEPARTMENT_IDS]);
 }
 
 const loadFaculty = unstable_cache(
@@ -353,7 +369,10 @@ export function getPublicPublications(filters: { q?: string; year?: string; page
 const loadNewsCategories = unstable_cache(
   async () => {
     const { data } = await createPublicClient().from("announcements").select("category").limit(500);
-    return Array.from(new Set((data || []).map((item) => item.category || "general"))).sort();
+    return Array.from(new Set([
+      ...(data || []).map((item) => item.category || "general"),
+      ...showcaseNews.map((item) => item.category || "general"),
+    ])).sort();
   },
   ["public-news-categories-v1"],
   { revalidate: 120, tags: ["public-news"] },
@@ -363,15 +382,40 @@ export function getPublicNewsCategories() {
   return loadNewsCategories();
 }
 
+function showcaseNewsResult(filters: { q: string; category: string; department: string; page: number }) {
+  const q = searchTerm(filters.q).toLowerCase();
+  const filtered = showcaseNews
+    .filter((item) => !q || `${item.title} ${item.summary}`.toLowerCase().includes(q))
+    .filter((item) => filters.category === "all" || item.category === filters.category)
+    .filter((item) => filters.department === "all" || item.department === filters.department)
+    .sort((left, right) => right.date.localeCompare(left.date));
+  const { from, page, to } = rangeFor(filters.page);
+  return {
+    data: filtered.slice(from, to + 1).map((item) => ({
+      id: item.id,
+      title: item.title,
+      content: item.summary,
+      category: item.category,
+      department: item.department,
+      created_at: item.date,
+      profiles: { full_name: "NSUT Connect Editorial" },
+    })),
+    count: filtered.length,
+    error: null,
+    page,
+    pageSize: PUBLIC_PAGE_SIZE,
+  } satisfies PagedResult<PublicNewsItem>;
+}
+
 const loadNews = unstable_cache(
-  async (filters: { q: string; category: string; page: number }) => {
+  async (filters: { q: string; category: string; department: string; page: number }) => {
     const supabase = createPublicClient();
     const { from, page, to } = rangeFor(filters.page);
     const q = searchTerm(filters.q);
     let query = supabase
       .from("announcements")
       .select(
-        "id, title, content, category, created_at, profiles!announcements_author_id_fkey(full_name)",
+        "id, title, content, category, department, created_at, profiles!announcements_author_id_fkey(full_name)",
         { count: "exact" },
       )
       .order("created_at", { ascending: false })
@@ -379,7 +423,9 @@ const loadNews = unstable_cache(
     if (q) query = query.or(`title.ilike.%${q}%,content.ilike.%${q}%`);
     if (filters.category === "general") query = query.or("category.eq.general,category.is.null");
     else if (filters.category !== "all") query = query.eq("category", filters.category);
+    if (filters.department !== "all") query = query.eq("department", filters.department);
     const { data, count, error } = await query;
+    if (error || !data?.length) return showcaseNewsResult(filters);
     return {
       data: (data || []) as PublicNewsItem[],
       count: count || 0,
@@ -388,23 +434,23 @@ const loadNews = unstable_cache(
       pageSize: PUBLIC_PAGE_SIZE,
     } satisfies PagedResult<PublicNewsItem>;
   },
-  ["public-news-v1"],
+  ["public-news-v2"],
   { revalidate: 60, tags: ["public-news"] },
 );
 
-export function getPublicNews(filters: { q?: string; category?: string; page?: number }) {
-  return loadNews({ q: filters.q || "", category: filters.category || "all", page: pageNumber(filters.page || 1) });
+export function getPublicNews(filters: { q?: string; category?: string; department?: string; page?: number }) {
+  return loadNews({ q: filters.q || "", category: filters.category || "all", department: filters.department || "all", page: pageNumber(filters.page || 1) });
 }
 
 const loadOpportunities = unstable_cache(
-  async (filters: { q: string; type: string; deadline: string; page: number }) => {
+  async (filters: { q: string; type: string; deadline: string; department: string; page: number }) => {
     const supabase = createPublicClient();
     const { from, page, to } = rangeFor(filters.page);
     const q = searchTerm(filters.q);
     const today = new Date().toISOString().slice(0, 10);
     let query = supabase
       .from("highlights")
-      .select("id, title, description, type, deadline, link_url, created_at", { count: "exact" })
+      .select("id, title, description, type, deadline, link_url, department, created_at", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
     if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
@@ -412,7 +458,35 @@ const loadOpportunities = unstable_cache(
     if (filters.deadline === "open") query = query.gte("deadline", today);
     if (filters.deadline === "closed") query = query.lt("deadline", today);
     if (filters.deadline === "none") query = query.is("deadline", null);
+    if (filters.department !== "all") query = query.eq("department", filters.department);
     const { data, count, error } = await query;
+    if (error || !data?.length) {
+      const filtered = showcaseOpportunities
+        .filter((item) => !q || `${item.title} ${item.summary}`.toLowerCase().includes(q.toLowerCase()))
+        .filter((item) => filters.type === "all" || item.type === filters.type)
+        .filter((item) => filters.department === "all" || item.department === filters.department)
+        .filter((item) => {
+          if (filters.deadline === "open") return Boolean(item.deadline && item.deadline >= today);
+          if (filters.deadline === "closed") return Boolean(item.deadline && item.deadline < today);
+          if (filters.deadline === "none") return !item.deadline;
+          return true;
+        });
+      return {
+        data: filtered.slice(from, to + 1).map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.summary,
+          type: item.type,
+          deadline: item.deadline,
+          link_url: item.sourceUrl,
+          department: item.department,
+        })),
+        count: filtered.length,
+        error: null,
+        page,
+        pageSize: PUBLIC_PAGE_SIZE,
+      } satisfies PagedResult<PublicOpportunity>;
+    }
     return {
       data: (data || []) as PublicOpportunity[],
       count: count || 0,
@@ -421,15 +495,16 @@ const loadOpportunities = unstable_cache(
       pageSize: PUBLIC_PAGE_SIZE,
     } satisfies PagedResult<PublicOpportunity>;
   },
-  ["public-opportunities-v1"],
+  ["public-opportunities-v2"],
   { revalidate: 60, tags: ["public-opportunities"] },
 );
 
-export function getPublicOpportunities(filters: { q?: string; type?: string; deadline?: string; page?: number }) {
+export function getPublicOpportunities(filters: { q?: string; type?: string; deadline?: string; department?: string; page?: number }) {
   return loadOpportunities({
     q: filters.q || "",
     type: filters.type || "all",
     deadline: filters.deadline || "all",
+    department: filters.department || "all",
     page: pageNumber(filters.page || 1),
   });
 }

@@ -1,6 +1,7 @@
 -- Require complete student submissions even when the database is called directly.
 
 drop policy if exists "Active students can apply to open projects" on public.applications;
+drop policy if exists "Active students submit complete applications" on public.applications;
 create policy "Active students submit complete applications"
   on public.applications for insert to authenticated
   with check (

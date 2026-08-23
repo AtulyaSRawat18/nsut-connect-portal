@@ -3,6 +3,7 @@ import { ArrowRight, Atom, BookOpen, CalendarDays, Lightbulb, MessagesSquare, Mi
 import CampusLineArt from "@/components/home/CampusLineArt";
 import ResearchBackdrop from "@/components/shared/ResearchBackdrop";
 import { showcaseNews, showcaseProjects } from "@/content/showcase";
+import { getDepartmentCompactLabel } from "@/lib/departments";
 
 const researchPillars = [
   { Icon: Users, title: "Collaborate", copy: "Connect across disciplines and roles." },
@@ -42,7 +43,7 @@ export default function ResearchHome() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.25em] text-primary">Research opportunities</p><h2 className="mt-2 text-4xl font-black">Detailed enough to evaluate before applying.</h2></div><Link href="/projects" className="text-xs font-black uppercase tracking-widest text-primary">All projects →</Link></div>
           <div className="grid gap-6 lg:grid-cols-2">
-            {showcaseProjects.slice(0, 4).map((project) => <article key={project.id} className="border border-outline bg-surface p-8"><div className="mb-5 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-widest text-primary">{project.department}</span><span className="text-[10px] font-bold uppercase tracking-widest text-foreground/45">{project.maxStudents} student places</span></div><h3 className="text-2xl font-black">{project.title}</h3><p className="mt-4 text-sm leading-relaxed text-foreground/65">{project.summary}</p><Link href={`/projects/${project.id}`} className="mt-7 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary">Project detail <ArrowRight className="h-4 w-4" /></Link></article>)}
+            {showcaseProjects.slice(0, 4).map((project) => <article key={project.id} className="border border-outline bg-surface p-8"><div className="mb-5 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-widest text-primary">{getDepartmentCompactLabel(project.department)}</span><span className="text-[10px] font-bold uppercase tracking-widest text-foreground/45">{project.maxStudents} student places</span></div><h3 className="text-2xl font-black">{project.title}</h3><p className="mt-4 text-sm leading-relaxed text-foreground/65">{project.summary}</p><Link href={`/projects/${project.id}`} className="mt-7 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary">Project detail <ArrowRight className="h-4 w-4" /></Link></article>)}
           </div>
         </div>
       </section>

@@ -35,7 +35,7 @@ for (const email of demoEmails) if (!byEmail.has(email)) throw new Error(`Missin
 
 const faculty = byEmail.get("demo.faculty01@nsut.ac.in");
 const students = [byEmail.get("demo.student01@nsut.ac.in"), byEmail.get("demo.student05@nsut.ac.in")];
-const project = await must("Faculty demo project", db.from("projects").select("id,title").eq("faculty_id", faculty.id).eq("status", "open").not("brief_url", "is", null).order("created_at").limit(1).single());
+const project = await must("Faculty demo project", db.from("projects").select("id,title,application_form_url").eq("faculty_id", faculty.id).eq("status", "open").not("brief_url", "is", null).neq("application_form_url", "NA").order("created_at").limit(1).single());
 
 const applications = [
   {
@@ -43,14 +43,14 @@ const applications = [
     sop: `I am applying to ${project.title} because it combines reproducible engineering analysis with a clear public-interest outcome. I can begin by reproducing the documented baseline, checking data quality and recording every modelling assumption. I will contribute eight hours each week, maintain an experiment log and present a concise validation report before proposing any model change.`,
     skills: "Python, NumPy, pandas and scikit-learn; reproducible Jupyter notebooks; Git-based collaboration; literature review; baseline evaluation and technical documentation.",
     cv: "/demo-cvs/aarav-sharma-research-cv.pdf",
-    form: "https://docs.google.com/forms/d/e/DEMO-AARAV-NSUT-CONNECT/viewform",
+    form: `${project.application_form_url}?completed=1&reference=DEMO-AARAV`,
   },
   {
     student: students[1],
     sop: `I want to join ${project.title} to strengthen its evidence and data-provenance workflow. My first contribution would be a structured audit of source licences, missing metadata and evaluation splits, followed by a small retrieval or classification baseline. I can commit eight hours per week and will document limitations, unsuccessful experiments and review questions for the faculty lead.`,
     skills: "Python and SQL; RDF and knowledge-graph fundamentals; data validation; bilingual information retrieval experiments; TypeScript prototyping and concise research documentation.",
     cv: "/demo-cvs/aditya-verma-research-cv.pdf",
-    form: "https://docs.google.com/forms/d/e/DEMO-ADITYA-NSUT-CONNECT/viewform",
+    form: `${project.application_form_url}?completed=1&reference=DEMO-ADITYA`,
   },
 ];
 

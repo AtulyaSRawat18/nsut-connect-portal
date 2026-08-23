@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowRight, Filter, Search } from "lucide-react";
 import Pagination from "@/components/shared/Pagination";
+import { DEPARTMENTS, getDepartmentLabel, isDepartmentId } from "@/lib/departments";
 import { getPublicProjects } from "@/lib/public-data";
+import { getPortalIdentity } from "@/lib/auth/server";
 
-const departments = ["all", "CSE", "ECE", "IT", "MAC", "ICE", "MECH", "CIVIL", "BT", "BBA"] as const;
 const statuses = ["all", "open", "closed"] as const;
 
 export default async function Projects({
@@ -13,10 +14,12 @@ export default async function Projects({
 }) {
   const params = await searchParams;
   const q = (params?.q || "").trim();
-  const department = departments.includes(params?.department as (typeof departments)[number]) ? params?.department || "all" : "all";
+  const department = isDepartmentId(params?.department) ? params.department : "all";
   const status = statuses.includes(params?.status as (typeof statuses)[number]) ? params?.status || "all" : "all";
   const result = await getPublicProjects({ q, department, status, page: Number(params?.page || 1) });
   const projects = result.data;
+  const identity = await getPortalIdentity();
+  const facultyViewer = Boolean(identity?.roles.includes("faculty"));
 
   return (
     <div className="min-h-screen bg-background py-16 font-sans">
@@ -27,7 +30,8 @@ export default async function Projects({
         <form className="mb-10 grid gap-3 rounded-2xl border border-outline bg-surface p-4 md:grid-cols-[1fr_11rem_11rem_auto]">
           <label className="relative"><Search className="absolute left-3 top-3.5 h-5 w-5 text-foreground/45" /><input name="q" defaultValue={q} placeholder="Project or topic" className="w-full rounded-lg border border-outline bg-background py-3 pl-11 pr-4 text-sm outline-none focus:border-primary" /></label>
           <select name="department" defaultValue={department} aria-label="Filter projects by department" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary">
-            {departments.map((item) => <option key={item} value={item}>{item === "all" ? "All departments" : item}</option>)}
+            <option value="all">All departments</option>
+            {DEPARTMENTS.map((item) => <option key={item.id} value={item.id}>{getDepartmentLabel(item.id)}</option>)}
           </select>
           <select name="status" defaultValue={status} aria-label="Filter projects by status" className="rounded-lg border border-outline bg-background px-4 py-3 text-sm outline-none focus:border-primary">
             <option value="all">All statuses</option><option value="open">Open</option><option value="closed">Closed</option>
@@ -46,12 +50,12 @@ export default async function Projects({
               return (
                 <article key={project.id} className="group flex flex-col gap-6 border border-outline bg-surface p-8 transition-all hover:border-primary md:p-10">
                   <div className="flex items-start justify-between">
-                    <span className={`rounded px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${project.status === "open" ? "bg-green-500/10 text-green-700" : "bg-red-500/10 text-red-700"}`}>{project.status}</span>
+                    <div className="flex flex-wrap gap-2"><span className={`rounded px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${project.status === "open" ? "bg-green-500/10 text-green-700" : "bg-red-500/10 text-red-700"}`}>{project.status === "open" && !facultyViewer && project.available_seats <= 0 ? "student seats filled" : project.status}</span>{facultyViewer ? <span className="rounded bg-blue-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blue-700">{project.status === "open" ? "Faculty collaboration available" : "Collaboration closed"}</span> : <span className="rounded bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">{project.available_seats} / {project.max_students} student seats available</span>}</div>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">{new Date(project.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>
                   </div>
                   <div>
                     <h2 className="mb-3 text-2xl font-extrabold text-primary">{project.title}</h2>
-                    <span className="inline-block rounded border border-outline bg-background px-2 py-1 text-xs font-bold text-foreground">{project.department}</span>
+                    <span className="inline-block rounded border border-outline bg-background px-2 py-1 text-xs font-bold text-foreground">{getDepartmentLabel(project.department)}</span>
                     <p className="mt-4 font-medium leading-relaxed text-foreground/65">{project.description}</p>
                   </div>
                   <div className="mt-2 flex flex-wrap items-center justify-between gap-4">

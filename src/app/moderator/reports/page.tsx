@@ -1,6 +1,7 @@
 import { requirePageIdentity } from "@/lib/auth/server";
 import { createClient } from "@/utils/supabase/server";
 import ReportActions from "./ReportActions";
+import Link from "next/link";
 
 export default async function ModeratorReportsPage() {
   await requirePageIdentity({ permissions: ["report.read", "report.resolve"] });
@@ -22,6 +23,8 @@ export default async function ModeratorReportsPage() {
       <section className="space-y-4">
         {(reports || []).map((report) => {
           const reporter = Array.isArray(report.portal_users) ? report.portal_users[0] : report.portal_users;
+          const evidence = report.evidence && typeof report.evidence === "object" && !Array.isArray(report.evidence) ? report.evidence as Record<string, unknown> : {};
+          const discussionId = report.entity_type === "forum_post" ? report.entity_id : typeof evidence.postId === "string" ? evidence.postId : null;
           return (
             <article key={report.id} className="rounded-2xl border border-outline bg-surface p-6">
               <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
@@ -37,7 +40,7 @@ export default async function ModeratorReportsPage() {
               <p className="mb-5 leading-relaxed text-foreground/70">{report.summary}</p>
               <div className="grid gap-2 border-t border-outline pt-4 text-xs text-foreground/45 md:grid-cols-3">
                 <span>Reporter: {reporter?.name || "Member"}</span>
-                <span>Target: {report.entity_id}</span>
+                <span>{discussionId ? <Link href={`/forum/${discussionId}`} className="font-bold text-primary hover:underline">Open reported discussion</Link> : `Target: ${report.entity_id}`}</span>
                 <span>{new Date(report.created_at).toLocaleString()}</span>
               </div>
             </article>
