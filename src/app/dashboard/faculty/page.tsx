@@ -34,11 +34,11 @@ export default async function FacultyWorkspaceOverview() {
     <div className="space-y-10">
       <header className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Faculty dashboard</p>
-          <h1 className="text-4xl font-black tracking-tight text-foreground">Welcome, {identity.name}</h1>
+          <p className="mb-2 text-xs font-semibold normal-case tracking-normal text-primary">Faculty dashboard</p>
+          <h1 className="text-3xl font-semibold tracking-normal text-foreground">Welcome, {identity.name}</h1>
           <p className="mt-3 max-w-2xl text-foreground/55">Assess project health, maintain evidence, review student interest, and publish research updates from one workspace.</p>
         </div>
-        <Link href="/dashboard/faculty/projects/new" className="rounded-xl bg-primary px-5 py-3 text-center text-xs font-bold uppercase tracking-widest text-primary-foreground">
+        <Link href="/dashboard/faculty/projects/new" className="rounded-lg bg-primary px-5 py-3 text-center text-xs font-bold normal-case tracking-normal text-primary-foreground">
           Create project
         </Link>
       </header>
@@ -51,10 +51,10 @@ export default async function FacultyWorkspaceOverview() {
         <WorkspaceStatCard label="Relationship requests" value={(contributions.count || 0) + (collaborations.count || 0)} detail="Contribute / collaborate" icon={<Handshake className="h-5 w-5" />} />
       </section>
 
-      <section className="rounded-2xl border border-outline bg-surface p-6 md:p-8">
+      <section className="rounded-lg border border-outline bg-surface p-6 md:p-8">
         <div className="mb-6 flex items-center justify-between">
-          <div><h2 className="text-xl font-black text-foreground">Recent projects</h2><p className="text-sm text-foreground/50">Your latest research listings.</p></div>
-          <Link href="/dashboard/faculty/projects" className="text-xs font-bold uppercase tracking-widest text-primary hover:underline">Manage all</Link>
+          <div><h2 className="text-xl font-semibold text-foreground">Recent projects</h2><p className="text-sm text-foreground/50">Your latest research listings.</p></div>
+          <Link href="/dashboard/faculty/projects" className="text-xs font-bold normal-case tracking-normal text-primary hover:underline">Manage all</Link>
         </div>
         <div className="divide-y divide-outline">
           {(projects || []).slice(0, 6).map((project) => (
@@ -62,7 +62,7 @@ export default async function FacultyWorkspaceOverview() {
               <div><p className="font-bold text-foreground">{project.title}</p><p className="mt-1 text-xs text-foreground/45">Created {new Date(project.created_at).toLocaleDateString()}</p></div>
               <span className="text-xs font-semibold text-foreground/55">{getDepartmentCompactLabel(project.department)}</span>
               <span className="text-xs text-foreground/55">{project.status === "open" ? "Requests enabled" : "Requests closed"}</span>
-              <span className={`w-fit rounded-full px-3 py-1 text-[10px] font-bold uppercase ${project.status === "open" ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-500"}`}>{project.status}</span>
+              <span className={`w-fit rounded-full px-3 py-1 text-xs font-bold normal-case ${project.status === "open" ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-500"}`}>{project.status}</span>
             </div>
           ))}
           {(projects || []).length === 0 && <p className="py-12 text-center text-sm text-foreground/45">Create your first research project to begin receiving applications.</p>}

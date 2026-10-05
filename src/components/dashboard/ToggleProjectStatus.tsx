@@ -32,7 +32,7 @@ export function ToggleProjectStatus({ projectId, initialStatus }: { projectId: s
     <button
       onClick={handleToggle}
       disabled={loading}
-      className={`text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded transition-colors ${
+      className={`text-xs normal-case font-bold tracking-normal px-3 py-1 rounded transition-colors ${
         initialStatus === "open"
           ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
           : "bg-green-50 text-green-600 hover:bg-green-100 border border-green-200"

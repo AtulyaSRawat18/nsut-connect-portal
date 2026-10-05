@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, User } from "lucide-react";
 import { getShowcaseForumPost } from "@/content/showcase";
-import ResearchBackdrop from "@/components/shared/ResearchBackdrop";
+
 import ForumDiscussion, { type DiscussionReply } from "./ForumDiscussion";
 import { getDepartmentLabel } from "@/lib/departments";
 import { createPublicClient } from "@/utils/supabase/public";
@@ -56,17 +56,17 @@ export default async function ForumDetail({ params }: { params: Promise<{ id: st
   const postAuthor = livePost ? (Array.isArray(livePost.profiles) ? livePost.profiles[0] : livePost.profiles) : null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#fbf7ef] px-6 py-16 text-foreground dark:bg-background">
-      <ResearchBackdrop compact />
+    <div className="portal-page px-5 text-foreground">
+
       <article className="relative mx-auto max-w-4xl">
-        <Link href="/forum" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary"><ArrowLeft className="h-4 w-4" /> Academic forum</Link>
-        <header className="mt-10 rounded-2xl border border-outline bg-background/90 p-7 shadow-sm backdrop-blur-sm md:p-10">
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-widest">
+        <Link href="/forum" className="inline-flex items-center gap-2 text-xs font-semibold normal-case tracking-normal text-primary"><ArrowLeft className="h-4 w-4" /> Academic forum</Link>
+        <header className="mt-10 rounded-lg border border-outline bg-background/90 p-7 shadow-sm backdrop-blur-sm md:p-10">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold normal-case tracking-normal">
             <span className="rounded bg-primary/10 px-3 py-1 text-primary">{getDepartmentLabel(post.department)}</span>
             {post.created_at && <time className="text-foreground/45">{new Date(post.created_at).toLocaleDateString()}</time>}
           </div>
-          <h1 className="mt-6 text-4xl font-black leading-tight tracking-tight md:text-5xl">{post.title}</h1>
-          <p className="mt-4 flex items-center gap-2 text-sm font-bold text-foreground/60"><User className="h-4 w-4" /> {livePost ? <Link href={`/profile/${livePost.author_id}`} className="hover:text-primary hover:underline">{postAuthor?.full_name || "Account unavailable"}</Link> : "NSUT Connect showcase contributor"}{postAuthor?.role && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] uppercase tracking-widest text-primary">{postAuthor.role}</span>}</p>
+          <h1 className="mt-6 text-3xl font-semibold leading-tight tracking-normal md:text-3xl">{post.title}</h1>
+          <p className="mt-4 flex items-center gap-2 text-sm font-bold text-foreground/60"><User className="h-4 w-4" /> {livePost ? <Link href={`/profile/${livePost.author_id}`} className="hover:text-primary hover:underline">{postAuthor?.full_name || "Account unavailable"}</Link> : "NSUT Connect showcase contributor"}{postAuthor?.role && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs normal-case tracking-normal text-primary">{postAuthor.role}</span>}</p>
           <p className="mt-5 text-lg leading-8 text-foreground/70">{post.content}</p>
         </header>
         <ForumDiscussion postId={post.id} initialScore={post.upvotes || 0} initialReplies={replies} reportable={Boolean(livePost)} />

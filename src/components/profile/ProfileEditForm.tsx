@@ -61,10 +61,10 @@ export type EditableProfile = {
 };
 
 const fieldClass = "w-full rounded border border-outline bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary";
-const labelClass = "mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-foreground/50";
+const labelClass = "mb-2 block text-xs font-semibold text-foreground/70";
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
-  return <label className="block"><span className={labelClass}>{label}</span>{children}{error && <span className="mt-1 block text-[10px] font-semibold text-red-500">{error}</span>}</label>;
+  return <label className="block"><span className={labelClass}>{label}</span>{children}{error && <span className="mt-1 block text-xs font-semibold text-red-500">{error}</span>}</label>;
 }
 
 export default function ProfileEditForm({
@@ -119,14 +119,14 @@ export default function ProfileEditForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7 rounded-xl border border-outline bg-surface p-6 shadow-sm md:p-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7 rounded-lg border border-outline bg-surface p-6 shadow-sm md:p-8">
       <div className="flex items-start justify-between gap-4">
-        <div><h2 className="text-xl font-black text-foreground">{completionMode ? "Build your profile" : "Edit profile details"}</h2><p className="mt-1 text-sm text-foreground/55">Everything below can be updated later. Your institutional sign-in email and account role stay protected.</p></div>
+        <div><h2 className="text-xl font-semibold text-foreground">{completionMode ? "Build your profile" : "Edit profile details"}</h2><p className="mt-1 text-sm text-foreground/55">Everything below can be updated later. Your institutional sign-in email and account role stay protected.</p></div>
         {onCancel && <button type="button" aria-label="Close profile editor" onClick={onCancel} className="rounded p-1 text-foreground/50 hover:bg-foreground/5 hover:text-foreground"><X size={20} /></button>}
       </div>
 
       <section>
-        <h3 className="mb-4 border-b border-outline pb-2 text-xs font-black uppercase tracking-[0.2em] text-primary">Identity and academics</h3>
+        <h3 className="mb-4 border-b border-outline pb-2 text-xs font-semibold normal-case tracking-normal text-primary">Identity and academics</h3>
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Full name" error={errors.name?.message}><input {...register("name")} className={fieldClass} /></Field>
           <Field label="Department" error={errors.department?.message}><select {...register("department")} className={fieldClass}><option value="">Select department</option>{DEPARTMENTS.map((item) => <option key={item.id} value={item.id}>{getDepartmentLabel(item.id)}</option>)}</select></Field>
@@ -141,7 +141,7 @@ export default function ProfileEditForm({
       </section>
 
       <section>
-        <h3 className="mb-4 border-b border-outline pb-2 text-xs font-black uppercase tracking-[0.2em] text-primary">Biography and education</h3>
+        <h3 className="mb-4 border-b border-outline pb-2 text-xs font-semibold normal-case tracking-normal text-primary">Biography and education</h3>
         <div className="space-y-4">
           <Field label="Biography" error={errors.bio?.message}><textarea {...register("bio")} className={`${fieldClass} min-h-28 resize-y`} placeholder="Introduce your interests, work, and goals." /></Field>
           <Field label="Education" error={errors.education?.message}><textarea {...register("education")} className={`${fieldClass} min-h-24 resize-y`} placeholder="Degrees, institutions, specialisations, and relevant study." /></Field>
@@ -149,7 +149,7 @@ export default function ProfileEditForm({
       </section>
 
       <section>
-        <h3 className="mb-4 border-b border-outline pb-2 text-xs font-black uppercase tracking-[0.2em] text-primary">Contact, links, and CV</h3>
+        <h3 className="mb-4 border-b border-outline pb-2 text-xs font-semibold normal-case tracking-normal text-primary">Contact, links, and CV</h3>
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Public contact email" error={errors.contact_email?.message}><input type="email" {...register("contact_email")} className={fieldClass} placeholder={profile.email || undefined} /></Field>
           <Field label="Website" error={errors.website_url?.message}><input {...register("website_url")} className={fieldClass} placeholder="https://…" /></Field>
@@ -167,8 +167,8 @@ export default function ProfileEditForm({
 
       {serverError && <p role="alert" className="rounded border border-red-500/30 bg-red-500/5 p-3 text-sm font-semibold text-red-600">{serverError}</p>}
       <div className="flex justify-end gap-3 border-t border-outline pt-5">
-        {onCancel && <button type="button" onClick={onCancel} className="rounded px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-outline/20">Cancel</button>}
-        <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 bg-primary px-6 py-3 text-xs font-bold uppercase tracking-widest text-on-primary hover:brightness-110 disabled:opacity-50">{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save size={16} />}{completionMode ? "Save profile and continue" : "Save changes"}</button>
+        {onCancel && <button type="button" onClick={onCancel} className="rounded px-4 py-2 text-xs font-bold normal-case tracking-normal hover:bg-outline/20">Cancel</button>}
+        <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 bg-primary px-6 py-3 text-xs font-bold normal-case tracking-normal text-on-primary hover:brightness-110 disabled:opacity-50">{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save size={16} />}{completionMode ? "Save profile and continue" : "Save changes"}</button>
       </div>
     </form>
   );

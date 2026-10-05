@@ -8,7 +8,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!entry && <Navbar />}
-      <main id="main-content" className="flex flex-1 flex-col">
+      <main id="main-content" tabIndex={-1} className={`flex flex-1 flex-col${entry ? "" : " portal-content"}`}>
         {children}
       </main>
       {!entry && <Footer />}

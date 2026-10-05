@@ -52,10 +52,10 @@ export default function ProjectAssessment({
     <div className="mt-5 border-t border-outline pt-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-48 flex-1">
-          <div className="mb-2 flex items-center justify-between text-[10px] font-black uppercase tracking-widest"><span>Research progress</span><span>{progress}%</span></div>
+          <div className="mb-2 flex items-center justify-between text-xs font-semibold normal-case tracking-normal"><span>Research progress</span><span>{progress}%</span></div>
           <div className="h-2 overflow-hidden rounded-full bg-foreground/10"><div className="h-full bg-primary transition-all" style={{ width: progress + "%" }} /></div>
         </div>
-        {linkedBrief ? <a href={materialReference} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary hover:underline"><FileText className="h-4 w-4" /> Project material</a> : <span className="max-w-64 truncate text-xs font-bold text-foreground/55">Material: {materialReference}</span>}
+        {linkedBrief ? <a href={materialReference} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-semibold normal-case tracking-normal text-primary hover:underline"><FileText className="h-4 w-4" /> Project material</a> : <span className="max-w-64 truncate text-xs font-bold text-foreground/55">Material: {materialReference}</span>}
       </div>
       <form onSubmit={save} className="grid gap-3">
         <div className="grid gap-3 sm:grid-cols-[1fr_12rem]">
@@ -82,7 +82,7 @@ export default function ProjectAssessment({
         </label>
         <div className="flex items-center justify-between gap-3">
           <span className={"text-xs " + (message.includes("saved") ? "text-green-600" : "text-red-600")} role="status">{message}</span>
-          <button disabled={pending || note.trim().length < 10} className="inline-flex items-center gap-2 rounded bg-foreground px-4 py-2 text-[10px] font-black uppercase tracking-widest text-background disabled:opacity-40">{pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save assessment</button>
+          <button disabled={pending || note.trim().length < 10} className="inline-flex items-center gap-2 rounded bg-foreground px-4 py-2 text-xs font-semibold normal-case tracking-normal text-background disabled:opacity-40">{pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save assessment</button>
         </div>
       </form>
     </div>

@@ -86,57 +86,57 @@ export default function ProjectEditForm({ project }: { project: EditableProject 
   }
 
   return (
-    <form onSubmit={save} className="grid gap-7 rounded-2xl border border-outline bg-surface p-6 md:p-8">
+    <form onSubmit={save} className="grid gap-7 rounded-lg border border-outline bg-surface p-6 md:p-8">
       <div className="grid gap-6 lg:grid-cols-2">
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Project title
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Project title
           <input value={title} onChange={(event) => setTitle(event.target.value)} required minLength={5} maxLength={180} className="mt-2 w-full rounded border border-outline bg-background px-4 py-3 text-sm normal-case tracking-normal text-foreground outline-none focus:border-primary" />
         </label>
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Department
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Department
           <select value={department} onChange={(event) => setDepartment(event.target.value)} required className="mt-2 w-full rounded border border-outline bg-background px-4 py-3 text-sm normal-case tracking-normal text-foreground outline-none focus:border-primary">{DEPARTMENTS.map((item) => <option key={item.id} value={item.id}>{getDepartmentLabel(item.id)}</option>)}</select>
         </label>
       </div>
 
-      <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Public project description
+      <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Public project description
         <textarea value={description} onChange={(event) => setDescription(event.target.value)} required minLength={20} maxLength={8000} className="mt-2 min-h-44 w-full rounded border border-outline bg-background p-4 text-sm normal-case leading-6 tracking-normal text-foreground outline-none focus:border-primary" />
       </label>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Listing status
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Listing status
           <select value={status} onChange={(event) => setStatus(event.target.value)} className="mt-2 w-full rounded border border-outline bg-background px-4 py-3 text-sm normal-case tracking-normal text-foreground"><option value="open">Open</option><option value="closed">Closed</option></select>
         </label>
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Student capacity
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Student capacity
           <input type="number" value={capacity} onChange={(event) => setCapacity(Number(event.target.value))} required min={Math.max(acceptedStudents, 1)} max={50} className="mt-2 w-full rounded border border-outline bg-background px-4 py-3 text-sm normal-case tracking-normal text-foreground" />
         </label>
-        <div className="rounded border border-outline bg-background p-4 text-xs leading-5 text-foreground/60"><strong className="block font-black uppercase tracking-widest text-foreground">Seat accounting</strong><span className="mt-2 block">{acceptedStudents} accepted · {availableSeats} currently available. Lowering capacity below accepted students is blocked by the database.</span></div>
+        <div className="rounded border border-outline bg-background p-4 text-xs leading-5 text-foreground/60"><strong className="block font-semibold normal-case tracking-normal text-foreground">Seat accounting</strong><span className="mt-2 block">{acceptedStudents} accepted · {availableSeats} currently available. Lowering capacity below accepted students is blocked by the database.</span></div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Project PDF / material reference
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Project PDF / material reference
           <input value={material} onChange={(event) => setMaterial(event.target.value)} required minLength={1} maxLength={700} placeholder="HTTPS/portal PDF, document reference, descriptive text, or NA" className="mt-2 w-full rounded border border-outline bg-background px-4 py-3 text-sm normal-case tracking-normal text-foreground" />
-          {(material.startsWith("https://") || material.startsWith("/")) && <a href={material} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary"><ExternalLink className="h-3.5 w-3.5" /> Open current material</a>}
+          {(material.startsWith("https://") || material.startsWith("/")) && <a href={material} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-xs font-semibold normal-case tracking-normal text-primary"><ExternalLink className="h-3.5 w-3.5" /> Open current material</a>}
         </label>
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Application Google Form / questionnaire
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Application Google Form / questionnaire
           <input value={questionnaire} onChange={(event) => setQuestionnaire(event.target.value)} required minLength={1} maxLength={700} placeholder="https://forms.gle/... or NA" className="mt-2 w-full rounded border border-outline bg-background px-4 py-3 text-sm normal-case tracking-normal text-foreground" />
-          {questionnaire !== "NA" && isApplicationFormReference(questionnaire) && <a href={questionnaire} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary"><ExternalLink className="h-3.5 w-3.5" /> Open current questionnaire</a>}
+          {questionnaire !== "NA" && isApplicationFormReference(questionnaire) && <a href={questionnaire} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-xs font-semibold normal-case tracking-normal text-primary"><ExternalLink className="h-3.5 w-3.5" /> Open current questionnaire</a>}
         </label>
       </div>
 
       <div className="grid gap-6 md:grid-cols-[1fr_14rem]">
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Progress: {progress}%
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Progress: {progress}%
           <input type="range" value={progress} onChange={(event) => setProgress(Number(event.target.value))} min={0} max={100} className="mt-4 w-full accent-primary" />
         </label>
-        <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Project health
+        <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Project health
           <select value={health} onChange={(event) => setHealth(event.target.value)} className="mt-2 w-full rounded border border-outline bg-background px-4 py-3 text-sm normal-case tracking-normal text-foreground"><option value="on_track">On track</option><option value="at_risk">At risk</option><option value="blocked">Blocked</option><option value="completed">Completed</option></select>
         </label>
       </div>
 
-      <label className="text-xs font-black uppercase tracking-widest text-foreground/65">Assessment note
+      <label className="text-xs font-semibold normal-case tracking-normal text-foreground/65">Assessment note
         <textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={1000} placeholder="Evidence completed, next milestone, risk and owner." className="mt-2 min-h-24 w-full rounded border border-outline bg-background p-4 text-sm normal-case leading-6 tracking-normal text-foreground" />
       </label>
 
       <div className="flex flex-col items-start justify-between gap-4 border-t border-outline pt-6 sm:flex-row sm:items-center">
         <p role="status" className={`text-sm font-bold ${saved ? "text-green-700" : "text-red-600"}`}>{message}</p>
-        <button disabled={pending} className="inline-flex items-center gap-2 rounded bg-primary px-6 py-3 text-xs font-black uppercase tracking-widest text-on-primary disabled:opacity-50">{pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save all changes</button>
+        <button disabled={pending} className="inline-flex items-center gap-2 rounded bg-primary px-6 py-3 text-xs font-semibold normal-case tracking-normal text-on-primary disabled:opacity-50">{pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save all changes</button>
       </div>
     </form>
   );

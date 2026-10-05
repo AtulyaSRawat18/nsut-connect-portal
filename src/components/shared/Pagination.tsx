@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default function Pagination({
   basePath,
@@ -26,16 +27,16 @@ export default function Pagination({
   };
 
   return (
-    <nav aria-label="Pagination" className="flex items-center justify-between gap-4 border-t border-outline pt-6">
+    <nav aria-label="Pagination" className="portal-pagination">
       {currentPage > 1 ? (
-        <Link href={hrefFor(currentPage - 1)} className="rounded-lg border border-outline px-4 py-2 text-xs font-bold uppercase tracking-widest text-foreground hover:border-primary hover:text-primary">
-          Previous
+        <Link href={hrefFor(currentPage - 1)} aria-label="Previous page" title="Previous page" className="icon-control">
+          <ArrowLeft size={18} />
         </Link>
       ) : <span />}
       <span className="text-xs font-semibold text-foreground/50">Page {currentPage} of {totalPages}</span>
       {currentPage < totalPages ? (
-        <Link href={hrefFor(currentPage + 1)} className="rounded-lg border border-outline px-4 py-2 text-xs font-bold uppercase tracking-widest text-foreground hover:border-primary hover:text-primary">
-          Next
+        <Link href={hrefFor(currentPage + 1)} aria-label="Next page" title="Next page" className="icon-control">
+          <ArrowRight size={18} />
         </Link>
       ) : <span />}
     </nav>
