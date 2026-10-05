@@ -2,6 +2,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+The entry and IDea collaboration changes are on `test/idea-entry-2026-10-04`.
+See [IDea rollout and validation](docs/IDEA_COLLABORATION.md) for migration 013,
+the opt-in member model, staging seed, and the preserved baseline tag.
+
 First, run the development server:
 
 ```bash

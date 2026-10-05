@@ -42,18 +42,18 @@ export default async function FacultyForumPage({
     <div className="space-y-8">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Community publishing</p>
-          <h1 className="text-4xl font-black text-foreground">My forum posts</h1>
+          <p className="mb-2 text-xs font-semibold normal-case tracking-normal text-primary">Community publishing</p>
+          <h1 className="text-3xl font-semibold text-foreground">My forum posts</h1>
           <p className="mt-3 text-foreground/55">Start academic discussions and review posts published under your identity.</p>
         </div>
-        <Link href="/forum" className="text-xs font-bold uppercase tracking-widest text-primary hover:underline">View public forum</Link>
+        <Link href="/forum" className="text-xs font-bold normal-case tracking-normal text-primary hover:underline">View public forum</Link>
       </header>
 
       <div className="grid gap-6 xl:grid-cols-[22rem_1fr]">
         <ForumPostForm />
 
         <section className="space-y-5">
-          <form className="grid gap-3 rounded-2xl border border-outline bg-surface p-4 sm:grid-cols-[1fr_12rem_auto]">
+          <form className="grid gap-3 rounded-lg border border-outline bg-surface p-4 sm:grid-cols-[1fr_12rem_auto]">
             <label className="relative">
               <Search className="absolute left-3 top-3.5 h-4 w-4 text-foreground/40" />
               <input
@@ -71,22 +71,22 @@ export default async function FacultyForumPage({
               <option value="all">All departments</option>
               {DEPARTMENTS.map((item) => <option key={item.id} value={item.id}>{getDepartmentLabel(item.id)}</option>)}
             </select>
-            <button className="rounded-lg bg-foreground px-5 py-3 text-xs font-bold uppercase tracking-widest text-background">Filter</button>
+            <button className="rounded-lg bg-foreground px-5 py-3 text-xs font-bold normal-case tracking-normal text-background">Filter</button>
           </form>
 
           {error && (
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-8 text-sm text-red-600">
+            <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-8 text-sm text-red-600">
               Forum posts could not be loaded. Try again shortly.
             </div>
           )}
 
           {!error && posts.map((post) => (
-            <article key={post.id} className="rounded-2xl border border-outline bg-surface p-6">
+            <article key={post.id} className="rounded-lg border border-outline bg-surface p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">{getDepartmentLabel(post.department)}</span>
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold normal-case tracking-normal text-primary">{getDepartmentLabel(post.department)}</span>
                 <span className="text-xs text-foreground/45">{new Date(post.created_at).toLocaleDateString()}</span>
               </div>
-              <h2 className="mt-4 text-xl font-black text-foreground">{post.title}</h2>
+              <h2 className="mt-4 text-xl font-semibold text-foreground">{post.title}</h2>
               <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/60">{post.content}</p>
               <div className="mt-5 flex items-center gap-2 border-t border-outline pt-4 text-xs text-foreground/45">
                 <MessageSquare className="h-4 w-4" /> {post.upvotes || 0} upvotes
@@ -95,7 +95,7 @@ export default async function FacultyForumPage({
           ))}
 
           {!error && posts.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-outline p-14 text-center text-foreground/45">
+            <div className="rounded-lg border border-dashed border-outline p-14 text-center text-foreground/45">
               No forum posts match these filters.
             </div>
           )}

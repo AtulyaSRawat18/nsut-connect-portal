@@ -1,68 +1,96 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { ArrowRight, BookOpen, ChevronDown, Compass, FolderKanban, GraduationCap, LayoutDashboard, Lightbulb, LogOut, Menu, MessageSquare, Search, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { useLogout } from "@/utils/auth";
 
-const navigation = [
-  { href: "/home", label: "Home" },
-  { href: "/projects", label: "Projects" },
-  { href: "/forum", label: "Forum" },
-  { href: "/news", label: "News" },
-  { href: "/opportunities", label: "Opportunities" },
-  { href: "/feed", label: "Feed" },
+const primary = [
+  { href: "/home", label: "Home", icon: Compass },
+  { href: "/projects", label: "Projects", icon: FolderKanban },
+  { href: "/idea", label: "IDea", icon: Lightbulb },
+  { href: "/forum", label: "Forum", icon: MessageSquare },
+  { href: "/opportunities", label: "Opportunities", icon: GraduationCap },
 ];
-
-function isCurrentPath(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+const explore = [
+  { title: "Research", links: [["Faculty directory", "/faculty"], ["Publications", "/publications"], ["Research feed", "/feed"], ["Grants & funding", "/grants"]] },
+  { title: "On campus", links: [["News & briefs", "/news"], ["Developments", "/developments"], ["Highlights", "/whats-new"]] },
+  { title: "The community", links: [["About NSUT Connect", "/about"], ["Contact & support", "/contact"], ["Research ethics", "/ethics"]] },
+];
+const isActive = (path: string, href: string) => path === href || path.startsWith(href + "/");
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const [menuPath, setMenuPath] = useState<string | null>(null);
   const [user, setUser] = useState<{ id: string; name: string; role: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchArea, setSearchArea] = useState("/projects");
+  const more = useRef<HTMLDetailsElement>(null);
+  const searchDialog = useRef<HTMLDialogElement>(null);
   const logout = useLogout();
-  const pathname = usePathname();
+  const menuOpen = menuPath === pathname;
 
   useEffect(() => {
-    let active = true;
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("/api/auth/session", { cache: "no-store" });
-        const payload = response.ok ? await response.json() as { user?: { id: string; name: string; role: string } } : null;
-        if (active) setUser(payload?.user ?? null);
-      } catch {
-        if (active) setUser(null);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-    fetchUser();
-    return () => { active = false; };
+    const controller = new AbortController();
+    fetch("/api/auth/session", { cache: "no-store", signal: controller.signal })
+      .then(async response => response.ok ? response.json() : null)
+      .then(payload => { if (!controller.signal.aborted) setUser(payload?.user || null); })
+      .catch(() => { if (!controller.signal.aborted) setUser(null); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, [pathname]);
 
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-outline bg-background transition-colors">
-      <nav className="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-6 py-3">
-        <Link href="/" className="flex items-center gap-4 transition-opacity hover:opacity-80">
-          <img alt="NSUT Logo" className="h-12 w-12 object-contain" src="/nsut-logo.png" />
-          <div className="flex flex-col border-l border-outline pl-4 text-left"><span className="text-lg font-extrabold uppercase leading-tight tracking-tight text-primary">NSUT Connect</span><span className="text-[10px] font-semibold uppercase tracking-widest text-foreground/70">Research Prototype</span></div>
-        </Link>
+  useEffect(() => {
+    const close = (event: PointerEvent) => {
+      if (more.current && !more.current.contains(event.target as Node)) more.current.open = false;
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuPath(null);
+        if (more.current?.open) { more.current.open = false; more.current.querySelector("summary")?.focus(); }
+      }
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", close); document.removeEventListener("keydown", escape); };
+  }, []);
 
-        <div className="hidden items-center gap-2 lg:flex">
-          {navigation.map((item) => {
-            const active = isCurrentPath(pathname, item.href);
-            return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={`rounded-lg border-b-2 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] transition-all ${active ? "border-primary bg-primary/10 text-primary" : "border-transparent text-foreground/70 hover:bg-foreground/5 hover:text-primary"}`}>{item.label}</Link>;
-          })}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          {loading ? <div className="h-8 w-20 animate-pulse bg-surface" /> : user ? <div className="flex items-center gap-2"><Link href="/dashboard" aria-current={pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/moderator") ? "page" : undefined} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-black uppercase tracking-widest transition-all ${pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/moderator") ? "bg-primary/10 text-primary" : "text-foreground/80 hover:text-primary"}`}><LayoutDashboard size={16} /><span className="hidden sm:inline">Dashboard</span></Link><button onClick={logout} className="ml-1 p-2 text-foreground/50 transition-colors hover:text-primary" title="Sign Out"><LogOut size={18} /></button></div> : <div className="flex items-center gap-2"><Link href="/signup" aria-current={pathname === "/signup" ? "page" : undefined} className={`border px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition-all ${pathname === "/signup" ? "border-primary bg-primary/10 text-primary" : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"}`}>Register</Link><Link href="/login" aria-current={pathname === "/login" ? "page" : undefined} className="bg-primary px-5 py-2 text-xs font-black uppercase tracking-[0.2em] text-on-primary transition-all hover:brightness-110">Sign In</Link></div>}
-        </div>
-      </nav>
-    </header>
-  );
+  return <header className="site-header">
+    <a href="#main-content" className="skip-link">Skip to content</a>
+    <nav className="site-navigation" aria-label="Main navigation">
+      <Link href="/home" className="site-brand" onClick={() => setMenuPath(null)}>
+        <Image src="/nsut-logo.png" alt="" width={42} height={42} />
+        <span>NSUT <strong>Connect</strong><small>Research & community</small></span>
+      </Link>
+      <div className="site-primary-links">{primary.map(item => <Link key={item.href} href={item.href} aria-current={isActive(pathname, item.href) ? "page" : undefined}>{item.label}{item.href === "/idea" && <span className="nav-new-dot" />}</Link>)}
+        <details ref={more} className="site-explore">
+          <summary className={explore.some(group => group.links.some(([, href]) => isActive(pathname, href))) ? "is-current" : ""}>Explore <ChevronDown size={14} /></summary>
+          <div className="site-explore-panel">{explore.map(group => <div key={group.title}><h2>{group.title}</h2>{group.links.map(([label, href]) => <Link key={href} href={href} aria-current={isActive(pathname, href) ? "page" : undefined} onClick={() => { if (more.current) more.current.open = false; }}>{label}<ArrowRight size={13} /></Link>)}</div>)}</div>
+        </details>
+      </div>
+      <div className="site-actions">
+        <button className="icon-control" title="Search portal" aria-label="Search portal" onClick={() => searchDialog.current?.showModal()}><Search size={19} /></button>
+        <ThemeToggle />
+        {loading ? <span className="site-session-loading" aria-label="Loading account" /> : user ? <><Link className="site-workspace-link" href="/dashboard" title="Your workspace"><LayoutDashboard size={17} /><span>Workspace</span></Link><button className="icon-control site-signout" title="Sign out" aria-label="Sign out" onClick={logout}><LogOut size={17} /></button></> : <Link href="/login" className="site-signin">Sign in <ArrowRight size={15} /></Link>}
+        <button className="icon-control site-menu-toggle" aria-label={menuOpen ? "Close navigation" : "Open navigation"} title={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuPath(menuOpen ? null : pathname)}>{menuOpen ? <X size={21} /> : <Menu size={21} />}</button>
+      </div>
+    </nav>
+    {menuOpen && <nav id="mobile-navigation" aria-label="Mobile navigation" className="site-mobile-nav">
+      <div className="site-mobile-primary">{primary.map(({ icon: Icon, ...item }) => <Link key={item.href} href={item.href} aria-current={isActive(pathname, item.href) ? "page" : undefined} onClick={() => setMenuPath(null)}><Icon size={18} />{item.label}</Link>)}</div>
+      <div className="site-mobile-groups">{explore.map(group => <div key={group.title}><h2>{group.title}</h2>{group.links.map(([label, href]) => <Link key={href} href={href} onClick={() => setMenuPath(null)} aria-current={isActive(pathname, href) ? "page" : undefined}>{label}</Link>)}</div>)}</div>
+      {!user && <Link className="site-mobile-register" href="/signup" onClick={() => setMenuPath(null)}>Join the community <ArrowRight size={16} /></Link>}
+      {user && <button className="site-mobile-register" onClick={logout}><LogOut size={16} /> Sign out</button>}
+    </nav>}
+    <dialog ref={searchDialog} aria-labelledby="portal-search-title" className="portal-search-dialog" onClick={event => { if (event.target === event.currentTarget) searchDialog.current?.close(); }}>
+      <div className="portal-dialog-heading"><BookOpen size={21} /><h2 id="portal-search-title">Find your next connection</h2><button className="icon-control" title="Close search" aria-label="Close search" onClick={() => searchDialog.current?.close()}><X size={20} /></button></div>
+      <form action={searchArea} method="get" onSubmit={() => searchDialog.current?.close()}>
+        <label>Search in<select value={searchArea} onChange={event => setSearchArea(event.target.value)}><option value="/projects">Research projects</option><option value="/faculty">Faculty directory</option><option value="/publications">Publications</option><option value="/forum">Discussions</option><option value="/opportunities">Opportunities</option></select></label>
+        <label>Keywords<input name="q" type="search" required maxLength={160} placeholder="A topic, a name, a question..." /></label>
+        <button className="portal-button" type="submit"><Search size={17} /> Search</button>
+      </form>
+    </dialog>
+  </header>;
 }

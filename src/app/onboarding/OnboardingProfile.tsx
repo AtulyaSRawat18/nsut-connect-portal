@@ -19,5 +19,5 @@ export default function OnboardingProfile({ profile, isActive }: { profile: Edit
     router.refresh();
   }
 
-  return <div className="min-h-screen bg-background px-6 py-12"><div className="mx-auto max-w-4xl"><RegistrationSteps current={3} />{!isActive && <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm leading-6 text-amber-700">Complete your faculty profile now. Institutional approval is still required before the faculty dashboard opens.</div>}<ProfileEditForm profile={profile} onUpdate={finish} completionMode /></div></div>;
+  return <div className="min-h-screen bg-background px-6 py-12"><div className="mx-auto max-w-4xl"><RegistrationSteps current={3} />{!isActive && <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm leading-6 text-amber-700">Complete your faculty profile now. Institutional approval is still required before the faculty dashboard opens.</div>}<ProfileEditForm profile={profile} onUpdate={finish} completionMode /></div></div>;
 }

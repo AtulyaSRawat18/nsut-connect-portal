@@ -39,14 +39,14 @@ export default function ForumPostForm() {
   }
 
   return (
-    <form onSubmit={submitPost} className="space-y-5 rounded-2xl border border-outline bg-surface p-6">
+    <form onSubmit={submitPost} className="space-y-5 rounded-lg border border-outline bg-surface p-6">
       <div>
-        <h2 className="text-xl font-black text-foreground">Start a discussion</h2>
+        <h2 className="text-xl font-semibold text-foreground">Start a discussion</h2>
         <p className="mt-1 text-sm text-foreground/50">Publish as your verified faculty identity.</p>
       </div>
 
       <label className="block">
-        <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-foreground/55">Title</span>
+        <span className="mb-2 block text-xs font-semibold normal-case tracking-normal text-foreground/55">Title</span>
         <input
           name="title"
           required
@@ -58,7 +58,7 @@ export default function ForumPostForm() {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-foreground/55">Department</span>
+        <span className="mb-2 block text-xs font-semibold normal-case tracking-normal text-foreground/55">Department</span>
         <select
           name="department"
           required
@@ -71,7 +71,7 @@ export default function ForumPostForm() {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-foreground/55">Discussion</span>
+        <span className="mb-2 block text-xs font-semibold normal-case tracking-normal text-foreground/55">Discussion</span>
         <textarea
           name="content"
           required
@@ -88,7 +88,7 @@ export default function ForumPostForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs font-bold uppercase tracking-widest text-primary-foreground disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-xs font-bold normal-case tracking-normal text-primary-foreground disabled:opacity-60"
       >
         {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         Publish discussion

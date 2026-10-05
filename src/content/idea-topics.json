@@ -1,0 +1,676 @@
+[
+  {
+    "id": "ml-research",
+    "title": "ML Research",
+    "category": "Computing & AI",
+    "description": "Reproduce papers, question benchmarks, and build models with people who care about the evidence.",
+    "niches": [
+      "Machine learning",
+      "Deep learning",
+      "Representation learning",
+      "Causal inference",
+      "Federated learning",
+      "Explainable AI"
+    ],
+    "aliases": [
+      "ML",
+      "artificial intelligence",
+      "neural networks"
+    ],
+    "resources": [
+      {
+        "title": "PyTorch tutorials",
+        "url": "https://docs.pytorch.org/tutorials/",
+        "kind": "Tutorial"
+      },
+      {
+        "title": "scikit-learn user guide",
+        "url": "https://scikit-learn.org/stable/user_guide.html",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "generative-ai",
+    "title": "Generative AI & Language",
+    "category": "Computing & AI",
+    "description": "Explore language, multimodal systems, and reliable evaluation across Indian languages.",
+    "niches": [
+      "LLMs",
+      "Retrieval augmented generation",
+      "NLP",
+      "Indic languages",
+      "AI agents",
+      "Model evaluation"
+    ],
+    "aliases": [
+      "RAG",
+      "natural language processing",
+      "transformers",
+      "gen ai"
+    ],
+    "resources": [
+      {
+        "title": "Hugging Face courses",
+        "url": "https://huggingface.co/learn",
+        "kind": "Course"
+      },
+      {
+        "title": "PyTorch tutorials",
+        "url": "https://docs.pytorch.org/tutorials/",
+        "kind": "Tutorial"
+      }
+    ]
+  },
+  {
+    "id": "computer-vision",
+    "title": "Computer Vision",
+    "category": "Computing & AI",
+    "description": "Connect visual perception to medical imaging, earth observation, and accessible devices.",
+    "niches": [
+      "3D vision",
+      "Segmentation",
+      "Remote sensing",
+      "Medical imaging",
+      "Vision language models"
+    ],
+    "aliases": [
+      "CV",
+      "image processing",
+      "object detection"
+    ],
+    "resources": [
+      {
+        "title": "PyTorch tutorials",
+        "url": "https://docs.pytorch.org/tutorials/",
+        "kind": "Tutorial"
+      },
+      {
+        "title": "scikit-learn user guide",
+        "url": "https://scikit-learn.org/stable/user_guide.html",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "edge-ai",
+    "title": "Edge AI & TinyML",
+    "category": "Computing & AI",
+    "description": "Bring learning to constrained hardware, sensors, and devices beyond the cloud.",
+    "niches": [
+      "Model compression",
+      "Quantization",
+      "Embedded inference",
+      "Neuromorphic computing",
+      "Sensor fusion"
+    ],
+    "aliases": [
+      "IoT",
+      "tiny ml",
+      "edge computing"
+    ],
+    "resources": [
+      {
+        "title": "PyTorch tutorials",
+        "url": "https://docs.pytorch.org/tutorials/",
+        "kind": "Tutorial"
+      },
+      {
+        "title": "scikit-learn user guide",
+        "url": "https://scikit-learn.org/stable/user_guide.html",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "ai-quant",
+    "title": "AI & Quantitative Finance",
+    "category": "Finance & Mathematics",
+    "description": "Study markets as data: robust experiments, risk, and reproducible financial models.",
+    "niches": [
+      "Time series",
+      "Portfolio optimization",
+      "Market microstructure",
+      "Risk modelling",
+      "Alternative data",
+      "Backtesting"
+    ],
+    "aliases": [
+      "AI quant",
+      "quant",
+      "quantitative trading",
+      "finance",
+      "algorithmic trading"
+    ],
+    "resources": [
+      {
+        "title": "QuantLib",
+        "url": "https://www.quantlib.org/",
+        "kind": "Open source"
+      },
+      {
+        "title": "scikit-learn user guide",
+        "url": "https://scikit-learn.org/stable/user_guide.html",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "applied-mathematics",
+    "title": "Applied Mathematics",
+    "category": "Finance & Mathematics",
+    "description": "Turn mathematical questions into computational experiments across disciplines.",
+    "niches": [
+      "Optimization",
+      "Stochastic processes",
+      "Graph theory",
+      "Numerical methods",
+      "Operations research"
+    ],
+    "aliases": [
+      "math",
+      "statistics",
+      "probability"
+    ],
+    "resources": [
+      {
+        "title": "QuantLib",
+        "url": "https://www.quantlib.org/",
+        "kind": "Open source"
+      },
+      {
+        "title": "scikit-learn user guide",
+        "url": "https://scikit-learn.org/stable/user_guide.html",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "quantum-computing",
+    "title": "Quantum Computing",
+    "category": "Quantum & Photonics",
+    "description": "Learn, simulate, and test quantum ideas with collaborators from computing, electronics, and physics.",
+    "niches": [
+      "Quantum algorithms",
+      "Quantum error correction",
+      "Qiskit",
+      "Variational circuits",
+      "Quantum simulation",
+      "Quantum ML"
+    ],
+    "aliases": [
+      "quantumn computing",
+      "qubits",
+      "quantum information",
+      "QC"
+    ],
+    "resources": [
+      {
+        "title": "IBM Quantum Learning",
+        "url": "https://quantum.cloud.ibm.com/learning/en",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "quantum-communications",
+    "title": "Quantum Communication",
+    "category": "Quantum & Photonics",
+    "description": "Explore secure quantum links, networking, and the devices that make them possible.",
+    "niches": [
+      "Quantum key distribution",
+      "Entanglement distribution",
+      "Quantum repeaters",
+      "Single photon detectors"
+    ],
+    "aliases": [
+      "QKD",
+      "quantum internet",
+      "quantum cryptography"
+    ],
+    "resources": [
+      {
+        "title": "IBM Quantum Learning",
+        "url": "https://quantum.cloud.ibm.com/learning/en",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "photonics",
+    "title": "Photonics & Optical Devices",
+    "category": "Quantum & Photonics",
+    "description": "Connect light, materials, and electronics at the device and system level.",
+    "niches": [
+      "Silicon photonics",
+      "Integrated optics",
+      "Optical sensing",
+      "Metasurfaces",
+      "LiDAR"
+    ],
+    "aliases": [
+      "laser",
+      "optoelectronics",
+      "optical engineering"
+    ],
+    "resources": [
+      {
+        "title": "NASA Laser Communications",
+        "url": "https://www.nasa.gov/communicating-with-missions/lasercomms/",
+        "kind": "Research"
+      }
+    ]
+  },
+  {
+    "id": "space-tech",
+    "title": "Space Technology",
+    "category": "Space & Communications",
+    "description": "Bring software, structures, electronics, and science together for small spacecraft.",
+    "niches": [
+      "CubeSats",
+      "Orbital mechanics",
+      "Attitude control",
+      "Space propulsion",
+      "Satellite payloads"
+    ],
+    "aliases": [
+      "space tech",
+      "aerospace",
+      "satellites",
+      "ADCS"
+    ],
+    "resources": [
+      {
+        "title": "NASA Small Spacecraft Institute",
+        "url": "https://www.nasa.gov/smallsat-institute/",
+        "kind": "Research"
+      }
+    ]
+  },
+  {
+    "id": "fsoc",
+    "title": "Free-Space Optical Communication",
+    "category": "Space & Communications",
+    "description": "Explore laser links from atmospheric channels to inter-satellite communication.",
+    "niches": [
+      "Atmospheric turbulence",
+      "Pointing acquisition tracking",
+      "Link budgets",
+      "Adaptive optics",
+      "Optical ground stations",
+      "Inter-satellite laser links"
+    ],
+    "aliases": [
+      "FSOC",
+      "FSO",
+      "free space optics",
+      "laser communication",
+      "space tech"
+    ],
+    "resources": [
+      {
+        "title": "NASA Laser Communications",
+        "url": "https://www.nasa.gov/communicating-with-missions/lasercomms/",
+        "kind": "Research"
+      }
+    ]
+  },
+  {
+    "id": "wireless-6g",
+    "title": "Wireless & 6G",
+    "category": "Space & Communications",
+    "description": "Investigate the next generation of communication systems, from RF to intelligent surfaces.",
+    "niches": [
+      "Massive MIMO",
+      "RIS",
+      "Terahertz links",
+      "Software defined radio",
+      "Integrated sensing",
+      "Non-terrestrial networks"
+    ],
+    "aliases": [
+      "5G",
+      "6G",
+      "wireless communications",
+      "RF",
+      "SDR"
+    ],
+    "resources": [
+      {
+        "title": "NASA Laser Communications",
+        "url": "https://www.nasa.gov/communicating-with-missions/lasercomms/",
+        "kind": "Research"
+      }
+    ]
+  },
+  {
+    "id": "bioinformatics",
+    "title": "Bioinformatics & Genomics",
+    "category": "Bio & Health",
+    "description": "Find common ground between biology, algorithms, and data-driven discovery.",
+    "niches": [
+      "Single cell analysis",
+      "Genomics",
+      "Protein modelling",
+      "Sequence analysis",
+      "Systems biology"
+    ],
+    "aliases": [
+      "bio",
+      "computational biology",
+      "DNA",
+      "bio informatics"
+    ],
+    "resources": [
+      {
+        "title": "EMBL-EBI training",
+        "url": "https://www.ebi.ac.uk/training/",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "biomedical",
+    "title": "Biomedical Engineering",
+    "category": "Bio & Health",
+    "description": "Design tools at the intersection of health, electronics, materials, and computation.",
+    "niches": [
+      "Biosensors",
+      "Medical devices",
+      "ECG analysis",
+      "Biomechanics",
+      "Wearable health",
+      "Neural interfaces"
+    ],
+    "aliases": [
+      "bio",
+      "health tech",
+      "biotech",
+      "BCI"
+    ],
+    "resources": [
+      {
+        "title": "EMBL-EBI training",
+        "url": "https://www.ebi.ac.uk/training/",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "synthetic-biology",
+    "title": "Synthetic Biology",
+    "category": "Bio & Health",
+    "description": "Explore biological systems as platforms for careful, responsible engineering.",
+    "niches": [
+      "Metabolic engineering",
+      "Cell free systems",
+      "Biomaterials",
+      "Microfluidics",
+      "Bioprocess modelling"
+    ],
+    "aliases": [
+      "bio",
+      "biotechnology",
+      "synbio"
+    ],
+    "resources": [
+      {
+        "title": "EMBL-EBI training",
+        "url": "https://www.ebi.ac.uk/training/",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "civil-structures",
+    "title": "Civil & Structural Engineering",
+    "category": "Civil & Environment",
+    "description": "Combine structural mechanics, computation, and monitoring for resilient infrastructure.",
+    "niches": [
+      "Earthquake engineering",
+      "Structural health monitoring",
+      "Finite elements",
+      "Digital twins",
+      "Sustainable concrete"
+    ],
+    "aliases": [
+      "civil",
+      "seismic",
+      "FEM",
+      "structures"
+    ],
+    "resources": [
+      {
+        "title": "OpenSees earthquake simulation",
+        "url": "https://opensees.berkeley.edu/",
+        "kind": "Open source"
+      }
+    ]
+  },
+  {
+    "id": "water-climate",
+    "title": "Water & Climate",
+    "category": "Civil & Environment",
+    "description": "Connect environmental observations with models for healthier, more resilient cities.",
+    "niches": [
+      "Hydrology",
+      "Flood modelling",
+      "Wastewater treatment",
+      "Urban heat",
+      "Climate adaptation"
+    ],
+    "aliases": [
+      "civil",
+      "environment",
+      "climate tech",
+      "water resources"
+    ],
+    "resources": [
+      {
+        "title": "OpenFOAM documentation",
+        "url": "https://www.openfoam.com/documentation/",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "geospatial",
+    "title": "Geospatial & Earth Observation",
+    "category": "Civil & Environment",
+    "description": "Use maps, imagery, and sensors to understand changes on the ground.",
+    "niches": [
+      "GIS",
+      "InSAR",
+      "Landslide monitoring",
+      "Land use mapping",
+      "Geospatial ML"
+    ],
+    "aliases": [
+      "civil",
+      "remote sensing",
+      "geoinformatics",
+      "satellite imagery"
+    ],
+    "resources": [
+      {
+        "title": "NASA Small Spacecraft Institute",
+        "url": "https://www.nasa.gov/smallsat-institute/",
+        "kind": "Research"
+      }
+    ]
+  },
+  {
+    "id": "robotics",
+    "title": "Robotics & Autonomy",
+    "category": "Robotics & Hardware",
+    "description": "Bring perception, mechanics, and control together in machines that work in the real world.",
+    "niches": [
+      "SLAM",
+      "Motion planning",
+      "Robot learning",
+      "Soft robotics",
+      "Multi-agent systems"
+    ],
+    "aliases": [
+      "ROS",
+      "autonomous robots",
+      "mechatronics"
+    ],
+    "resources": [
+      {
+        "title": "ROS documentation",
+        "url": "https://docs.ros.org/",
+        "kind": "Documentation"
+      },
+      {
+        "title": "Hugging Face robotics course",
+        "url": "https://huggingface.co/learn/robotics-course",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "drones",
+    "title": "Drones & Aerial Systems",
+    "category": "Robotics & Hardware",
+    "description": "Collaborate on aerial sensing, vehicle design, navigation, and coordinated flight.",
+    "niches": [
+      "UAV control",
+      "Visual odometry",
+      "Swarm coordination",
+      "Flight dynamics",
+      "Aerial mapping"
+    ],
+    "aliases": [
+      "drone",
+      "unmanned aerial vehicle",
+      "aerospace"
+    ],
+    "resources": [
+      {
+        "title": "ROS documentation",
+        "url": "https://docs.ros.org/",
+        "kind": "Documentation"
+      },
+      {
+        "title": "Hugging Face robotics course",
+        "url": "https://huggingface.co/learn/robotics-course",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "vlsi",
+    "title": "VLSI & Embedded Systems",
+    "category": "Robotics & Hardware",
+    "description": "Move from architecture to hardware through open tools and shared experiments.",
+    "niches": [
+      "RISC-V",
+      "FPGA",
+      "ASIC design",
+      "Hardware security",
+      "Low power circuits",
+      "Real time systems"
+    ],
+    "aliases": [
+      "chip",
+      "semiconductors",
+      "electronics",
+      "embedded"
+    ],
+    "resources": [
+      {
+        "title": "PyTorch tutorials",
+        "url": "https://docs.pytorch.org/tutorials/",
+        "kind": "Tutorial"
+      },
+      {
+        "title": "scikit-learn user guide",
+        "url": "https://scikit-learn.org/stable/user_guide.html",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "energy",
+    "title": "Clean Energy & Storage",
+    "category": "Energy & Materials",
+    "description": "Connect materials, power systems, and computation for more sustainable energy.",
+    "niches": [
+      "Battery health",
+      "Power electronics",
+      "Smart grids",
+      "Solar forecasting",
+      "Hydrogen",
+      "EV systems"
+    ],
+    "aliases": [
+      "renewable energy",
+      "sustainability",
+      "electric vehicles",
+      "BMS"
+    ],
+    "resources": [
+      {
+        "title": "PyTorch tutorials",
+        "url": "https://docs.pytorch.org/tutorials/",
+        "kind": "Tutorial"
+      },
+      {
+        "title": "scikit-learn user guide",
+        "url": "https://scikit-learn.org/stable/user_guide.html",
+        "kind": "Documentation"
+      }
+    ]
+  },
+  {
+    "id": "materials",
+    "title": "Advanced Materials",
+    "category": "Energy & Materials",
+    "description": "Study how material structures shape the performance of future devices.",
+    "niches": [
+      "Nanomaterials",
+      "Composites",
+      "2D materials",
+      "Additive manufacturing",
+      "Computational materials"
+    ],
+    "aliases": [
+      "materials science",
+      "3d printing",
+      "nanotechnology"
+    ],
+    "resources": [
+      {
+        "title": "IBM Quantum Learning",
+        "url": "https://quantum.cloud.ibm.com/learning/en",
+        "kind": "Course"
+      }
+    ]
+  },
+  {
+    "id": "fluid-thermal",
+    "title": "Fluid & Thermal Engineering",
+    "category": "Energy & Materials",
+    "description": "Build and validate models of flow and heat across devices, infrastructure, and vehicles.",
+    "niches": [
+      "CFD",
+      "Heat transfer",
+      "Microchannels",
+      "Aerodynamics",
+      "Thermal management"
+    ],
+    "aliases": [
+      "mechanical",
+      "fluid dynamics",
+      "computational fluid dynamics"
+    ],
+    "resources": [
+      {
+        "title": "OpenFOAM documentation",
+        "url": "https://www.openfoam.com/documentation/",
+        "kind": "Documentation"
+      }
+    ]
+  }
+]

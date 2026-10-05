@@ -15,8 +15,8 @@ export default async function ModeratorReportsPage() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Moderation</p>
-        <h1 className="text-4xl font-black text-foreground">Content reports</h1>
+        <p className="mb-2 text-xs font-semibold normal-case tracking-normal text-primary">Moderation</p>
+        <h1 className="text-3xl font-semibold text-foreground">Content reports</h1>
         <p className="mt-3 text-foreground/55">Oldest unresolved reports are shown first.</p>
       </header>
 
@@ -26,14 +26,14 @@ export default async function ModeratorReportsPage() {
           const evidence = report.evidence && typeof report.evidence === "object" && !Array.isArray(report.evidence) ? report.evidence as Record<string, unknown> : {};
           const discussionId = report.entity_type === "forum_post" ? report.entity_id : typeof evidence.postId === "string" ? evidence.postId : null;
           return (
-            <article key={report.id} className="rounded-2xl border border-outline bg-surface p-6">
+            <article key={report.id} className="rounded-lg border border-outline bg-surface p-6">
               <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="mb-2 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">{report.entity_type.replaceAll("_", " ")}</span>
-                    <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${report.priority === "urgent" ? "bg-red-500/10 text-red-500" : "bg-foreground/5 text-foreground/50"}`}>{report.priority}</span>
+                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold normal-case tracking-normal text-primary">{report.entity_type.replaceAll("_", " ")}</span>
+                    <span className={`rounded-full px-3 py-1 text-xs font-bold normal-case tracking-normal ${report.priority === "urgent" ? "bg-red-500/10 text-red-500" : "bg-foreground/5 text-foreground/50"}`}>{report.priority}</span>
                   </div>
-                  <h2 className="text-lg font-black capitalize text-foreground">{report.category.replaceAll("_", " ")}</h2>
+                  <h2 className="text-lg font-semibold capitalize text-foreground">{report.category.replaceAll("_", " ")}</h2>
                 </div>
                 <ReportActions reportId={report.id} />
               </div>
@@ -47,7 +47,7 @@ export default async function ModeratorReportsPage() {
           );
         })}
         {(reports || []).length === 0 && (
-          <div className="rounded-2xl border border-dashed border-outline p-16 text-center text-foreground/45">No unresolved reports.</div>
+          <div className="rounded-lg border border-dashed border-outline p-16 text-center text-foreground/45">No unresolved reports.</div>
         )}
       </section>
     </div>

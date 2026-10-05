@@ -17,16 +17,16 @@ export default async function EditFacultyProjectPage({ params }: { params: Promi
     .maybeSingle();
 
   if (error) {
-    return <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-10 text-red-700"><h1 className="text-xl font-black">Project editor unavailable</h1><p className="mt-2 text-sm">The project could not be loaded. Please retry shortly.</p></div>;
+    return <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-10 text-red-700"><h1 className="text-xl font-semibold">Project editor unavailable</h1><p className="mt-2 text-sm">The project could not be loaded. Please retry shortly.</p></div>;
   }
   if (!project) notFound();
 
   return (
     <div className="space-y-8">
       <header>
-        <Link href="/dashboard/faculty/projects" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary hover:underline"><ArrowLeft className="h-4 w-4" /> Back to projects</Link>
-        <p className="mt-7 text-xs font-black uppercase tracking-[0.3em] text-primary">Owner-only project editor</p>
-        <h1 className="mt-2 text-4xl font-black text-foreground">Edit project listing</h1>
+        <Link href="/dashboard/faculty/projects" className="inline-flex items-center gap-2 text-xs font-semibold normal-case tracking-normal text-primary hover:underline"><ArrowLeft className="h-4 w-4" /> Back to projects</Link>
+        <p className="mt-7 text-xs font-semibold normal-case tracking-normal text-primary">Owner-only project editor</p>
+        <h1 className="mt-2 text-3xl font-semibold text-foreground">Edit project listing</h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-foreground/55">Update the public description, capacity, project PDF or material, application questionnaire, and current research assessment.</p>
       </header>
       <ProjectEditForm project={project} />

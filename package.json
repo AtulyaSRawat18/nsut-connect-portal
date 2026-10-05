@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:idea": "node --test scripts/test-idea.cjs scripts/test-idea-rls.mjs",
     "seed:demo": "node scripts/seed-demo.mjs",
     "seed:demo:clean": "node scripts/seed-demo.mjs --cleanup"
   },
@@ -19,6 +20,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
+    "fuse.js": "^7.5.0",
     "lucide-react": "^1.7.0",
     "next": "16.2.2",
     "next-themes": "^0.4.6",
@@ -30,6 +32,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

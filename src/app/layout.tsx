@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import AppShell from "@/components/AppShell";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -22,9 +21,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-on-surface font-sans">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Navbar />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
+          <AppShell>{children}</AppShell>
         </ThemeProvider>
       </body>
     </html>

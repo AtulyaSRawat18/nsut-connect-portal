@@ -90,7 +90,7 @@ export default function NewOpportunityPage() {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
         <h1 className="text-3xl font-display font-bold text-red-500 mb-4">Access Denied</h1>
         <p className="text-foreground/50 max-w-md mb-8">You do not have permission to post opportunities. Only designated Content Handlers and Faculty members can post here.</p>
-        <Link href="/dashboard" className="border border-outline px-6 py-3 text-xs font-bold uppercase tracking-widest text-foreground hover:bg-surface transition-colors">
+        <Link href="/dashboard" className="border border-outline px-6 py-3 text-xs font-bold normal-case tracking-normal text-foreground hover:bg-surface transition-colors">
           Back to Dashboard
         </Link>
       </div>
@@ -100,19 +100,19 @@ export default function NewOpportunityPage() {
   return (
     <div className="min-h-screen bg-background py-16 px-6">
       <div className="max-w-3xl mx-auto">
-        <Link href="/dashboard" className="flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-widest mb-8 hover:underline">
+        <Link href="/dashboard" className="flex items-center gap-2 text-primary text-sm font-bold normal-case tracking-normal mb-8 hover:underline">
           <ArrowLeft size={16} /> Back to Dashboard
         </Link>
 
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase mb-4 w-fit">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-normal normal-case mb-4 w-fit">
           <Sparkles className="w-3.5 h-3.5 fill-primary" /> Content Handler
         </div>
-        <h1 className="text-4xl font-display font-black text-primary mb-2 tracking-tight">Post Opportunity</h1>
+        <h1 className="text-3xl font-display font-semibold text-primary mb-2 tracking-normal">Post Opportunity</h1>
         <p className="text-foreground/50 mb-12">Publish scholarships, research internships, hackathons, or student developments.</p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 bg-surface p-8 border border-outline rounded-xl">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 bg-surface p-8 border border-outline rounded-lg">
           <div>
-            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Title</label>
+            <label className="block text-xs font-bold text-foreground normal-case tracking-normal mb-2">Title</label>
             <input
               type="text"
               className={`w-full px-4 py-3 bg-background border ${errors.title ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`}
@@ -123,7 +123,7 @@ export default function NewOpportunityPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Description</label>
+            <label className="block text-xs font-bold text-foreground normal-case tracking-normal mb-2">Description</label>
             <textarea
               className={`w-full px-4 py-3 bg-background border ${errors.description ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all min-h-[150px]`}
               placeholder="Provide eligibility, stipend/awards, and work details..."
@@ -134,7 +134,7 @@ export default function NewOpportunityPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Type</label>
+              <label className="block text-xs font-bold text-foreground normal-case tracking-normal mb-2">Type</label>
               <select
                 className="w-full px-4 py-3 bg-background border border-outline text-foreground focus:border-primary outline-none transition-all"
                 {...register("type")}
@@ -147,7 +147,7 @@ export default function NewOpportunityPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Apply or source URL <span className="text-primary">(required)</span></label>
+              <label className="block text-xs font-bold text-foreground normal-case tracking-normal mb-2">Apply or source URL <span className="text-primary">(required)</span></label>
               <input
                 type="text"
                 className={`w-full px-4 py-3 bg-background border ${errors.link_url ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`}
@@ -159,7 +159,7 @@ export default function NewOpportunityPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Application Deadline</label>
+            <label className="block text-xs font-bold text-foreground normal-case tracking-normal mb-2">Application Deadline</label>
             <input
               type="date"
               className={`w-full px-4 py-3 bg-background border ${errors.deadline ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`}
@@ -169,7 +169,7 @@ export default function NewOpportunityPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-foreground uppercase tracking-widest mb-2">Department</label>
+            <label className="block text-xs font-bold text-foreground normal-case tracking-normal mb-2">Department</label>
             <select className={`w-full px-4 py-3 bg-background border ${errors.department ? "border-red-500" : "border-outline"} text-foreground focus:border-primary outline-none transition-all`} defaultValue="" {...register("department")}>
               <option value="" disabled>Select department</option>
               {DEPARTMENTS.map((department) => <option key={department.id} value={department.id}>{getDepartmentLabel(department.id)}</option>)}
@@ -180,7 +180,7 @@ export default function NewOpportunityPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex justify-center items-center gap-2 bg-primary text-primary-foreground py-4 text-sm font-bold uppercase tracking-widest hover:brightness-110 transition-all disabled:opacity-50"
+            className="w-full flex justify-center items-center gap-2 bg-primary text-primary-foreground py-4 text-sm font-bold normal-case tracking-normal hover:brightness-110 transition-all disabled:opacity-50"
           >
             {isSubmitting ? (
               <><Loader2 className="animate-spin w-4 h-4" /> Publishing...</>

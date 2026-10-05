@@ -10,5 +10,5 @@ export default async function DemoApplicationFormPage({ params }: { params: Prom
   const { slug } = await params;
   const form = getDemoApplicationForm(slug);
   if (!form) notFound();
-  return <main className="min-h-screen bg-background"><DemoApplicationQuestionnaire form={form} /></main>;
+  return <div className="bg-background"><DemoApplicationQuestionnaire form={form} /></div>;
 }

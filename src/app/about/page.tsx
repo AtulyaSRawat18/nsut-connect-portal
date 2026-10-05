@@ -1,114 +1,19 @@
-import { Mail, Phone, MapPin, Shield, Users, Target } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, FlaskConical, Lightbulb, ShieldCheck, Users } from "lucide-react";
+import PageHeading from "@/components/shared/PageHeading";
 
 export default function About() {
-  return (
-    <div className="min-h-screen bg-background font-sans">
-      {/* Hero Section */}
-      <section className="py-24 px-8 bg-secondary text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-primary/10 mix-blend-overlay" />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-5xl md:text-6xl font-display font-black mb-8 tracking-tight">Mission & Vision</h1>
-          <p className="text-xl text-white/70 leading-relaxed font-medium">
-            NSUT Connect is a pioneering digital infrastructure designed to bridge the gap between academic research 
-            and real-world opportunity, fostering a transparent, community-driven ecosystem for innovation.
-          </p>
-        </div>
-      </section>
-
-      {/* Overview Section */}
-      <section className="py-24 px-8 border-b border-outline">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div>
-             <h2 className="text-xs font-black text-primary tracking-[0.3em] uppercase mb-4">The Platform</h2>
-             <h3 className="text-4xl font-display font-black text-foreground mb-8 leading-tight">Empowering Every Researcher.</h3>
-             <p className="text-foreground/70 text-lg leading-relaxed mb-8">
-               Our portal provides a unified interface for students to discover faculty-led projects, apply with verified credentials, and engage in high-impact intellectual discourse. Structured workflows keep applications clear, attributable, and easy for faculty to review.
-             </p>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="flex gap-4">
-                   <Shield className="w-6 h-6 text-primary flex-shrink-0" />
-                   <div>
-                      <h4 className="font-bold text-foreground">Verified Profiles</h4>
-                      <p className="text-sm text-foreground/50">Only institutional members can contribute to the core ecosystem.</p>
-                   </div>
-                </div>
-                <div className="flex gap-4">
-                   <Target className="w-6 h-6 text-primary flex-shrink-0" />
-                   <div>
-                      <h4 className="font-bold text-foreground">Structured Collaboration</h4>
-                      <p className="text-sm text-foreground/50">Clear project requirements and application workflows connect skills with research needs.</p>
-                   </div>
-                </div>
-             </div>
-          </div>
-          <div className="bg-surface rounded-3xl aspect-square flex items-center justify-center border-2 border-dashed border-outline">
-             <div className="text-center p-12">
-                <Users className="w-16 h-16 text-primary/30 mx-auto mb-6" />
-                <p className="text-foreground/50 font-bold uppercase tracking-widest text-xs">Join 2,500+ NSUT Active Researchers</p>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-24 px-8 bg-surface">
-        <div className="max-w-7xl mx-auto">
-           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-              <div className="lg:col-span-1">
-                 <h2 className="text-3xl font-display font-black text-foreground mb-8">Get in Touch</h2>
-                 <p className="text-foreground/70 mb-12">For institutional inquiries, partnership proposals, or technical support, please reach out via our official Research Office channels.</p>
-                 
-                 <div className="space-y-6">
-                    <div className="flex items-center gap-4 text-foreground/70 text-sm font-bold">
-                       <Mail className="w-5 h-5 text-primary" /> research.office@nsut.ac.in
-                    </div>
-                    <div className="flex items-center gap-4 text-foreground/70 text-sm font-bold">
-                       <Phone className="w-5 h-5 text-primary" /> +91 011 2500 0212
-                    </div>
-                    <div className="flex items-center gap-4 text-foreground/70 text-sm font-bold">
-                       <MapPin className="w-5 h-5 text-primary" /> Azad Hind Fauj Marg, Sector 3, Dwarka
-                    </div>
-                 </div>
-              </div>
-
-              <div className="lg:col-span-2">
-                 <form className="bg-background p-10 border border-outline rounded-2xl shadow-sm space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black text-foreground/50 uppercase tracking-widest">Full Name</label>
-                          <input type="text" className="w-full bg-surface border border-outline p-4 rounded-lg focus:ring-2 focus:ring-primary outline-none" placeholder="John Doe" />
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black text-foreground/50 uppercase tracking-widest">Email Address</label>
-                          <input type="email" className="w-full bg-surface border border-outline p-4 rounded-lg focus:ring-2 focus:ring-primary outline-none" placeholder="john@nsut.ac.in" />
-                       </div>
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black text-foreground/50 uppercase tracking-widest">Subject</label>
-                       <input type="text" className="w-full bg-surface border border-outline p-4 rounded-lg focus:ring-2 focus:ring-primary outline-none" placeholder="Research Partnership" />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black text-foreground/50 uppercase tracking-widest">Message</label>
-                       <textarea rows={5} className="w-full bg-surface border border-outline p-4 rounded-lg focus:ring-2 focus:ring-primary outline-none" placeholder="Describe your inquiry..." />
-                    </div>
-                    <button className="bg-primary text-white px-10 py-4 font-bold uppercase tracking-widest text-xs rounded hover:bg-primary-dark transition-all w-full md:w-auto">
-                       Send Message
-                    </button>
-                 </form>
-              </div>
-           </div>
-        </div>
-      </section>
-      
-      {/* Footer Branding */}
-      <footer className="py-12 border-t border-outline text-center">
-         <div className="flex justify-center items-center gap-2 mb-4">
-            <span className="text-primary font-black tracking-tighter text-2xl">NSUT</span>
-            <span className="text-foreground/20 font-light text-2xl">|</span>
-            <span className="text-foreground/50 font-bold uppercase tracking-widest text-[10px]">Research Portal</span>
-         </div>
-         <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em]">© 2026 NSUT Connect prototype</p>
-      </footer>
-    </div>
-  );
+  return <div className="portal-page"><div className="portal-container">
+    <PageHeading eyebrow="Our community" title="About NSUT Connect" description="A shared place for students and faculty to find opportunities, exchange ideas, and build across disciplines." />
+    <figure className="about-campus"><Image src="/campus-fountain.jpg" alt="The NSUT entrance, gardens, and science mural" width={1200} height={515} priority /><figcaption>Netaji Subhas University of Technology / New Delhi</figcaption></figure>
+    <section className="about-introduction"><p className="portal-eyebrow">More connections. Better questions.</p><div><h2>Research begins with people.</h2><p>A promising question can begin in any department. NSUT Connect brings projects, faculty expertise, publications, and conversations into one campus community.</p><p>Students can find mentors and apply to projects. Faculty can share their work and build teams. IDea offers a place to discover common interests across branches.</p></div></section>
+    <div className="about-principles">{[
+      { icon: Users, title: "Across disciplines", description: "Meet people who bring a different perspective to the same question." },
+      { icon: FlaskConical, title: "Grounded in research", description: "Explore methods, evidence, projects, and published work." },
+      { icon: Lightbulb, title: "Open to curiosity", description: "Find a field, ask a question, or start an interdisciplinary conversation." },
+      { icon: ShieldCheck, title: "Accountable participation", description: "Institutional sign-in, attributed discussions, and moderated participation." },
+    ].map(({ icon: Icon, ...item }) => <section key={item.title}><Icon size={23} /><h3>{item.title}</h3><p>{item.description}</p></section>)}</div>
+    <section className="about-status"><div><h2>A community taking shape.</h2><p>NSUT Connect is an internal research prototype pending institutional approval.</p></div><Link href="/contact" className="portal-button-secondary">Contact & support <ArrowRight size={16} /></Link></section>
+  </div></div>;
 }

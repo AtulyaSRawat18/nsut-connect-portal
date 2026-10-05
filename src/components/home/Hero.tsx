@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -10,12 +11,12 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-normal normal-case mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Institutional Research Portal
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-display font-black text-primary leading-[1.1] tracking-tight mb-8">
+            <h1 className="text-3xl md:text-7xl font-display font-semibold text-primary leading-[1.1] tracking-normal mb-8">
               Connecting <br />
               <span className="text-foreground">Research &</span> <br />
               Opportunity.
@@ -30,14 +31,14 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Link
                 href="/projects"
-                className="group bg-primary text-white px-10 py-4 font-sans font-bold tracking-widest text-[11px] uppercase rounded-sm flex items-center gap-3 transition-all hover:bg-primary-container shadow-xl shadow-primary/20"
+                className="group bg-primary text-white px-10 py-4 font-sans font-bold tracking-normal text-xs normal-case rounded-sm flex items-center gap-3 transition-all hover:bg-primary-container shadow-xl shadow-primary/20"
               >
                 Find Projects
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/faculty"
-                className="px-10 py-4 font-sans font-bold tracking-widest text-[11px] uppercase text-primary hover:bg-primary/5 transition-all rounded-sm"
+                className="px-10 py-4 font-sans font-bold tracking-normal text-xs normal-case text-primary hover:bg-primary/5 transition-all rounded-sm"
               >
                 Faculty Directory
               </Link>
@@ -47,19 +48,21 @@ export default function Hero() {
           <div className="flex-1 relative">
             <div className="relative aspect-square w-full max-w-[500px] mx-auto">
               {/* Asymmetric Image Container */}
-              <div className="absolute inset-0 bg-primary/10 rounded-2xl -rotate-6" />
-              <div className="absolute inset-0 overflow-hidden rounded-2xl shadow-2xl rotate-3 transition-transform hover:rotate-0 duration-500">
-                <img 
+              <div className="absolute inset-0 bg-primary/10 rounded-lg -rotate-6" />
+              <div className="absolute inset-0 overflow-hidden rounded-lg shadow-2xl rotate-3 transition-transform hover:rotate-0 duration-500">
+                <Image
                   src="/campus-fountain.jpg" 
                   alt="NSUT campus aerial view" 
+                  fill
+                  sizes="(max-width: 1023px) 90vw, 500px"
                   className="w-full h-full object-cover"
                 />
               </div>
               
               {/* Decorative Elements */}
               <div className="absolute -bottom-6 -left-6 bg-primary p-6 rounded-lg shadow-2xl border-l-4 border-secondary max-w-[200px]">
-                <p className="text-[24px] font-display font-black text-white leading-none mb-1">450+</p>
-                <p className="text-[9px] font-sans font-bold tracking-widest text-white/80 uppercase leading-tight">
+                <p className="text-[24px] font-display font-semibold text-white leading-none mb-1">450+</p>
+                <p className="text-xs font-sans font-bold tracking-normal text-white/80 normal-case leading-tight">
                   Active projects seeking researchers
                 </p>
               </div>

@@ -126,6 +126,15 @@ As of 19 August 2026, the repository contains:
 
 The staging Supabase project has migrations `001` through `012` applied and the namespaced demo dataset loaded. This is a verified staging environment, not a production-readiness claim; production still requires separate infrastructure, backups, monitoring, security/privacy review, institutional approval, and production-only configuration.
 
+## IDea collaboration test branch (4 October 2026)
+
+The test branch adds a focused sign-in/registration entry screen and an IDea
+commons at `/idea`. Its 24 interest spaces cover detailed interdisciplinary
+niches, typo-tolerant search, opt-in member discovery, private saved connections,
+resource links, and discussions using the existing moderated forum. Migration
+013 adds the associated RLS-protected tables and read functions. See
+`docs/IDEA_COLLABORATION.md` for rollout, validation, and rollback details.
+
 ## Product positioning statement
 
 For NSUT students, faculty, and institutional teams who need a trusted way to discover and coordinate academic activity, NSUT Connect Portal is a role-aware campus collaboration platform that unifies projects, applications, publications, opportunities, community discussion, verification, and moderation. Unlike static university pages or informal messaging groups, it combines public discovery with secure, auditable workflows backed by institutional identity and database-level authorization.
