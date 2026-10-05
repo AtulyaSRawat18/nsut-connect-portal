@@ -79,7 +79,7 @@ export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const requiredRoles = rolesForPath(pathname);
     const isProtectedRoute = requiredRoles !== null;
-    const isAuthRoute = pathname === "/login";
+    const isAuthRoute = pathname === "/login" || pathname === "/";
 
     if (isProtectedRoute || isAuthRoute) {
       const {

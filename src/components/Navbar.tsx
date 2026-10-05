@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { useLogout } from "@/utils/auth";
 
 const navigation = [
   { href: "/home", label: "Home" },
   { href: "/projects", label: "Projects" },
+  { href: "/idea", label: "IDea" },
   { href: "/forum", label: "Forum" },
   { href: "/news", label: "News" },
   { href: "/opportunities", label: "Opportunities" },
@@ -21,6 +23,7 @@ function isCurrentPath(pathname: string, href: string) {
 }
 
 export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState<{ id: string; name: string; role: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const logout = useLogout();
@@ -45,24 +48,26 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-outline bg-background transition-colors">
-      <nav className="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-6 py-3">
-        <Link href="/" className="flex items-center gap-4 transition-opacity hover:opacity-80">
-          <img alt="NSUT Logo" className="h-12 w-12 object-contain" src="/nsut-logo.png" />
+      <nav aria-label="Main navigation" className="portal-nav mx-auto flex w-full max-w-screen-2xl items-center justify-between gap-3 px-4 py-3">
+        <Link href="/home" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+          <Image alt="NSUT Logo" className="h-12 w-12 object-contain" src="/nsut-logo.png" width={48} height={48} />
           <div className="flex flex-col border-l border-outline pl-4 text-left"><span className="text-lg font-extrabold uppercase leading-tight tracking-tight text-primary">NSUT Connect</span><span className="text-[10px] font-semibold uppercase tracking-widest text-foreground/70">Research Prototype</span></div>
         </Link>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-1 xl:flex">
           {navigation.map((item) => {
             const active = isCurrentPath(pathname, item.href);
             return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={`rounded-lg border-b-2 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] transition-all ${active ? "border-primary bg-primary/10 text-primary" : "border-transparent text-foreground/70 hover:bg-foreground/5 hover:text-primary"}`}>{item.label}</Link>;
           })}
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="portal-account flex items-center gap-2">
           <ThemeToggle />
+          <button type="button" className="p-2 xl:hidden" title={menuOpen ? "Close navigation" : "Open navigation"} aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
           {loading ? <div className="h-8 w-20 animate-pulse bg-surface" /> : user ? <div className="flex items-center gap-2"><Link href="/dashboard" aria-current={pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/moderator") ? "page" : undefined} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-black uppercase tracking-widest transition-all ${pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/moderator") ? "bg-primary/10 text-primary" : "text-foreground/80 hover:text-primary"}`}><LayoutDashboard size={16} /><span className="hidden sm:inline">Dashboard</span></Link><button onClick={logout} className="ml-1 p-2 text-foreground/50 transition-colors hover:text-primary" title="Sign Out"><LogOut size={18} /></button></div> : <div className="flex items-center gap-2"><Link href="/signup" aria-current={pathname === "/signup" ? "page" : undefined} className={`border px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition-all ${pathname === "/signup" ? "border-primary bg-primary/10 text-primary" : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"}`}>Register</Link><Link href="/login" aria-current={pathname === "/login" ? "page" : undefined} className="bg-primary px-5 py-2 text-xs font-black uppercase tracking-[0.2em] text-on-primary transition-all hover:brightness-110">Sign In</Link></div>}
         </div>
       </nav>
+      {menuOpen && <nav id="mobile-navigation" aria-label="Mobile navigation" className="grid grid-cols-2 gap-1 border-t border-outline p-4 xl:hidden">{navigation.map(item => <Link key={item.href} href={item.href} aria-current={isCurrentPath(pathname, item.href) ? "page" : undefined} onClick={() => setMenuOpen(false)} className={`rounded-md px-4 py-3 text-sm font-semibold ${isCurrentPath(pathname, item.href) ? "bg-primary/10 text-primary" : "hover:bg-surface"}`}>{item.label}</Link>)}</nav>}
     </header>
   );
 }

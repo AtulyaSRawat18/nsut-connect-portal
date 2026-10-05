@@ -2,13 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, MailCheck } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 import zxcvbn from "zxcvbn";
 import RegistrationSteps from "@/components/auth/RegistrationSteps";
+import AuthShell from "@/components/auth/AuthShell";
 
 const signupSchema = z.object({
   fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
@@ -30,6 +30,7 @@ export default function SignupPage() {
 
   async function onSubmit(data: SignupValues) {
     setServerError("");
+    try {
     const response = await fetch("/api/auth/signup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -37,6 +38,7 @@ export default function SignupPage() {
       return;
     }
     setSubmittedEmail(data.email);
+    } catch { setServerError("We couldn't connect. Please try again."); }
   }
 
   if (submittedEmail) {
@@ -47,11 +49,10 @@ export default function SignupPage() {
   const strengthColor = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-green-500"][passwordScore] || "bg-transparent";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-outline bg-surface p-8 shadow-xl">
-        <div className="absolute left-0 top-0 h-1 w-full bg-primary" />
+    <AuthShell mode="signup">
+      <div className="auth-registration">
         <RegistrationSteps current={1} />
-        <div className="mb-7 text-center"><Image src="/nsut-logo.png" alt="NSUT logo" width={64} height={64} className="mx-auto mb-4" /><h1 className="text-3xl font-black uppercase tracking-tight text-foreground">Create your account</h1><p className="mt-2 text-sm text-foreground/60">Start with secure account details. Academic information comes after email confirmation.</p></div>
+        <div className="mb-7"><h1 className="auth-title">Find your community.</h1><p className="auth-description">Start with your university email. Your next collaborator could be one branch away.</p></div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {serverError && <p role="alert" className="border-l-2 border-primary bg-primary/10 p-4 text-sm font-bold text-primary">{serverError}</p>}
           <div className="grid grid-cols-2 gap-3 rounded-lg border border-outline bg-background p-1">{(["student", "faculty"] as const).map((item) => <label key={item} className={`cursor-pointer rounded-md py-3 text-center text-xs font-bold uppercase tracking-widest ${role === item ? "bg-primary text-on-primary" : "text-foreground/60 hover:bg-foreground/5"}`}><input type="radio" value={item} className="sr-only" {...register("role")} />{item}</label>)}</div>
@@ -62,6 +63,6 @@ export default function SignupPage() {
         </form>
         <div className="mt-7 border-t border-outline pt-6 text-center"><Link href="/login" className="text-xs font-bold uppercase tracking-widest text-primary hover:underline">Already registered? Sign in</Link></div>
       </div>
-    </div>
+    </AuthShell>
   );
 }
