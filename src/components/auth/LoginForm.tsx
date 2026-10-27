@@ -57,7 +57,8 @@ export default function LoginForm() {
       <p className="auth-eyebrow">Your next idea starts here</p>
       <h1 className="auth-title">Welcome back.</h1>
       <p className="auth-description">
-        A place for curious minds, across every branch.
+        Sign in to NSUT Research Network. Reconnect with your projects,
+        your collaborators, and your next research question.
       </p>
       <form onSubmit={handleAuth} className="auth-form">
         <fieldset>

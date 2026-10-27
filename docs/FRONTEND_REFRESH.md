@@ -1,5 +1,30 @@
 # Portal Frontend Refresh
 
+## Network Identity (7 October 2026)
+
+The current user-facing name is **NSUT Research Network**. The user-supplied
+red, black, and white seal is stored without image modification at
+`public/nsut-research-network-logo.png`. `NetworkIdentity` shares the seal and
+full wordmark across navigation, footer, and account screens, including email
+confirmation. Root metadata applies the name to every page title, with a title
+template for IDea topic pages. Browser and home-screen icons use the same asset;
+the previous default favicon was removed.
+
+Welcome and community copy emphasizes shared curiosity, interdisciplinary
+collaboration, and supportive participation. Historical repository names,
+database identifiers, auth cookies, and existing migration files are unchanged.
+The supplied branding does not imply institutional approval; prototype notices
+remain visible. The HTTP suite checks the new name/logo and absence of the old
+brand across public and account pages. Browser visual QA remains outstanding.
+
+The branding build/local server uses `NSUT_BUILD_DIR=.next-network` after a
+Windows/OneDrive lock prevented reuse of `.next-idea/diagnostics`. The new cache
+is ignored by Git; no locked cache files were deleted.
+
+Verification for the rename: production webpack build and TypeScript passed,
+changed-file ESLint passed, and all 40 portal HTTP checks passed, including the
+new logo's optimized image response and IDea's inherited page title/icon.
+
 ## Scope
 
 The portal now extends the account-entry and IDea design across public discovery,

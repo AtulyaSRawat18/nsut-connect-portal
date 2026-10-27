@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import IdeaExplorer from "@/components/idea/IdeaExplorer";
 export const metadata: Metadata = {
-  title: "IDea | NSUT Connect",
+  title: "IDea",
   description:
     "Find collaborators, explore research interests, and share ideas across every NSUT branch.",
 };

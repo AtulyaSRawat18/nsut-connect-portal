@@ -13,6 +13,9 @@ for (const path of ["/", "/login", "/signup"]) {
   const html = await page(path);
   assert.doesNotMatch(html, /<nav[^>]+aria-label="Main navigation"/);
   assert.match(html, /class="auth-shell"/);
+  assert.match(html, /<title>[^<]*NSUT Research Network<\/title>/);
+  assert.match(html, /nsut-research-network-logo\.png/);
+  assert.equal(/NSUT Connect|nsut-logo\.png/.test(html), false, `${path}: old branding remains`);
   pass(`${path}: focused account entry`);
 }
 
@@ -26,6 +29,9 @@ for (const path of routes) {
   assert.ok((html.match(/<h1[\s>]/g) || []).length >= 1, `${path}: missing page heading`);
   assert.doesNotMatch(html, /href="#"/);
   assert.match(html, /aria-labelledby="portal-search-title"/);
+  assert.match(html, /<title>[^<]*NSUT Research Network<\/title>/);
+  assert.match(html, /nsut-research-network-logo\.png/);
+  assert.equal(/NSUT Connect|nsut-logo\.png/.test(html), false, `${path}: old branding remains`);
   pass(`${path}: shared navigation, search, landmarks, links`);
 }
 
@@ -48,7 +54,12 @@ const missing = await page("/portal-test-page-does-not-exist", 404);
 assert.match(missing, /We could not find that page/);
 pass("custom not-found page");
 
-for (const asset of ["/campus-fountain.jpg", "/nsut-logo.png"]) {
+const topic = await page("/idea/quantum-computing");
+assert.match(topic, /<title>Quantum Computing \| IDea \| NSUT Research Network<\/title>/);
+assert.match(topic, /rel="icon" href="\/nsut-research-network-logo\.png"/);
+pass("IDea topic inherits network title and browser icon");
+
+for (const asset of ["/campus-fountain.jpg", "/nsut-research-network-logo.png", "/_next/image?url=%2Fnsut-research-network-logo.png&w=128&q=75"]) {
   const response = await fetch(new URL(asset, base));
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") || "", /^image\//);

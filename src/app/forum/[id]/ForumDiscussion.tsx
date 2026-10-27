@@ -104,7 +104,7 @@ export default function ForumDiscussion({ postId, initialScore, initialReplies, 
           <label htmlFor="forum-reply" className="text-xs font-semibold normal-case tracking-normal text-foreground/55">Reply on this page</label>
           <textarea id="forum-reply" value={content} onChange={(event) => setContent(event.target.value)} minLength={2} maxLength={5000} required placeholder="Add evidence, a method, a clarification, or a constructive follow-up?" className="mt-3 min-h-28 w-full resize-y rounded-lg border border-outline bg-background p-4 text-sm leading-6 outline-none focus:border-primary" />
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <p className={"text-xs " + (message.includes("Sign in") || message.includes("unavailable") ? "text-red-600" : "text-foreground/50")} role="status">{message || "Your NSUT Connect profile name and role will be shown with this reply."}</p>
+            <p className={"text-xs " + (message.includes("Sign in") || message.includes("unavailable") ? "text-red-600" : "text-foreground/50")} role="status">{message || "Your NSUT Research Network profile name and role will be shown with this reply."}</p>
             <button disabled={pending || content.trim().length < 2} className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-xs font-semibold normal-case tracking-normal text-white disabled:opacity-45">{pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Post reply</button>
           </div>
         </form>

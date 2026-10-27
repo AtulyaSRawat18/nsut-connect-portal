@@ -23,7 +23,7 @@ export default function Hero() {
             </h1>
             
             <p className="max-w-xl mx-auto lg:mx-0 text-lg text-foreground/70 font-sans leading-relaxed mb-12">
-              NSUT Connect bridges the gap between students and faculty, 
+              NSUT Research Network bridges the gap between students and faculty,
               fostering a transparent ecosystem for pioneering academic 
               collaboration and innovative development.
             </p>

@@ -36,7 +36,11 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     ".next-idea/types/**/*.ts",
-    ".next-idea/dev/types/**/*.ts"
+    ".next-idea/dev/types/**/*.ts",
+    ".next-network/types/**/*.ts",
+    ".next-network/dev/types/**/*.ts",
+    ".next-network/relaunch-20261008/types/**/*.ts",
+    ".next-network/relaunch-20261008/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

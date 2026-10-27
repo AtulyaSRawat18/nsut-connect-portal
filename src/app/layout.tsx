@@ -4,8 +4,19 @@ import AppShell from "@/components/AppShell";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "NSUT Connect",
-  description: "Connecting NSUT students and faculty for transparent research collaboration.",
+  title: { default: "NSUT Research Network", template: "%s | NSUT Research Network" },
+  applicationName: "NSUT Research Network",
+  description: "A research community for NSUT students and faculty to share knowledge, discover collaborators, and turn curiosity into interdisciplinary research.",
+  icons: {
+    icon: { url: "/nsut-research-network-logo.png", type: "image/png", sizes: "640x640" },
+    shortcut: "/nsut-research-network-logo.png",
+    apple: "/nsut-research-network-logo.png",
+  },
+  openGraph: {
+    title: "NSUT Research Network",
+    siteName: "NSUT Research Network",
+    description: "Shared curiosity. Meaningful research. Connect with people, projects, and ideas across NSUT.",
+  },
 };
 
 export default function RootLayout({

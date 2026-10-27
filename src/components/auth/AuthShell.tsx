@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import NetworkIdentity from "@/components/shared/NetworkIdentity";
 
 export default function AuthShell({
   children,
@@ -22,22 +23,19 @@ export default function AuthShell({
           className="object-cover"
         />
         <Link href="/" className="auth-brand">
-          <Image src="/nsut-logo.png" width={46} height={46} alt="" />
-          <span>
-            NSUT Connect<small>Research & community</small>
-          </span>
+          <NetworkIdentity />
         </Link>
         <div className="auth-campus-caption">
           <span className="auth-kicker">A campus full of possibility</span>
           <h2>
-            Good ideas.
+            Shared curiosity.
             <br />
-            Great company.
+            Meaningful research.
           </h2>
           <p>
-            Find your people. Share your curiosity.
+            Every discipline has something to contribute.
             <br />
-            Build something that matters.
+            Find your people and take the next step together.
           </p>
           <Link href="/home">
             Explore the campus community <ArrowUpRight size={17} />
@@ -46,8 +44,8 @@ export default function AuthShell({
       </section>
       <section className="auth-panel">
         <header className="auth-panel-header">
-          <Link href="/" className="font-bold">
-            NSUT <span className="text-primary">Connect</span>
+          <Link href="/" className="site-brand auth-panel-brand">
+            <NetworkIdentity />
           </Link>
           <ThemeToggle />
         </header>
@@ -69,7 +67,7 @@ export default function AuthShell({
           {children}
         </div>
         <footer className="auth-footer">
-          <span>NSUT research community</span>
+          <span>NSUT Research Network</span>
           <div>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>

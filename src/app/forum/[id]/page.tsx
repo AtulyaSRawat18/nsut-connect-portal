@@ -66,7 +66,7 @@ export default async function ForumDetail({ params }: { params: Promise<{ id: st
             {post.created_at && <time className="text-foreground/45">{new Date(post.created_at).toLocaleDateString()}</time>}
           </div>
           <h1 className="mt-6 text-3xl font-semibold leading-tight tracking-normal md:text-3xl">{post.title}</h1>
-          <p className="mt-4 flex items-center gap-2 text-sm font-bold text-foreground/60"><User className="h-4 w-4" /> {livePost ? <Link href={`/profile/${livePost.author_id}`} className="hover:text-primary hover:underline">{postAuthor?.full_name || "Account unavailable"}</Link> : "NSUT Connect showcase contributor"}{postAuthor?.role && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs normal-case tracking-normal text-primary">{postAuthor.role}</span>}</p>
+          <p className="mt-4 flex items-center gap-2 text-sm font-bold text-foreground/60"><User className="h-4 w-4" /> {livePost ? <Link href={`/profile/${livePost.author_id}`} className="hover:text-primary hover:underline">{postAuthor?.full_name || "Account unavailable"}</Link> : "NSUT Research Network showcase contributor"}{postAuthor?.role && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs normal-case tracking-normal text-primary">{postAuthor.role}</span>}</p>
           <p className="mt-5 text-lg leading-8 text-foreground/70">{post.content}</p>
         </header>
         <ForumDiscussion postId={post.id} initialScore={post.upvotes || 0} initialReplies={replies} reportable={Boolean(livePost)} />

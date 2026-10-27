@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import NetworkIdentity from "@/components/shared/NetworkIdentity";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowRight, BookOpen, ChevronDown, Compass, FolderKanban, GraduationCap, LayoutDashboard, Lightbulb, LogOut, Menu, MessageSquare, Search, X } from "lucide-react";
@@ -18,7 +18,7 @@ const primary = [
 const explore = [
   { title: "Research", links: [["Faculty directory", "/faculty"], ["Publications", "/publications"], ["Research feed", "/feed"], ["Grants & funding", "/grants"]] },
   { title: "On campus", links: [["News & briefs", "/news"], ["Developments", "/developments"], ["Highlights", "/whats-new"]] },
-  { title: "The community", links: [["About NSUT Connect", "/about"], ["Contact & support", "/contact"], ["Research ethics", "/ethics"]] },
+  { title: "The community", links: [["About the network", "/about"], ["Contact & support", "/contact"], ["Research ethics", "/ethics"]] },
 ];
 const isActive = (path: string, href: string) => path === href || path.startsWith(href + "/");
 
@@ -62,8 +62,7 @@ export default function Navbar() {
     <a href="#main-content" className="skip-link">Skip to content</a>
     <nav className="site-navigation" aria-label="Main navigation">
       <Link href="/home" className="site-brand" onClick={() => setMenuPath(null)}>
-        <Image src="/nsut-logo.png" alt="" width={42} height={42} />
-        <span>NSUT <strong>Connect</strong><small>Research & community</small></span>
+        <NetworkIdentity />
       </Link>
       <div className="site-primary-links">{primary.map(item => <Link key={item.href} href={item.href} aria-current={isActive(pathname, item.href) ? "page" : undefined}>{item.label}{item.href === "/idea" && <span className="nav-new-dot" />}</Link>)}
         <details ref={more} className="site-explore">
@@ -81,6 +80,7 @@ export default function Navbar() {
     {menuOpen && <nav id="mobile-navigation" aria-label="Mobile navigation" className="site-mobile-nav">
       <div className="site-mobile-primary">{primary.map(({ icon: Icon, ...item }) => <Link key={item.href} href={item.href} aria-current={isActive(pathname, item.href) ? "page" : undefined} onClick={() => setMenuPath(null)}><Icon size={18} />{item.label}</Link>)}</div>
       <div className="site-mobile-groups">{explore.map(group => <div key={group.title}><h2>{group.title}</h2>{group.links.map(([label, href]) => <Link key={href} href={href} onClick={() => setMenuPath(null)} aria-current={isActive(pathname, href) ? "page" : undefined}>{label}</Link>)}</div>)}</div>
+      <button className="site-mobile-search" onClick={() => { setMenuPath(null); searchDialog.current?.showModal(); }}><Search size={17} /> Search the network</button>
       {!user && <Link className="site-mobile-register" href="/signup" onClick={() => setMenuPath(null)}>Join the community <ArrowRight size={16} /></Link>}
       {user && <button className="site-mobile-register" onClick={logout}><LogOut size={16} /> Sign out</button>}
     </nav>}

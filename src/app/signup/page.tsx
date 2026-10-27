@@ -42,7 +42,7 @@ export default function SignupPage() {
   }
 
   if (submittedEmail) {
-    return <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12"><div className="w-full max-w-lg rounded-lg border border-outline bg-surface p-8 text-center shadow-xl"><RegistrationSteps current={2} /><MailCheck className="mx-auto h-14 w-14 text-primary" /><h1 className="mt-5 text-3xl font-semibold text-foreground">Confirm your email</h1><p className="mt-4 leading-7 text-foreground/65">We sent a verification link to <strong className="text-foreground">{submittedEmail}</strong>. Open it to continue to profile setup.</p><p className="mt-4 rounded-lg border border-outline bg-background p-4 text-sm text-foreground/55">After confirmation: build your public academic profile, then continue to the dashboard. Faculty accounts still require institutional approval before faculty tools unlock.</p><Link href="/login" className="mt-7 inline-block text-xs font-bold normal-case tracking-normal text-primary hover:underline">Return to sign in</Link></div></div>;
+    return <AuthShell mode="signup"><div className="text-center"><RegistrationSteps current={2} /><MailCheck className="mx-auto h-14 w-14 text-primary" /><h1 className="mt-5 auth-title">Confirm your email</h1><p className="mt-4 leading-7 text-foreground/65">We sent a verification link to <strong className="text-foreground">{submittedEmail}</strong>. Open it to continue to your NSUT Research Network profile.</p><p className="mt-4 text-sm leading-7 text-foreground/55">Your next step is to share your academic interests and explore the network. Faculty tools become available after institutional approval.</p><Link href="/login" className="mt-7 inline-block text-xs font-semibold text-primary hover:underline">Return to sign in</Link></div></AuthShell>;
   }
 
   const strengthWidth = ["w-1/5", "w-2/5", "w-3/5", "w-4/5", "w-full"][passwordScore] || "w-0";
@@ -52,7 +52,7 @@ export default function SignupPage() {
     <AuthShell mode="signup">
       <div className="auth-registration">
         <RegistrationSteps current={1} />
-        <div className="mb-7"><h1 className="auth-title">Find your community.</h1><p className="auth-description">Start with your university email. Your next collaborator could be one branch away.</p></div>
+        <div className="mb-7"><h1 className="auth-title">Join the network.</h1><p className="auth-description">Bring your curiosity to NSUT Research Network. Start with your university email and connect with people who share your research interests.</p></div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {serverError && <p role="alert" className="border-l-2 border-primary bg-primary/10 p-4 text-sm font-bold text-primary">{serverError}</p>}
           <div className="grid grid-cols-2 gap-3 rounded-lg border border-outline bg-background p-1">{(["student", "faculty"] as const).map((item) => <label key={item} className={`cursor-pointer rounded-md py-3 text-center text-xs font-bold normal-case tracking-normal ${role === item ? "bg-primary text-on-primary" : "text-foreground/60 hover:bg-foreground/5"}`}><input type="radio" value={item} className="sr-only" {...register("role")} />{item}</label>)}</div>

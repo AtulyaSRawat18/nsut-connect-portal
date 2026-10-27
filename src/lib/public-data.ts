@@ -398,7 +398,7 @@ function showcaseNewsResult(filters: { q: string; category: string; department: 
       category: item.category,
       department: item.department,
       created_at: item.date,
-      profiles: { full_name: "NSUT Connect Editorial" },
+      profiles: { full_name: "NSUT Research Network Editorial" },
     })),
     count: filtered.length,
     error: null,

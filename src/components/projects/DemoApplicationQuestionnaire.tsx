@@ -27,7 +27,7 @@ export function DemoApplicationQuestionnaire({ form }: { form: DemoApplicationFo
       </div>
       <div className="rounded-lg border border-outline bg-surface shadow-xl">
         <header className="border-t-8 border-primary p-7 md:p-10">
-          <p className="text-xs font-semibold normal-case tracking-normal text-primary">NSUT Connect application questionnaire</p>
+          <p className="text-xs font-semibold normal-case tracking-normal text-primary">NSUT Research Network application questionnaire</p>
           <h1 className="mt-3 text-3xl font-semibold text-foreground md:text-3xl">{form.title}</h1>
           <p className="mt-3 text-sm font-bold text-foreground/70">{form.projectTitle}</p>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-foreground/60">{form.introduction} Estimated completion time: {form.estimatedMinutes} minutes.</p>
